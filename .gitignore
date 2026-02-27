@@ -1,0 +1,21 @@
+# Ambiente Virtuale (Fondamentale!)
+venv/
+ENV/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Test e Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Database locale (per non sovrascrivere i dati dei colleghi)
+*.db
+
+# Impostazioni dell'editor (VS Code, PyCharm)
+.vscode/
+.idea/
