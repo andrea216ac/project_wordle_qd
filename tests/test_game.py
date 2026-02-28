@@ -11,3 +11,4 @@ def test_welcome():
     game = WordleGame()
     # Sostituisci con il messaggio che hai effettivamente in game.py
     assert "Connessione" in game.get_welcome_message()
+    

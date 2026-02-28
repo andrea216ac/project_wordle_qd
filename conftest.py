@@ -1,3 +1,6 @@
+"""
+Configurazione per pytest e gestione dei path.
+"""
 import sys
 import os
 
