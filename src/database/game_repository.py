@@ -13,31 +13,14 @@ class GameRepository:
     """Gestisce le operazioni CRUD nel database per l'entità Game."""
 
     def __init__(self, session: Session) -> None:
-        """
-        Inizializza il repository.
-
-        Args:
-            session (Session): La sessione del database attiva.
-        """
+        """Inizializza il repository con la sessione."""
         self.session = session
 
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def save_game(
         self, user_id: int, word_to_guess: str, attempts: int, won: bool, points: int, mode: str
     ) -> Game | None:
-        """
-        Salva i risultati di una nuova partita nel database.
-
-        Args:
-            user_id (int): L'ID dell'utente che ha giocato.
-            word_to_guess (str): La parola che andava indovinata.
-            attempts (int): Il numero di tentativi impiegati.
-            won (bool): True se la partita è stata vinta, False altrimenti.
-            points (int): I punti ottenuti.
-            mode (str): La modalità di gioco (es. 'Daily', 'Training').
-
-        Returns:
-            Game | None: L'oggetto Game salvato, o None se il salvataggio fallisce.
-        """
+        """Salva i risultati di una nuova partita nel database."""
         try:
             new_game = Game(
                 user_id=user_id,
@@ -54,21 +37,21 @@ class GameRepository:
 
         except SQLAlchemyError as error:
             self.session.rollback()
-            logger.error("Errore critico durante il salvataggio della partita per user_id %s: %s", user_id, error)
+            logger.error(
+                "Errore critico durante salvataggio partita per user_id %s: %s",
+                user_id,
+                error
+            )
             return None
 
     def get_games_by_user(self, user_id: int) -> list[Game]:
-        """
-        Recupera lo storico di tutte le partite giocate da uno specifico utente.
-
-        Args:
-            user_id (int): L'ID dell'utente.
-
-        Returns:
-            list[Game]: Una lista contenente tutte le partite trovate.
-        """
+        """Recupera lo storico di tutte le partite giocate da uno specifico utente."""
         try:
             return self.session.query(Game).filter(Game.user_id == user_id).all()
         except SQLAlchemyError as error:
-            logger.error("Errore DB durante il recupero dello storico per user_id %s: %s", user_id, error)
+            logger.error(
+                "Errore DB durante il recupero dello storico per user_id %s: %s",
+                user_id,
+                error
+            )
             return []

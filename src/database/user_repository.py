@@ -13,24 +13,11 @@ class UserRepository:
     """Gestisce le operazioni CRUD nel database per l'entità User."""
 
     def __init__(self, session: Session) -> None:
-        """
-        Inizializza il repository.
-
-        Args:
-            session (Session): La sessione del database attiva.
-        """
+        """Inizializza il repository con la sessione."""
         self.session = session
 
     def get_user_by_username(self, username: str) -> User | None:
-        """
-        Cerca un utente in base allo username.
-
-        Args:
-            username (str): Il nome utente da cercare.
-
-        Returns:
-            User | None: L'oggetto utente se trovato, altrimenti None.
-        """
+        """Cerca un utente in base allo username."""
         try:
             return self.session.query(User).filter(User.username == username).first()
         except SQLAlchemyError as error:
@@ -38,15 +25,7 @@ class UserRepository:
             return None
 
     def create_user(self, username: str) -> User | None:
-        """
-        Crea un nuovo utente o restituisce quello esistente.
-
-        Args:
-            username (str): L'username desiderato.
-
-        Returns:
-            User | None: L'utente creato/recuperato, o None in caso di errore critico.
-        """
+        """Crea un nuovo utente o restituisce quello esistente."""
         try:
             existing_user = self.get_user_by_username(username)
             if existing_user:
@@ -60,5 +39,9 @@ class UserRepository:
 
         except SQLAlchemyError as error:
             self.session.rollback()
-            logger.error("Errore critico durante la creazione dell'utente '%s': %s", username, error)
+            logger.error(
+                "Errore critico durante la creazione dell'utente '%s': %s",
+                username,
+                error
+            )
             return None

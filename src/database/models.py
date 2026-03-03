@@ -35,3 +35,4 @@ class Game(Base):
 
     # Relazione inversa verso l'utente
     user = relationship("User", back_populates="games")
+    

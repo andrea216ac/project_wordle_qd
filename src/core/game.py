@@ -13,3 +13,4 @@ class WordleGame:
     def get_welcome_message(self):
         """Restituisce il messaggio di benvenuto per il debug."""
         return "Connessione"
+# pylint: disable=too-few-public-methods

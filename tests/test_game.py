@@ -1,3 +1,4 @@
+"""Modulo di test per la logica di gioco."""
 from src.core.game import WordleGame
 
 def test_placeholder():
