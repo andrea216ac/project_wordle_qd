@@ -18,7 +18,13 @@ class GameRepository:
 
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def save_game(
-        self, user_id: int, word_to_guess: str, attempts: int, won: bool, points: int, mode: str
+        self,
+        user_id: int,
+        word_to_guess: str,
+        attempts: int,
+        won: bool,
+        points: int,
+        mode: str,
     ) -> Game | None:
         """Salva i risultati di una nuova partita nel database."""
         try:
@@ -28,7 +34,7 @@ class GameRepository:
                 attempts=attempts,
                 won=won,
                 points=points,
-                mode=mode
+                mode=mode,
             )
             self.session.add(new_game)
             self.session.commit()
@@ -40,7 +46,7 @@ class GameRepository:
             logger.error(
                 "Errore critico durante salvataggio partita per user_id %s: %s",
                 user_id,
-                error
+                error,
             )
             return None
 
@@ -52,6 +58,6 @@ class GameRepository:
             logger.error(
                 "Errore DB durante il recupero dello storico per user_id %s: %s",
                 user_id,
-                error
+                error,
             )
             return []

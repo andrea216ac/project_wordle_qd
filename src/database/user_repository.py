@@ -42,6 +42,6 @@ class UserRepository:
             logger.error(
                 "Errore critico durante la creazione dell'utente '%s': %s",
                 username,
-                error
+                error,
             )
             return None
