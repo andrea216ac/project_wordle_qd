@@ -1,38 +1,64 @@
+"""Modulo contenente il repository per l'accesso ai dati degli utenti."""
+
+import logging
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
+
 from src.database.models import User
 
+logger = logging.getLogger(__name__)
+
+
 class UserRepository:
-    """
-    Questa classe gestisce tutte le operazioni nel database per la tabella 'users'.
-    Isola la logica di accesso ai dati dal resto dell'applicazione.
-    """
-    
-    def __init__(self, session: Session):
-        # Riceve la sessione (la "connessione" attiva) quando viene creata
+    """Gestisce le operazioni CRUD nel database per l'entità User."""
+
+    def __init__(self, session: Session) -> None:
+        """
+        Inizializza il repository.
+
+        Args:
+            session (Session): La sessione del database attiva.
+        """
         self.session = session
 
     def get_user_by_username(self, username: str) -> User | None:
-        """Cerca un utente per nome. Restituisce l'oggetto User se esiste, altrimenti None."""
-        return self.session.query(User).filter(User.username == username).first()
-
-    def create_user(self, username: str) -> User:
         """
-        Crea un nuovo utente. Se l'utente esiste già (essendo UNIQUE), 
-        lo recupera semplicemente senza mandare in crash il programma.
-        """
-        # 1. Controlliamo se il giocatore esiste già
-        existing_user = self.get_user_by_username(username)
-        if existing_user:
-            return existing_user  # Se esiste, facciamo un "login" automatico
+        Cerca un utente in base allo username.
 
-        # 2. Se non esiste, creiamo il nuovo oggetto Python
-        new_user = User(username=username)
-        
-        # 3. Lo aggiungiamo alla sessione e salviamo sul database (commit)
-        self.session.add(new_user)
-        self.session.commit()
-        
-        # 4. Aggiorniamo l'oggetto per ottenere l'ID generato automaticamente da SQLite
-        self.session.refresh(new_user)
-        
-        return new_user
+        Args:
+            username (str): Il nome utente da cercare.
+
+        Returns:
+            User | None: L'oggetto utente se trovato, altrimenti None.
+        """
+        try:
+            return self.session.query(User).filter(User.username == username).first()
+        except SQLAlchemyError as error:
+            logger.error("Errore DB in get_user_by_username: %s", error)
+            return None
+
+    def create_user(self, username: str) -> User | None:
+        """
+        Crea un nuovo utente o restituisce quello esistente.
+
+        Args:
+            username (str): L'username desiderato.
+
+        Returns:
+            User | None: L'utente creato/recuperato, o None in caso di errore critico.
+        """
+        try:
+            existing_user = self.get_user_by_username(username)
+            if existing_user:
+                return existing_user
+
+            new_user = User(username=username)
+            self.session.add(new_user)
+            self.session.commit()
+            self.session.refresh(new_user)
+            return new_user
+
+        except SQLAlchemyError as error:
+            self.session.rollback()
+            logger.error("Errore critico durante la creazione dell'utente '%s': %s", username, error)
+            return None

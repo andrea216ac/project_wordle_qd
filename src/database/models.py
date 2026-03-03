@@ -1,35 +1,37 @@
-from datetime import datetime
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
-from .db import Base  # Importiamo la 'Base' magica che hai creato poco fa!
+"""Modulo contenente le definizioni dei modelli ORM per il database."""
 
-# Tabella degli UTENTI
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
+
+from src.database.db import Base
+
+
 class User(Base):
+    """
+    Rappresenta un giocatore registrato nell'applicazione.
+    """
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
-    
-    # Relazione: un utente può avere tante partite. 
-    # Questo ci permetterà di chiedere a Python: "utente.games" e riavere tutte le sue giocate!
-    games = relationship("Game", back_populates="player")
+
+    # Relazione bidirezionale con le partite (Uno-a-Molti)
+    games = relationship("Game", back_populates="user", cascade="all, delete-orphan")
 
 
-# Tabella delle PARTITE
 class Game(Base):
+    """
+    Rappresenta una singola partita giocata da un utente.
+    """
     __tablename__ = "games"
 
     id = Column(Integer, primary_key=True, index=True)
-    
-    # Chiave Esterna (Foreign Key): collega questa partita all'ID di un utente specifico
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    
-    word_to_guess = Column(String, nullable=False)       # La parola segreta
-    attempts = Column(Integer, nullable=False)           # Quanti tentativi ha usato (1-6)
-    won = Column(Boolean, nullable=False, default=False) # Ha vinto o perso?
-    points = Column(Integer, nullable=False, default=0)  # Punti calcolati (es. 6 punti al 1° colpo)
-    mode = Column(String, nullable=False)                # "Daily" o "Training"
-    played_at = Column(DateTime, default=datetime.now)   # Data e ora esatta
-    
-    # Relazione inversa: collega la partita al suo giocatore
-    player = relationship("User", back_populates="games")
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    word_to_guess = Column(String, nullable=False)
+    attempts = Column(Integer, nullable=False)
+    won = Column(Boolean, nullable=False)
+    points = Column(Integer, nullable=False)
+    mode = Column(String, nullable=False)
+
+    # Relazione inversa verso l'utente
+    user = relationship("User", back_populates="games")
