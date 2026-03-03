@@ -25,7 +25,6 @@ class Game(Base):
     """
     Rappresenta una singola partita giocata da un utente.
     """
-    
     # pylint: disable=too-few-public-methods
     __tablename__ = "games"
 
