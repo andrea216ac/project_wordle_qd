@@ -1,8 +1,9 @@
 """Modulo contenente il repository per l'accesso ai dati degli utenti."""
 
 import logging
-from sqlalchemy.orm import Session
+
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
 from src.database.models import User
 

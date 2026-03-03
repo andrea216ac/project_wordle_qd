@@ -1,7 +1,7 @@
 """Modulo per l'inizializzazione del database e la creazione delle tabelle."""
 
-from src.database.db import engine, Base
 import src.database.models  # pylint: disable=unused-import
+from src.database.db import Base, engine
 
 
 def init_database() -> None:

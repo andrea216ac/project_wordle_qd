@@ -1,6 +1,7 @@
 """Modulo per la configurazione del database e la gestione delle sessioni."""
 
 import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
