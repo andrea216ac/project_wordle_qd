@@ -10,7 +10,7 @@ class WordleGame:
     def __init__(self, secret_word="GATTO"):
         """Inizializza il gioco con una parola segreta."""
         self.secret_word = secret_word.upper()
-
+        
     def get_welcome_message(self):
-        """Restituisce il messaggio di benvenuto per il debug."""
-        return "Connessione"
+            """Restituisce il messaggio di benvenuto per il debug."""
+            return "Connessione"
