@@ -26,7 +26,7 @@ class WordRepository:
             return (
                 self.session.query(Word)
                 .filter(Word.language == language, Word.length == length)
-                .order_by(func.random())
+                .order_by(func.random())  # pylint: disable=not-callable
                 .first()
             )
         except SQLAlchemyError as error:

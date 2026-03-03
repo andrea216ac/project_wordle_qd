@@ -49,4 +49,3 @@ class Word(Base):
     word = Column(String, nullable=False, index=True)
     language = Column(String, nullable=False, index=True)
     length = Column(Integer, nullable=False)
-    
