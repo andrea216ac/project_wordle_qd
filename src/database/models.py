@@ -10,6 +10,7 @@ class User(Base):
     """
     Rappresenta un giocatore registrato nell'applicazione.
     """
+    # pylint: disable=too-few-public-methods
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -23,6 +24,7 @@ class Game(Base):
     """
     Rappresenta una singola partita giocata da un utente.
     """
+    # pylint: disable=too-few-public-methods
     __tablename__ = "games"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -35,4 +37,3 @@ class Game(Base):
 
     # Relazione inversa verso l'utente
     user = relationship("User", back_populates="games")
-    
