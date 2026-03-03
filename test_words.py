@@ -20,9 +20,14 @@ def run_test() -> None:
         if session.query(Word).count() == 0:
             print("\n[DB] Popolamento iniziale del dizionario in corso...")
             parole_prova = [
-                ("GATTO", "IT"), ("VOLPE", "IT"), ("TIGRE", "IT"),
-                ("LEONE", "IT"), ("CERVO", "IT"), ("MOUSE", "EN"),
-                ("HORSE", "EN"), ("SNAKE", "EN"),
+                ("GATTO", "IT"),
+                ("VOLPE", "IT"),
+                ("TIGRE", "IT"),
+                ("LEONE", "IT"),
+                ("CERVO", "IT"),
+                ("MOUSE", "EN"),
+                ("HORSE", "EN"),
+                ("SNAKE", "EN"),
             ]
             for parola, lingua in parole_prova:
                 nuova_parola = Word(word=parola, language=lingua, length=5)
@@ -48,7 +53,9 @@ def run_test() -> None:
 
         if word_oggi_1 and word_oggi_2 and word_domani:
             print(f"Utente A gioca OGGI: ottiene '{word_oggi_1.word}'")
-            print(f"Utente B gioca OGGI: ottiene '{word_oggi_2.word}' (DEVE essere identica!)")
+            print(
+                f"Utente B gioca OGGI: ottiene '{word_oggi_2.word}' (DEVE essere identica!)"
+            )
             print(f"Domani la parola cambierà e sarà: '{word_domani.word}'")
 
 
