@@ -35,3 +35,17 @@ class Game(Base):
     mode = Column(String, nullable=False)
 
     user = relationship("User", back_populates="games")
+
+
+class Word(Base):
+    """
+    Rappresenta una parola del dizionario multilingua.
+    """
+
+    # pylint: disable=too-few-public-methods
+    __tablename__ = "words"
+
+    id = Column(Integer, primary_key=True, index=True)
+    word = Column(String, nullable=False, index=True)
+    language = Column(String, nullable=False, index=True)
+    length = Column(Integer, nullable=False)
