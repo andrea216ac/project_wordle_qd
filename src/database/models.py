@@ -8,6 +8,7 @@ from src.database.db import Base
 
 class User(Base):
     """Rappresenta un giocatore registrato nell'applicazione."""
+
     # pylint: disable=too-few-public-methods
     __tablename__ = "users"
 
