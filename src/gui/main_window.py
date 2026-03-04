@@ -3,7 +3,8 @@
 import os
 import sys
 
-from PyQt6 import QtWidgets, uic  # pylint: disable=no-member
+# pylint: disable=no-member, no-name-in-module
+from PyQt6 import QtWidgets, uic
 
 
 class MainWindow(QtWidgets.QMainWindow):  # pylint: disable=too-few-public-methods
