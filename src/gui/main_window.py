@@ -3,10 +3,10 @@
 import os
 import sys
 
-from PyQt6 import QtWidgets, uic  # pylint: disable=no-member
+from PyQt6 import QtWidgets, uic # pylint: disable=no-member
 
 
-class MainWindow(QtWidgets.QMainWindow):  # pylint: disable=too-few-public-methods
+class MainWindow(QtWidgets.QMainWindow): # pylint: disable=too-few-public-methods
     """Classe che gestisce l'interfaccia principale."""
 
     def __init__(self, nome_giocatore="Andrea"):
