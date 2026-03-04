@@ -1,0 +1,18 @@
+import sys
+import os
+from PyQt6 import QtWidgets, uic
+
+class MainWindow(QtWidgets.QMainWindow):
+    def __init__(self, nome_giocatore="Andrea"):
+        super().__init__()
+        ui_path = os.path.join(os.path.dirname(__file__), 'main_window.ui')
+        uic.loadUi(ui_path, self)
+        self.btn_exit.clicked.connect(self.close)
+
+        self.lbl_welcome.setText(f"Bentornato/a, {nome_giocatore}!")
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
