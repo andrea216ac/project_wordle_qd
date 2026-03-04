@@ -1,7 +1,8 @@
 """Modulo per la finestra principale dell'applicazione Wordle."""
 
-import sys
 import os
+import sys
+
 from PyQt6 import QtWidgets, uic  # pylint: disable=no-member
 
 
