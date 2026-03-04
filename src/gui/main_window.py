@@ -1,8 +1,10 @@
+"""Modulo per la finestra principale dell'applicazione Wordle."""
 import sys
 import os
-from PyQt6 import QtWidgets, uic
+from PyQt6 import QtWidgets, uic # pylint: disable=no-member
 
-class MainWindow(QtWidgets.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow): # pylint: disable=too-few-public-methods
+    """Classe che gestisce l'interfaccia principale."""
     def __init__(self, nome_giocatore="Andrea"):
         super().__init__()
         ui_path = os.path.join(os.path.dirname(__file__), 'main_window.ui')
