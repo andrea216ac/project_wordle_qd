@@ -11,7 +11,7 @@ def test_main_window_init():
     # pylint: disable=import-outside-toplevel, no-name-in-module, unused-variable
     from PyQt6.QtWidgets import QApplication
     from src.gui.main_window import MainWindow
-    
+
     app = QApplication.instance() or QApplication([])
     window = MainWindow(nome_giocatore="Tester")
     assert window is not None
