@@ -2,7 +2,6 @@
 import os
 import pytest
 
-# Controlliamo se siamo su GitHub Actions
 IS_GITHUB = os.getenv("GITHUB_ACTIONS") == "true"
 
 @pytest.mark.skipif(IS_GITHUB, reason="Salto test GUI su GitHub Actions")

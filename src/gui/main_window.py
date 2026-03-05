@@ -1,8 +1,7 @@
 """Modulo per la finestra principale dell'applicazione Wordle."""
 
 import os
-import sys
-from typing import Any, Type  # Aggiungi questa riga
+from typing import Any, Type
 
 # pylint: disable=no-member, c-extension-no-member, no-name-in-module
 try:
@@ -29,7 +28,6 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
             btn_exit = getattr(self, "btn_exit", None)
             if btn_exit:
                 btn_exit.clicked.connect(self.close)
-            
             lbl_welcome = getattr(self, "lbl_welcome", None)
             if lbl_welcome:
                 lbl_welcome.setText(f"Bentornato/a, {nome_giocatore}!")
