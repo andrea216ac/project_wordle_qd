@@ -6,15 +6,14 @@ import sys
 # pylint: disable=no-member, c-extension-no-member, no-name-in-module
 try:
     from PyQt6 import QtWidgets, uic
-
     HAS_QT = True
-    BASE_CLASS = QtWidgets.QMainWindow
+    BaseClass = QtWidgets.QMainWindow
 except ImportError:
     HAS_QT = False
-    BASE_CLASS = object
+    BaseClass = object
 
 
-class MainWindow(BASE_CLASS):
+class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
     """Classe che gestisce l'interfaccia principale."""
 
     def __init__(self, nome_giocatore="Andrea"):
