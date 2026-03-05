@@ -6,6 +6,7 @@ from typing import Any, Type
 # pylint: disable=no-member, c-extension-no-member, no-name-in-module
 try:
     from PyQt6 import QtWidgets, uic
+
     HAS_QT = True
     BaseClass: Type[Any] = QtWidgets.QMainWindow
 except ImportError:
