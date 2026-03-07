@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 
 try:
-    from PyQt6 import QtWidgets, QtCore
+    from PyQt6 import QtWidgets
     from PyQt6.QtCore import Qt  # pylint: disable=no-name-in-module
     HAS_QT = True
 except ImportError:
