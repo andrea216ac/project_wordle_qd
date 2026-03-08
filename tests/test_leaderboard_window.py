@@ -1,17 +1,26 @@
 """Unit tests per la finestra della classifica di Wordle."""
 
+# pylint: disable=no-name-in-module, import-outside-toplevel
 import os
+from typing import Any, cast
 import pytest
 
 from src.gui.leaderboard_window import LeaderboardWindow, HAS_QT
 
+try:
+    from PyQt6.QtWidgets import QAbstractItemView
+    Q_ABSTRACT = cast(Any, QAbstractItemView)
+except ImportError:
+    Q_ABSTRACT = cast(Any, object)
+
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
+
 
 @pytest.fixture(name="leaderboard_app")
 def fixture_leaderboard_app(qtbot):
     """Inizializza la finestra della classifica per i test UI."""
     if not HAS_QT:
-        pytest.skip("Librerie Qt non disponibili")
+        pytest.skip("Librerie Qt non disponibili su questo sistema.")
     test_window = LeaderboardWindow()
     qtbot.addWidget(test_window)
     return test_window
@@ -51,8 +60,6 @@ def test_user_position_display(leaderboard_app):
 
 def test_read_only_tables(leaderboard_app):
     """Assicura che le tabelle siano in modalità sola lettura."""
-    from PyQt6.QtWidgets import QAbstractItemView
-
-    no_edit = QAbstractItemView.EditTrigger.NoEditTriggers
+    no_edit = Q_ABSTRACT.EditTrigger.NoEditTriggers
     assert leaderboard_app.table_top3.editTriggers() == no_edit
     assert leaderboard_app.table_user_pos.editTriggers() == no_edit
