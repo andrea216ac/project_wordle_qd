@@ -4,11 +4,16 @@ import os
 import sys
 
 # pylint: disable=no-name-in-module, no-member, c-extension-no-member
-from PyQt6 import QtWidgets, uic
-from PyQt6.QtWidgets import QHeaderView, QTableWidgetItem
+try:
+    from PyQt6 import QtWidgets, uic
+    from PyQt6.QtWidgets import QHeaderView, QTableWidgetItem
+    HAS_QT = True
+    BASE_DIALOG = QtWidgets.QDialog
+except ImportError:
+    HAS_QT = False
+    BASE_DIALOG = object
 
-
-class LeaderboardWindow(QtWidgets.QDialog):
+class LeaderboardWindow(QtWidgets.QDialog): # pylint: disable=too-few-public-methods
     """Classe che gestisce la visualizzazione della classifica utenti."""
 
     def __init__(self):
