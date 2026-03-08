@@ -27,7 +27,7 @@ def fixture_leaderboard_app(request):
     except (pytest.FixtureLookupError, ImportError, RuntimeError):
         pytest.skip("Plugin pytest-qt o librerie grafiche non inizializzate.")
         return None
-    
+
     test_window = LeaderboardWindow()
     qtbot_inst.addWidget(test_window)
     return test_window
