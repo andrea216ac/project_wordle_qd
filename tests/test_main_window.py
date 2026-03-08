@@ -10,7 +10,7 @@ try:
     HAS_QT = True
 except ImportError:
     QtWidgets = MagicMock()
-    QtCore = MagicMock()
+    QtCore = MagicMock() # pylint: disable=invalid-name
     Qt = MagicMock()
     HAS_QT = False
 
