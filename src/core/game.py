@@ -1,1 +1,3 @@
-"""Modulo logica di gioco."""
+#prova
+
+print("parola")
