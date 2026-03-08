@@ -25,6 +25,7 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
             return
 
         super().__init__()
+        self.leaderboard_window = None
         ui_path = os.path.join(os.path.dirname(__file__), "main_window.ui")
 
         if os.path.exists(ui_path):
@@ -37,9 +38,23 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
             lbl_welcome = getattr(self, "lbl_welcome", None)
             if lbl_welcome:
                 lbl_welcome.setText(f"Bentornato/a, {nome_giocatore}!")
+
+            btn_leaderboard = getattr(self, "btn_leaderboard", None)
+            if btn_leaderboard:
+                btn_leaderboard.clicked.connect(self.apri_classifica)
         else:
             print(f"ERRORE: File UI non trovato in {ui_path}")
 
+    def apri_classifica(self):
+            """Metodo per aprire la finestra della classifica."""
+            from src.gui.leaderboard_window import LeaderboardWindow
+            
+            if self.leaderboard_window is None:
+                self.leaderboard_window = LeaderboardWindow()
+            
+            self.leaderboard_window.show()
+            self.leaderboard_window.raise_()
+            self.leaderboard_window.activateWindow()
 
 if __name__ == "__main__":
     if HAS_QT:
