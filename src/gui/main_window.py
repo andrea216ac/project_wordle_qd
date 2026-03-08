@@ -46,15 +46,15 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
             print(f"ERRORE: File UI non trovato in {ui_path}")
 
     def apri_classifica(self):
-            """Metodo per aprire la finestra della classifica."""
-            from src.gui.leaderboard_window import LeaderboardWindow
+        """Metodo per aprire la finestra della classifica."""
+        from src.gui.leaderboard_window import LeaderboardWindow
             
-            if self.leaderboard_window is None:
-                self.leaderboard_window = LeaderboardWindow()
-            
-            self.leaderboard_window.show()
-            self.leaderboard_window.raise_()
-            self.leaderboard_window.activateWindow()
+        if self.leaderboard_window is None:
+            self.leaderboard_window = LeaderboardWindow()
+        
+        self.leaderboard_window.show()
+        self.leaderboard_window.raise_()
+        self.leaderboard_window.activateWindow()
 
 if __name__ == "__main__":
     if HAS_QT:

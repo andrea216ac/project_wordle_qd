@@ -1,12 +1,18 @@
+"""Modulo per la finestra della classifica dell'applicazione Wordle."""
+
 import os
 import sys
 
+# pylint: disable=no-name-in-module, no-member, c-extension-no-member
 from PyQt6 import QtWidgets, uic
 from PyQt6.QtWidgets import QHeaderView, QTableWidgetItem
 
 
 class LeaderboardWindow(QtWidgets.QDialog):
+    """Classe che gestisce la visualizzazione della classifica utenti."""
+
     def __init__(self):
+        """Inizializza la finestra e carica i dati della classifica."""
         super().__init__()
 
         ui_path = os.path.join(os.path.dirname(__file__), "leaderboard_window.ui")
@@ -30,11 +36,14 @@ class LeaderboardWindow(QtWidgets.QDialog):
                 self.dati_classifica, nome_utente_corrente="Tu (Esempio)"
             )
         else:
-            print(
-                "ERRORE: I nomi 'table_top3' o 'table_user_pos' non corrispondono all'objectName nel file .ui"
+            msg = (
+                "ERRORE: I nomi 'table_top3' o 'table_user_pos' "
+                "non corrispondono all'objectName nel file .ui"
             )
+            print(msg)
 
     def setup_leaderboard_graphics(self):
+        """Configura le intestazioni e il comportamento delle tabelle."""
         self.table_top3.setColumnCount(4)
         self.table_top3.setHorizontalHeaderLabels(
             ["Pos.", "Utente", "Media Tentativi", "Vittorie"]
@@ -58,6 +67,7 @@ class LeaderboardWindow(QtWidgets.QDialog):
         )
 
     def popola_classifica(self, dati, nome_utente_corrente):
+        """Inserisce i dati ordinati all'interno dei widget QTableWidget."""
         dati_ordinati = sorted(dati, key=lambda x: (-x["vittorie"], x["media"]))
 
         self.table_top3.setRowCount(3)
@@ -87,15 +97,14 @@ class LeaderboardWindow(QtWidgets.QDialog):
             )
 
         style = """
-            QTableWidget { background-color: #ffffff; gridline-color: #d3d6da; border: none; }
-            QHeaderView::section { background-color: #787c7e; color: white; padding: 5px; font-weight: bold; }
+            QTableWidget { background-color: #ffffff; gridline-color: #d3d6da; }
+            QHeaderView::section { background-color: #787c7e; color: white; padding: 5px; }
             QTableWidget::item { padding: 10px; color: #1a1a1a; }
         """
         self.table_top3.setStyleSheet(style)
         self.table_user_pos.setStyleSheet(style)
 
 
-# --- BLOCCO DI ESECUZIONE ---
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     window = LeaderboardWindow()
