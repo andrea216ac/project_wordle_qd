@@ -1,3 +1,1 @@
-#prova
-
-print("parola")
+"""Modulo logica di gioco."""
