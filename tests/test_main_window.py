@@ -11,14 +11,14 @@ try:
     from PyQt6 import QtWidgets as real_widgets
     from PyQt6.QtCore import Qt as real_qt  # pylint: disable=no-name-in-module
 
-    QtWidgets = cast(Any, real_widgets)
-    QtCore = cast(Any, real_core)
-    Qt = cast(Any, real_qt)
+    QtWidgets = cast(Any, real_widgets)  # pylint: disable=invalid-name
+    QtCore = cast(Any, real_core)        # pylint: disable=invalid-name   
+    Qt = cast(Any, real_qt)              # pylint: disable=invalid-name   
     HAS_QT = True
 except ImportError:
-    QtWidgets = cast(Any, MagicMock())
-    QtCore = cast(Any, MagicMock())
-    Qt = cast(Any, MagicMock())
+    QtWidgets = cast(Any, MagicMock())   # pylint: disable=invalid-name
+    QtCore = cast(Any, MagicMock())      # pylint: disable=invalid-name
+    Qt = cast(Any, MagicMock())          # pylint: disable=invalid-name
     HAS_QT = False
 
 from src.gui.main_window import MainWindow
