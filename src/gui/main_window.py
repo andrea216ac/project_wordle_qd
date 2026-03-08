@@ -4,6 +4,8 @@ import os
 import sys
 from typing import Any, Type, cast
 
+from src.gui.leaderboard_window import LeaderboardWindow
+
 # pylint: disable=no-member, c-extension-no-member, no-name-in-module
 try:
     from PyQt6 import QtWidgets, uic
@@ -47,14 +49,14 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
 
     def apri_classifica(self):
         """Metodo per aprire la finestra della classifica."""
-        from src.gui.leaderboard_window import LeaderboardWindow
-            
+
         if self.leaderboard_window is None:
             self.leaderboard_window = LeaderboardWindow()
-        
+
         self.leaderboard_window.show()
         self.leaderboard_window.raise_()
         self.leaderboard_window.activateWindow()
+
 
 if __name__ == "__main__":
     if HAS_QT:

@@ -63,7 +63,7 @@ def test_leaderboard_button_functional(app_window, qtbot):
     """Verifica che il tasto classifica apra la relativa finestra."""
     # pylint: disable=no-member
     qtbot.mouseClick(app_window.btn_leaderboard, Qt.MouseButton.LeftButton)
-    assert not app_window.isVisible()   
+    assert not app_window.isVisible()
 
 
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI: librerie grafiche mancanti")

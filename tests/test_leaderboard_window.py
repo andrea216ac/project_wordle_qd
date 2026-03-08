@@ -1,11 +1,14 @@
 """Unit tests per la finestra della classifica di Wordle."""
 
 import os
+
 import pytest
+
 # pylint: disable=no-name-in-module, import-outside-toplevel
 
 try:
-    from PyQt6 import QtWidgets
+    import PyQt6
+
     HAS_QT = True
 except ImportError:
     HAS_QT = False
