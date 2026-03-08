@@ -21,16 +21,15 @@ def fixture_leaderboard_app(request):
     """Inizializza la finestra della classifica per i test UI."""
     if not HAS_QT:
         pytest.skip("Librerie Qt non disponibili su questo sistema.")
-    
-    try:
-        # Questo cerca 'qtbot' solo quando il test viene effettivamente eseguito
-        qtbot = request.getfixturevalue("qtbot")
-    except (pytest.FixtureLookupError, Exception):
-        # Se pytest-qt non è installato o crasha per libEGL, saltiamo il test
-        pytest.skip("Plugin pytest-qt non trovato o non inizializzato correttamente.")
 
+    try:
+        qtbot_inst = request.getfixturevalue("qtbot")
+    except (pytest.FixtureLookupError, ImportError, RuntimeError):
+        pytest.skip("Plugin pytest-qt o librerie grafiche non inizializzate.")
+        return None
+    
     test_window = LeaderboardWindow()
-    qtbot.addWidget(test_window)
+    qtbot_inst.addWidget(test_window)
     return test_window
 
 
