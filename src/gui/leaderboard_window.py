@@ -2,13 +2,14 @@
 
 import os
 import sys
+from typing import Any, Type
 
 # pylint: disable=no-name-in-module, no-member, c-extension-no-member
 try:
     from PyQt6 import QtWidgets, uic
     from PyQt6.QtWidgets import QHeaderView, QTableWidgetItem
     HAS_QT = True
-    BaseDialog = QtWidgets.QDialog
+    BaseDialog: Type[Any] = QtWidgets.QDialog
 except ImportError:
     HAS_QT = False
     BaseDialog = object
