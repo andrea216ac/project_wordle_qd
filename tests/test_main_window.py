@@ -12,13 +12,13 @@ try:
     from PyQt6.QtCore import Qt as real_qt  # pylint: disable=no-name-in-module
 
     QtWidgets = cast(Any, real_widgets)  # pylint: disable=invalid-name
-    QtCore = cast(Any, real_core)        # pylint: disable=invalid-name   
-    Qt = cast(Any, real_qt)              # pylint: disable=invalid-name   
+    QtCore = cast(Any, real_core)  # pylint: disable=invalid-name
+    Qt = cast(Any, real_qt)  # pylint: disable=invalid-name
     HAS_QT = True
 except ImportError:
-    QtWidgets = cast(Any, MagicMock())   # pylint: disable=invalid-name
-    QtCore = cast(Any, MagicMock())      # pylint: disable=invalid-name
-    Qt = cast(Any, MagicMock())          # pylint: disable=invalid-name
+    QtWidgets = cast(Any, MagicMock())  # pylint: disable=invalid-name
+    QtCore = cast(Any, MagicMock())  # pylint: disable=invalid-name
+    Qt = cast(Any, MagicMock())  # pylint: disable=invalid-name
     HAS_QT = False
 
 from src.gui.main_window import MainWindow
