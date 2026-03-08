@@ -13,7 +13,7 @@ except ImportError:
     HAS_QT = False
     BaseDialog = object
 
-class LeaderboardWindow(QtWidgets.QDialog): # pylint: disable=too-few-public-methods
+class LeaderboardWindow(BaseDialog): # pylint: disable=too-few-public-methods
     """Classe che gestisce la visualizzazione della classifica utenti."""
 
     def __init__(self):

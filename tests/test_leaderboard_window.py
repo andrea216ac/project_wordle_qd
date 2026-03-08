@@ -1,15 +1,11 @@
 """Unit tests per la finestra della classifica di Wordle."""
 
 import os
-import importlib.util
 import pytest
 
-HAS_QT = importlib.util.find_spec("PyQt6") is not None
-
-from src.gui.leaderboard_window import LeaderboardWindow
+from src.gui.leaderboard_window import LeaderboardWindow, HAS_QT
 
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
-
 
 @pytest.fixture(name="leaderboard_app")
 def fixture_leaderboard_app(qtbot):
