@@ -38,7 +38,7 @@ def seed_words_from_file(file_path: str, language: str, length: int = 5) -> None
                 Word.language == language,
                 Word.length == length,
             ).all()
-            
+
             existing_words = {w.word for w in existing}
             new_words = raw_words - existing_words
 
@@ -54,7 +54,7 @@ def seed_words_from_file(file_path: str, language: str, length: int = 5) -> None
             # Inserimento massivo (bulk insert)
             session.add_all(words_to_insert)
             session.commit()
-            
+
             logger.info(
                 "Inserite %d nuove parole (%s) dal file %s.",
                 len(words_to_insert),
