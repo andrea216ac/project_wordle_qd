@@ -1,10 +1,14 @@
 
 
 class Game:
+     # ==== COSTRUTTORE ====
     def __init__(self, target_word):
-        self.target_word = target_word
-        self.attempts = 0
-
+        self.target_word = target_word         # Target: obiettivo da indovinare
+        self.attempts = 0                      # Attemps: numero tentativi
+        self.is_over = False                   # Gioco finito?
+        self.max_attempts = len(target_word) + 2  # Numero max di tentativi --- scegliere tentativi fissi o dipende da lunghezza?
+        
+    # ==== METODO INDOVINA =====
     def check_guess(self, guess):
 
         #CONTROLLO LUNGHEZZA
