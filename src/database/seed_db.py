@@ -34,10 +34,14 @@ def seed_words_from_file(file_path: str, language: str, length: int = 5) -> None
     with SessionLocal() as session:
         try:
             # Recupera le parole già presenti per evitare duplicati
-            existing = session.query(Word.word).filter(
-                Word.language == language,
-                Word.length == length,
-            ).all()
+            existing = (
+                session.query(Word.word)
+                .filter(
+                    Word.language == language,
+                    Word.length == length,
+                )
+                .all()
+            )
 
             existing_words = {w.word for w in existing}
             new_words = raw_words - existing_words
