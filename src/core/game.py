@@ -19,6 +19,10 @@ class Game:
         if len(guess) != len(self.target_word):
             raise ValueError("Lunghezza non valida") #interfaccia
         
+        #CONTROLLO CARATTERI 
+        if not guess.isalpha():
+            raise ValueError("La parola deve contenere solo lettere")
+        
         self.attempts += 1                         #incremento tentativo
         result = [None] * len(self.target_word)    #result: array per corretto, presente o assente
         usato = [False] * len(self.target_word)    #usato: stringa booleana, evita riutilizzo delle lettere
@@ -46,11 +50,17 @@ class Game:
                 else: 
                     result[i] = "Assente"      #lettere doppie ma già usate es. cassa - sassi 
 
+        #CONTROLLO VITTORIA E FINE TENTATIVI
+        if all(r == "Corretto" for r in result):   #interfaccia
+            self.is_over = True
+        elif self.attempts >= self.max_attempts:  # print tentativi finiti (UI)
+            self.is_over = True
+
         return result
     
 
 #main.py
-game = Game("cane")   #classe Game si aspetta una parola, quella da indovinare
+game = Game("palla")   #classe Game si aspetta una parola, quella da indovinare
 
 guess = input("Inserisci una parola: ")  # guess: tentativo di indovinare
 
