@@ -97,6 +97,7 @@ def test_mainwindow_initialization_defaults():
     if HAS_QT:
         assert "Andrea" in window.lbl_welcome.text()
 
+
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI: librerie grafiche mancanti")
 def test_new_game_button_functional(app_window, qtbot):
     """Verifica che il tasto Nuova Partita apra la GameWindow e chiuda la MainWindow."""
