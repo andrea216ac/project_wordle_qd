@@ -11,6 +11,10 @@ class Game:
     # ==== METODO INDOVINA =====
     def check_guess(self, guess):
 
+        #CONTROLLO SE GIOCO E' FINITO
+        if self.is_over:
+            raise Exception("Il gioco è finito")   #interfaccia
+        
         #CONTROLLO LUNGHEZZA
         if len(guess) != len(self.target_word):
             raise ValueError("Lunghezza non valida") #interfaccia
