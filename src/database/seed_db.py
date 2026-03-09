@@ -23,7 +23,9 @@ def seed_words_from_file(file_path: str, language: str, length: int = 5) -> None
 
     with path.open("r", encoding="utf-8") as file:
         # Estrae le parole: rimuove spazi, mette in maiuscolo, filtra per lunghezza
-        raw_words = {line.strip().upper() for line in file if len(line.strip()) == length}
+        raw_words = {
+            line.strip().upper() for line in file if len(line.strip()) == length
+        }
 
     if not raw_words:
         logger.warning("Nessuna parola valida trovata in %s", file_path)
@@ -31,31 +33,30 @@ def seed_words_from_file(file_path: str, language: str, length: int = 5) -> None
 
     with SessionLocal() as session:
         try:
-            # Controlla quali parole esistono già per evitare duplicati
-            existing_words = {
-                w.word
-                for w in session.query(Word.word)
-                .filter(Word.language == language, Word.length == length)
-                .all()
-            }
-
+            # Recupera le parole già presenti per evitare duplicati
+            existing = session.query(Word.word).filter(
+                Word.language == language,
+                Word.length == length,
+            ).all()
+            
+            existing_words = {w.word for w in existing}
             new_words = raw_words - existing_words
 
             if not new_words:
-                logger.info(
-                    "Tutte le parole di %s sono già presenti nel database.",
-                    file_path,
-                )
+                logger.info("Tutte le parole di %s sono già presenti.", file_path)
                 return
 
             # Prepara gli oggetti Word per l'inserimento
-            words_to_insert = [Word(word=word, language=language, length=length) for word in new_words]
+            words_to_insert = [
+                Word(word=w, language=language, length=length) for w in new_words
+            ]
 
-            # Inserimento massivo (bulk insert) per massimizzare le prestazioni
+            # Inserimento massivo (bulk insert)
             session.add_all(words_to_insert)
             session.commit()
+            
             logger.info(
-                "Inserite con successo %d nuove parole (%s) dal file %s.",
+                "Inserite %d nuove parole (%s) dal file %s.",
                 len(words_to_insert),
                 language,
                 file_path,
@@ -64,14 +65,14 @@ def seed_words_from_file(file_path: str, language: str, length: int = 5) -> None
         except SQLAlchemyError as error:
             session.rollback()
             logger.error(
-                "Errore durante il caricamento delle parole da %s: %s",
+                "Errore durante il caricamento da %s: %s",
                 file_path,
                 error,
             )
 
 
 if __name__ == "__main__":
-    # Configurazione base del logger per vedere l'output nel terminale
+    # Configurazione base del logger
     logging.basicConfig(level=logging.INFO)
 
     logger.info("Inizio procedura di popolamento database...")
