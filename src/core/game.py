@@ -15,16 +15,32 @@ class Game:
         if len(guess) != len(self.target_word):
             raise ValueError("Lunghezza non valida") #interfaccia
         
-        self.attempts += 1
-        result = []
+        self.attempts += 1                         #incremento tentativo
+        result = [None] * len(self.target_word)    #result: array per corretto, presente o assente
+        usato = [False] * len(self.target_word)    #usato: stringa booleana, evita riutilizzo delle lettere
 
+        #CICLO PER PAROLE CORRETTE
         for i in range(len(self.target_word)):
-            if guess[i] == self.target_word[i]:
-                result.append("CORRECT")
-            elif guess[i] in self.target_word:
-                result.append("PRESENT")
-            else:
-                result.append("ABSENT")
+            if guess[i] == self.target_word[i]: 
+                result[i] = "Corretto" 
+                usato[i] = True 
+
+        #CICLO PER PRESENTE E ASSENTE 
+        for i in range(len(self.target_word)): #scorre la parola "guess" e array "result"
+            if result[i] is None:   # solo lettere non corrette 
+                trovato = False
+
+                for j in range(len(self.target_word)):  #scorre la parola "target" e array "usato"
+                    #se lettera presente ma non "usata"
+                    if guess[i] == self.target_word[j] and not usato[j]: 
+                        trovato = True
+                        usato[j] = True
+                        break              
+
+                if trovato:    
+                    result[i] = "Presente"     #esempio palla - lampa (presente, corretto, assente, presente, corretto)
+                else: 
+                    result[i] = "Assente"      #lettere doppie ma già usate es. cassa - sassi 
 
         return result
     
