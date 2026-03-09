@@ -6,6 +6,11 @@ class Game:
         self.attempts = 0
 
     def check_guess(self, guess):
+
+        #CONTROLLO LUNGHEZZA
+        if len(guess) != len(self.target_word):
+            raise ValueError("Lunghezza non valida") #interfaccia
+        
         self.attempts += 1
         result = []
 
