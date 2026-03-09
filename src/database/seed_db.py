@@ -23,11 +23,7 @@ def seed_words_from_file(file_path: str, language: str, length: int = 5) -> None
 
     with path.open("r", encoding="utf-8") as file:
         # Estrae le parole: rimuove spazi, mette in maiuscolo, filtra per lunghezza
-        raw_words = {
-            line.strip().upper()
-            for line in file
-            if len(line.strip()) == length
-        }
+        raw_words = {line.strip().upper() for line in file if len(line.strip()) == length}
 
     if not raw_words:
         logger.warning("Nessuna parola valida trovata in %s", file_path)
@@ -53,10 +49,7 @@ def seed_words_from_file(file_path: str, language: str, length: int = 5) -> None
                 return
 
             # Prepara gli oggetti Word per l'inserimento
-            words_to_insert = [
-                Word(word=word, language=language, length=length)
-                for word in new_words
-            ]
+            words_to_insert = [Word(word=word, language=language, length=length) for word in new_words]
 
             # Inserimento massivo (bulk insert) per massimizzare le prestazioni
             session.add_all(words_to_insert)
