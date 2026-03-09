@@ -29,14 +29,15 @@ if HAS_QT:
 
 @pytest.fixture(name="app_window")
 def fixture_app_window(request):
+    """Inizializza la finestra della main window per i test UI."""
     if not HAS_QT:
         pytest.skip("Librerie Qt non disponibili")
 
-    try:
-        qtbot_inst = request.getfixturevalue("qtbot")
-    except Exception:
-        pytest.skip("Plugin pytest-qt non funzionante")
+    if "qtbot" not in request.fixturenames:
+        pytest.skip("Plugin pytest-qt non installato o non configurato")
         return None
+
+    qtbot_inst = request.getfixturevalue("qtbot")
 
     window = MainWindow(nome_giocatore="Tester")
     qtbot_inst.addWidget(window)
