@@ -186,7 +186,7 @@ QLabel{
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="btn_back">
        <property name="maximumSize">
         <size>
          <width>150</width>

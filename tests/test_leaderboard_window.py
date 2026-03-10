@@ -3,12 +3,14 @@
 # pylint: disable=no-name-in-module, import-outside-toplevel
 import os
 from typing import Any, cast
+
 import pytest
 
-from src.gui.leaderboard_window import LeaderboardWindow, HAS_QT
+from src.gui.leaderboard_window import HAS_QT, LeaderboardWindow
 
 try:
     from PyQt6.QtWidgets import QAbstractItemView
+
     QAbstract = cast(Any, QAbstractItemView)
 except ImportError:
     QAbstract = cast(Any, object)
@@ -70,3 +72,23 @@ def test_read_only_tables(leaderboard_app):
     no_edit = QAbstract.EditTrigger.NoEditTriggers
     assert leaderboard_app.table_top3.editTriggers() == no_edit
     assert leaderboard_app.table_user_pos.editTriggers() == no_edit
+
+
+def test_torna_indietro_logic(leaderboard_app):
+    """Verifica che il metodo torna_indietro non crashi."""
+    leaderboard_app.torna_indietro()
+    assert leaderboard_app.main_window is not None
+
+
+def test_popola_classifica_empty(leaderboard_app):
+    """Verifica che il popolamento funzioni anche con dati vuoti."""
+    leaderboard_app.popola_classifica([], nome_utente_corrente="Nessuno")
+    assert leaderboard_app.table_top3.rowCount() == 3
+    assert leaderboard_app.table_user_pos.rowCount() == 0
+
+
+def test_user_not_in_leaderboard(leaderboard_app):
+    """Verifica il comportamento se l'utente corrente non è in classifica."""
+    dati_test = [{"utente": "Player1", "vittorie": 1, "media": 5.0}]
+    leaderboard_app.popola_classifica(dati_test, nome_utente_corrente="Sconosciuto")
+    assert leaderboard_app.table_user_pos.rowCount() == 0

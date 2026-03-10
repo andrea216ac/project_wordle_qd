@@ -8,18 +8,22 @@ from typing import Any, Type
 try:
     from PyQt6 import QtWidgets, uic
     from PyQt6.QtWidgets import QHeaderView, QTableWidgetItem
+
     HAS_QT = True
     BaseDialog: Type[Any] = QtWidgets.QDialog
 except ImportError:
     HAS_QT = False
     BaseDialog = object
 
-class LeaderboardWindow(BaseDialog): # pylint: disable=too-few-public-methods
+
+class LeaderboardWindow(BaseDialog):  # pylint: disable=too-few-public-methods
     """Classe che gestisce la visualizzazione della classifica utenti."""
 
-    def __init__(self):
+    def __init__(self, main_window=None):
         """Inizializza la finestra e carica i dati della classifica."""
         super().__init__()
+
+        self.main_window = main_window
 
         ui_path = os.path.join(os.path.dirname(__file__), "leaderboard_window.ui")
 
@@ -28,6 +32,10 @@ class LeaderboardWindow(BaseDialog): # pylint: disable=too-few-public-methods
             return
 
         uic.loadUi(ui_path, self)
+
+        btn_leaderboard = getattr(self, "btn_back", None)
+        if btn_leaderboard:
+            btn_leaderboard.clicked.connect(self.torna_indietro)
 
         self.dati_classifica = [
             {"utente": "Andrea", "media": 3.2, "vittorie": 45},
@@ -109,6 +117,20 @@ class LeaderboardWindow(BaseDialog): # pylint: disable=too-few-public-methods
         """
         self.table_top3.setStyleSheet(style)
         self.table_user_pos.setStyleSheet(style)
+
+    def torna_indietro(self):
+        """Metodo per tornare alla main window."""
+        # pylint: disable=import-outside-toplevel
+        from src.gui.main_window import MainWindow
+
+        if self.main_window is None:
+            self.main_window = MainWindow()
+
+        self.main_window.show()
+        self.main_window.raise_()
+        self.main_window.activateWindow()
+
+        self.close()
 
 
 if __name__ == "__main__":
