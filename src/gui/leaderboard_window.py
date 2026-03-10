@@ -120,7 +120,7 @@ class LeaderboardWindow(BaseDialog):  # pylint: disable=too-few-public-methods
 
     def torna_indietro(self):
         """Metodo per tornare alla main window."""
-        # pylint: disable=import-outside-toplevel
+        # pylint: disable=import-outside-toplevel, cyclic-import
         from src.gui.main_window import MainWindow
 
         if self.main_window is None:
