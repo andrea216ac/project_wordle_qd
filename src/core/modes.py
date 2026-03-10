@@ -1,4 +1,4 @@
-"""Game modes for Wordle: ClassicMode and TrainingMode."""
+"""Metodi di Gioco: ClassicMode and TrainingMode."""
 
 import datetime
 import logging
@@ -14,5 +14,5 @@ logger = logging.getLogger(__name__)
 
 class ClassicMode:
     """
-    ClassicMode: one word per day, score increases when the word is guessed.
+    ClassicMode: una parola al giorno
     """
