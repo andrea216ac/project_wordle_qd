@@ -49,7 +49,7 @@ class Game:
             raise ValueError("Invalid guess length")
 
         self.attempts += 1
-        result: List[Optional[str]] = [None] * len(self.target_word)
+        result: List[str] = [""] * len(self.target_word)
         used: List[bool] = [False] * len(self.target_word)
 
         # 1° pass: corretto
