@@ -1,7 +1,7 @@
 """Game modes module for Wordle."""
 
 import logging
-from typing import Optional, List
+from typing import List, Optional
 
 from src.core.game import Game
 from src.core.word_provider import WordProvider
@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class ModeError(Exception):
-    """Custom exception for game mode errors."""
+    """Custom exception per errori nelle modalità."""
 
 
 class ClassicMode:

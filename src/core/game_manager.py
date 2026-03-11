@@ -1,28 +1,19 @@
 """Game manager coordina le sessioni di gioco."""
 
 import logging
-from typing import Optional, List
+from typing import List, Optional
 
+from src.core.modes import ClassicMode, ModeError, TrainingMode
 from src.core.game import Game
 from src.core.word_provider import WordProvider
-from src.core.modes import ClassicMode, TrainingMode, ModeError
 
 logger = logging.getLogger(__name__)
 
 
 class GameManager:
-    """
-    Coordina il gioco, scegliendo la modalità e collegando
-    le chiamate della UI alla logica del gioco.
-    """
+    """Gestisce la logica dei giochi e delle modalità."""
 
     def __init__(self, word_provider: WordProvider) -> None:
-        """
-        Inizializzazione
-
-        Args:
-            word_provider: Recupera le parole.
-        """
         self.word_provider: WordProvider = word_provider
         self.current_mode: Optional[ClassicMode | TrainingMode] = None
         self.language: Optional[str] = None
