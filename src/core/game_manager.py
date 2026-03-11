@@ -3,8 +3,8 @@
 import logging
 from typing import List, Optional
 
-from src.core.modes import ClassicMode, ModeError, TrainingMode
 from src.core.game import Game
+from src.core.modes import ClassicMode, ModeError, TrainingMode
 from src.core.word_provider import WordProvider
 
 logger = logging.getLogger(__name__)
