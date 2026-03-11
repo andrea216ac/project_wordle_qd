@@ -6,7 +6,6 @@ from typing import Optional, List
 from .game import Game
 from .word_provider import WordProvider
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -48,7 +47,9 @@ class ClassicMode:
             word = self.word_provider.get_daily_word(language, word_length)
             self.current_game = Game(word)
             logger.info(
-                "Classic mode game started | language=%s length=%s", language, word_length
+                "Classic mode game started | language=%s length=%s",
+                language,
+                word_length,
             )
         except Exception as exc:
             logger.error("Failed to start classic mode game: %s", exc)

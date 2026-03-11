@@ -7,7 +7,6 @@ from .game import Game
 from .word_provider import WordProvider
 from .modes import ClassicMode, TrainingMode, ModeError
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -28,6 +27,7 @@ class GameManager:
         self.current_mode: Optional[ClassicMode | TrainingMode] = None
         self.language: Optional[str] = None
         self.word_length: Optional[int] = None
+
     def start_game(self, mode: str, language: str, word_length: int) -> None:
         """
         Inizia un nuovo gioco nella modalità scelta
@@ -120,6 +120,7 @@ class GameManager:
             return 0
 
         return game.attempts
+
     def get_score(self) -> int:
         """
         Restituisce il punteggio per la modalità classica.

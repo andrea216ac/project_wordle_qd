@@ -5,7 +5,6 @@ import logging
 import random
 from typing import Dict, List, Set
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -23,7 +22,6 @@ class WordProvider:  # pylint: disable=too-few-public-methods
         self.used_words: Dict[str, Set[str]] = {
             language: set() for language in words_by_language
         }
-
 
     def get_random_word(self, language: str, length: int) -> str:
         """
@@ -74,7 +72,6 @@ class WordProvider:  # pylint: disable=too-few-public-methods
         self.used_words[language].add(chosen_word)
 
         return chosen_word
-
 
     def get_daily_word(self, language: str, length: int) -> str:
         """
