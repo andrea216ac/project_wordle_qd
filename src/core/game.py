@@ -1,4 +1,4 @@
-"""Core game logic module for Wordle."""
+"""Game logic per Wordle."""
 
 import logging
 from typing import Optional, List
@@ -8,62 +8,67 @@ logger = logging.getLogger(__name__)
 
 
 class Game:
-    """Represents a single Wordle game session."""
+    """Rappresenta una singola sessione del gioco Wordle"""
 
     def __init__(self, target_word: str, max_attempts: int = 6) -> None:
         """
-        Initialize the game.
+        Inizializzazione the game.
 
         Args:
-            target_word: The word to guess.
-            max_attempts: Maximum number of attempts allowed.
+            target_word: Parola da indovinare.
+            max_attempts: Numero massimo di tentativi possibili.
         """
         self.target_word: str = target_word
         self.attempts: int = 0
         self.is_over: bool = False
         self.max_attempts: int = max_attempts
      
-    # ==== METODO INDOVINA =====
-    def check_guess(self, guess):
+    def check_guess(self, guess: str) -> List[str]:
+        """
+        Confrontare la risposta del giocatore con la parola da indovinare.
 
-        #CONTROLLO SE GIOCO E' FINITO
+        Args:
+            guess: Parola indovinata dal giocatore.
+
+        Returns:
+            List of strings: "Corretto", "Presente" or "Assente".
+
+        Raises:
+            ValueError: Se le lunghezze non corrispondono.
+            RuntimeError: Se il gioco è già finito.
+        """
         if self.is_over:
-            raise Exception("Il gioco è finito")   #interfaccia
-        
-        #CONTROLLO LUNGHEZZA
+            logger.error("Attempted guess after game is over.")
+            raise RuntimeError("Game is already over")
+
         if len(guess) != len(self.target_word):
-            raise ValueError("Lunghezza non valida") #interfaccia
-        
-        #CONTROLLO CARATTERI 
-        if not guess.isalpha():
-            raise ValueError("La parola deve contenere solo lettere")
-        
-        self.attempts += 1                         #incremento tentativo
-        result = [None] * len(self.target_word)    #result: array per corretto, presente o assente
-        usato = [False] * len(self.target_word)    #usato: stringa booleana, evita riutilizzo delle lettere
+            logger.error(
+                "Invalid guess length: expected %d, got %d",
+                len(self.target_word),
+                len(guess),
+            )
+            raise ValueError("Invalid guess length")
 
-        #CICLO PER PAROLE CORRETTE
-        for i in range(len(self.target_word)):
-            if guess[i] == self.target_word[i]: 
-                result[i] = "Corretto" 
-                usato[i] = True 
+        self.attempts += 1
+        result: List[Optional[str]] = [None] * len(self.target_word)
+        used: List[bool] = [False] * len(self.target_word)
 
-        #CICLO PER PRESENTE E ASSENTE 
-        for i in range(len(self.target_word)): #scorre la parola "guess" e array "result"
-            if result[i] is None:   # solo lettere non corrette 
-                trovato = False
+        # 1° pass: corretto
+        for i, char in enumerate(guess):
+            if char == self.target_word[i]:
+                result[i] = "Corretto"
+                used[i] = True
 
-                for j in range(len(self.target_word)):  #scorre la parola "target" e array "usato"
-                    #se lettera presente ma non "usata"
-                    if guess[i] == self.target_word[j] and not usato[j]: 
-                        trovato = True
-                        usato[j] = True
-                        break              
-
-                if trovato:    
-                    result[i] = "Presente"     #esempio palla - lampa (presente, corretto, assente, presente, corretto)
-                else: 
-                    result[i] = "Assente"      #lettere doppie ma già usate es. cassa - sassi 
+        # 2° pass: presente
+        for i, char in enumerate(guess):
+            if result[i] is None:
+                found = False
+                for j, target_char in enumerate(self.target_word):
+                    if char == target_char and not used[j]:
+                        found = True
+                        used[j] = True
+                        break
+                result[i] = "Presente" if found else "Assente"
 
         #CONTROLLO VITTORIA E FINE TENTATIVI
         if all(r == "Corretto" for r in result):   #interfaccia
