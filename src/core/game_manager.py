@@ -1,5 +1,15 @@
-from modes import ClassicMode, TrainingMode
-from word_provider import WordProvider
+"""Game manager coordina le sessioni di gioco."""
+
+import logging
+from typing import Optional, List
+
+from src.core.game import Game
+from src.core.word_provider import WordProvider
+from src.core.modes import ClassicMode, TrainingMode, ModeError
+
+
+logger = logging.getLogger(__name__)
+
 
 class GameManager:
     """
@@ -7,9 +17,17 @@ class GameManager:
     le chiamate della UI alla logica del gioco.
     """
 
-    def __init__(self, word_provider: WordProvider):
-        self.word_provider = word_provider
-        self.mode = None  # ClassicMode o TrainingMode
+    def __init__(self, word_provider: WordProvider) -> None:
+        """
+        Inizializzazione
+
+        Args:
+            word_provider: Recupera le parole.
+        """
+        self.word_provider: WordProvider = word_provider
+        self.current_mode: Optional[ClassicMode | TrainingMode] = None
+        self.language: Optional[str] = None
+        self.word_length: Optional[int] = None
 
     # Avvia modalità classica (parola del giorno + punteggio)
     def start_classic(self):
@@ -33,14 +51,16 @@ class GameManager:
             return False
         return self.mode.game.is_over
 
-    # Ritorna il punteggio (solo modalità classica)
-    def get_score(self):
-        if hasattr(self.mode, "score"):
-            return self.mode.score
-        return None
+    def get_score(self) -> int:
+        """
+        Restituisce il punteggio per la modalità classica.
+        
+        """
+        if isinstance(self.current_mode, ClassicMode):
+            return self.current_mode.score
+        return 0
 
-    # Avvia una nuova partita nella modalità corrente
-    def next_game(self):
-        if self.mode is None:
-            raise Exception("Nessuna modalità attiva")
-        self.mode.start()
+    def reset_game(self) -> None:
+        """Resetta la sessione di gioco corrente."""
+        logger.info("Resetting game session.")
+        self.current_mode = None

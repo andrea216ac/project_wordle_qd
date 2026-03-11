@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class Game:
-    """Rappresenta una singola sessione del gioco Wordle"""
+    """Rappresenta una singola sessione del gioco Wordle"""  # pylint: disable=too-few-public-methods
 
     def __init__(self, target_word: str, max_attempts: int = 6) -> None:
         """
