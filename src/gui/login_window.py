@@ -1,4 +1,5 @@
 """Modulo per la finestra di Login dell'applicazione Wordle."""
+
 # pylint: disable=duplicate-code
 import os
 import sys
@@ -70,7 +71,7 @@ class LoginWindow(BaseDialog):
     def vai_a_registrazione(self):
         """Metodo per aprire la finestra di registrazione."""
         # pylint: disable=import-outside-toplevel, import-error
-        from .registration_window import RegistrationWindow # type: ignore
+        from .registration_window import RegistrationWindow  # type: ignore
 
         self.reg_window = RegistrationWindow()
         self.reg_window.show()
