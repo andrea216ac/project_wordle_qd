@@ -1,7 +1,7 @@
 """Unit tests per la finestra di Login."""
 
 import pytest
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt  # pylint: disable=no-name-in-module
 
 from src.gui.login_window import HAS_QT, LoginWindow
 
@@ -44,7 +44,7 @@ def test_login_transition(login_app, qtbot):
 
 
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
-def test_button_enabling_logic(login_app, qtbot):
+def test_button_enabling_logic(login_app):
     """Verifica che il pulsante si abiliti solo con campi compilati."""
     assert not login_app.btn_login.isEnabled()
 

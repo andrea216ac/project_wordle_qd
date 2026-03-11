@@ -1,5 +1,5 @@
 """Modulo per la finestra di Login dell'applicazione Wordle."""
-
+# pylint: disable=duplicate-code
 import os
 import sys
 from typing import Any, Type
