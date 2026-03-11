@@ -70,10 +70,14 @@ class Game:
                         break
                 result[i] = "Presente" if found else "Assente"
 
-        #CONTROLLO VITTORIA E FINE TENTATIVI
-        if all(r == "Corretto" for r in result):   #interfaccia
+        # Controllo vittoria o fine tentativi
+        if guess == self.target_word:
             self.is_over = True
-        elif self.attempts >= self.max_attempts:  # print tentativi finiti (UI)
+            logger.info("Word guessed correctly!")
+
+        if self.attempts >= self.max_attempts:
             self.is_over = True
+            logger.info("Maximum attempts reached. Game over.")
 
         return result
+    
