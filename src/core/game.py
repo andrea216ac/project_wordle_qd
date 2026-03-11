@@ -22,7 +22,6 @@ class Game:
         self.attempts: int = 0
         self.is_over: bool = False
         self.max_attempts: int = max_attempts
-     
     def check_guess(self, guess: str) -> List[str]:
         """
         Confrontare la risposta del giocatore con la parola da indovinare.
@@ -80,4 +79,3 @@ class Game:
             logger.info("Maximum attempts reached. Game over.")
 
         return result
-    
