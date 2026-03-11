@@ -3,8 +3,8 @@
 import logging
 from typing import Optional, List
 
-from game import Game
-from word_provider import WordProvider
+from .game import Game
+from .word_provider import WordProvider
 
 
 logger = logging.getLogger(__name__)
@@ -141,4 +141,3 @@ class TrainingMode:
 
         result = self.current_game.check_guess(guess)
         return result
-    
