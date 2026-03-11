@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 class ModeError(Exception):
     """Custom exception for game mode errors."""
-    pass
 
 
 class ClassicMode:
