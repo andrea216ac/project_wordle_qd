@@ -1,5 +1,4 @@
 
-
 class Game:
      # ==== COSTRUTTORE ====
     def __init__(self, target_word):
@@ -57,13 +56,3 @@ class Game:
             self.is_over = True
 
         return result
-    
-
-#main.py
-game = Game("palla")   #classe Game si aspetta una parola, quella da indovinare
-
-guess = input("Inserisci una parola: ")  # guess: tentativo di indovinare
-
-result = game.check_guess(guess)
-
-print(result)
