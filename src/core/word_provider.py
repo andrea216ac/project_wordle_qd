@@ -111,4 +111,3 @@ class WordProvider:  # pylint: disable=too-few-public-methods
         today_index = datetime.date.today().toordinal() % len(filtered_words)
 
         return filtered_words[today_index]
-
