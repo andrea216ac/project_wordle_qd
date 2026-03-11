@@ -8,14 +8,21 @@ logger = logging.getLogger(__name__)
 
 
 class Game:
+    """Represents a single Wordle game session."""
 
-     # ==== COSTRUTTORE ====
-    def __init__(self, target_word):
-        self.target_word = target_word         # Target: obiettivo da indovinare
-        self.attempts = 0                      # Attemps: numero tentativi
-        self.is_over = False                   # Gioco finito?
-        self.max_attempts = len(target_word) + 2  # Numero max di tentativi --- scegliere tentativi fissi o dipende da lunghezza?
-        
+    def __init__(self, target_word: str, max_attempts: int = 6) -> None:
+        """
+        Initialize the game.
+
+        Args:
+            target_word: The word to guess.
+            max_attempts: Maximum number of attempts allowed.
+        """
+        self.target_word: str = target_word
+        self.attempts: int = 0
+        self.is_over: bool = False
+        self.max_attempts: int = max_attempts
+     
     # ==== METODO INDOVINA =====
     def check_guess(self, guess):
 
