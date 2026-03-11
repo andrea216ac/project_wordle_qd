@@ -3,9 +3,9 @@
 import logging
 from typing import Optional, List
 
-from .game import Game
-from .word_provider import WordProvider
-from .modes import ClassicMode, TrainingMode, ModeError
+from src.core.game import Game
+from src.core.word_provider import WordProvider
+from src.core.modes import ClassicMode, TrainingMode, ModeError
 
 logger = logging.getLogger(__name__)
 

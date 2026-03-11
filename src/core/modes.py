@@ -3,8 +3,8 @@
 import logging
 from typing import Optional, List
 
-from .game import Game
-from .word_provider import WordProvider
+from src.core.game import Game
+from src.core.word_provider import WordProvider
 
 logger = logging.getLogger(__name__)
 
