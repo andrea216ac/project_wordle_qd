@@ -1,5 +1,14 @@
+"""Core game logic module for Wordle."""
+
+import logging
+from typing import Optional, List
+
+
+logger = logging.getLogger(__name__)
+
 
 class Game:
+
      # ==== COSTRUTTORE ====
     def __init__(self, target_word):
         self.target_word = target_word         # Target: obiettivo da indovinare
