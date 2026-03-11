@@ -8,14 +8,15 @@ from src.gui.login_window import HAS_QT, LoginWindow
 
 @pytest.fixture(name="login_app")
 def fixture_login_app(request):
+    """Inizializza la finestra della login window per i test UI."""
     if not HAS_QT:
         pytest.skip("Ambiente headless")
 
-    try:
-        qtbot_inst = request.getfixturevalue("qtbot")
-    except Exception:
-        pytest.skip("Plugin pytest-qt mancante")
+    if "qtbot" not in request.fixturenames:
+        pytest.skip("Plugin pytest-qt non installato o non configurato")
         return None
+
+    qtbot_inst = request.getfixturevalue("qtbot")
 
     window = LoginWindow()
     qtbot_inst.addWidget(window)
@@ -71,14 +72,3 @@ def test_successful_login_navigation(login_app, qtbot):
     assert login_app.main_window is not None
     assert login_app.main_window.isVisible()
     assert utente_finto in login_app.main_window.lbl_welcome.text()
-
-
-@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
-def test_password_is_hidden(login_app):
-    """
-    Test concettuale: verifica se la password è oscurata.
-    """
-    # Questo test fallirebbe con il tuo XML attuale (QTextEdit).
-    # Se passerai a QLineEdit, potrai scommentare la riga sotto:
-    # assert login_app.textEdit_psw.echoMode() == QtWidgets.QLineEdit.EchoMode.Password
-    pass
