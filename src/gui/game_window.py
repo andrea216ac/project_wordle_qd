@@ -20,11 +20,13 @@ class GameWindow(BaseWindow):
 
     def __init__(self, nome_giocatore: str = "Giocatore"):
         """Inizializza la finestra, carica l'UI e prepara la griglia."""
+        self.grid: List[List[Any]] = []
+
         if not HAS_QT:
             self.nome_giocatore = nome_giocatore
             self.current_row = 0
             self.current_col = 0
-            self.grid = []
+            self.grid = [[None for _ in range(5)] for _ in range(6)]
             return
 
         super().__init__()
@@ -39,9 +41,7 @@ class GameWindow(BaseWindow):
         self.current_row = 0
         self.current_col = 0
 
-        self.grid: List[List[QtWidgets.QTextEdit]] = [
-            [None for _ in range(5)] for _ in range(6)
-        ]
+        self.grid = [[None for _ in range(5)] for _ in range(6)]
 
         self._map_ui_grid()
         self._setup_keyboard()
