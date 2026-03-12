@@ -4,7 +4,8 @@ import os
 import sys
 from typing import Any, List, Type
 
-# pylint: disable=invalid-name, too-few-public-methods
+# pylint: disable=c-extension-no-member, invalid-name, no-member
+
 try:
     from PyQt6 import QtCore, QtWidgets, uic
     HAS_QT = True
@@ -25,7 +26,7 @@ class GameWindow(BaseWindow):
             self.current_col = 0
             self.grid = []
             return
-        
+
         super().__init__()
         ui_path = os.path.join(os.path.dirname(__file__), "game_window.ui")
 

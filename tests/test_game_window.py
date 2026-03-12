@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-# pylint: disable=no-name-in-module, disable=protected-access, redefined-outer-name, duplicate-code
+# pylint: disable=no-name-in-module, duplicate-code, c-extension-no-member, invalid-name, protected-access, redefined-outer-name
 try:
     from PyQt6 import QtWidgets as real_widgets
     from PyQt6.QtCore import Qt as real_qt
@@ -19,7 +19,7 @@ except ImportError:
 from src.gui.game_window import GameWindow
 
 
-@pytest.fixture()
+@pytest.fixture(name="game")
 def game_instance(request):
     """Fixture per inizializzare la finestra prima di ogni test."""
     if not HAS_QT:
@@ -36,51 +36,51 @@ def game_instance(request):
     return window
 
 
-def test_initial_state(app):
+def test_initial_state(game):
     """Verifica che all'avvio solo la prima cella sia abilitata."""
-    assert app.current_row == 0
-    assert app.current_col == 0
-    assert app.grid[0][0].isEnabled() is True
-    assert app.grid[0][1].isEnabled() is False
+    assert game.current_row == 0
+    assert game.current_col == 0
+    assert game.grid[0][0].isEnabled() is True
+    assert game.grid[0][1].isEnabled() is False
 
 
-def test_typing_moves_cursor(app):
+def test_typing_moves_cursor(game):
     """Verifica che scrivendo una lettera il cursore si sposti a destra."""
-    app._ui_on_key_press("A")
-    assert app.current_col == 1
-    assert app.grid[0][0].toPlainText() == "A"
-    assert app.grid[0][1].isEnabled() is True
+    game._ui_on_key_press("A")
+    assert game.current_col == 1
+    assert game.grid[0][0].toPlainText() == "A"
+    assert game.grid[0][1].isEnabled() is True
 
 
-def test_backspace_logic(app):
+def test_backspace_logic(game):
     """Verifica che il backspace cancelli la lettera e torni indietro."""
-    app._ui_on_key_press("W")
-    app._ui_on_backspace()
-    assert app.current_col == 0
-    assert app.grid[0][0].toPlainText() == ""
+    game._ui_on_key_press("W")
+    game._ui_on_backspace()
+    assert game.current_col == 0
+    assert game.grid[0][0].toPlainText() == ""
 
 
-def test_cannot_enter_short_word(app):
+def test_cannot_enter_short_word(game):
     """Verifica che premendo INVIO su una riga incompleta non si passi alla successiva."""
-    app._ui_on_key_press("T")
-    app._ui_on_enter()
-    assert app.current_row == 0
+    game._ui_on_key_press("T")
+    game._ui_on_enter()
+    assert game.current_row == 0
 
 
-def test_row_progression(app):
+def test_row_progression(game):
     """Verifica il passaggio alla riga successiva dopo una parola completa."""
     for char in "HELLO":
-        app._ui_on_key_press(char)
+        game._ui_on_key_press(char)
 
-    app._ui_on_enter()
+    game._ui_on_enter()
 
-    assert app.current_row == 1
-    assert app.current_col == 0
-    assert app.grid[1][0].isEnabled() is True
-    assert app.grid[0][0].isEnabled() is False
+    assert game.current_row == 1
+    assert game.current_col == 0
+    assert game.grid[1][0].isEnabled() is True
+    assert game.grid[0][0].isEnabled() is False
 
 
-def test_keyboard_buttons_exist(app):
+def test_keyboard_buttons_exist(game):
     """Verifica che la tastiera QWERTY sia stata generata nel container."""
-    buttons = app.keyboard_container.findChildren(QtWidgets.QPushButton)
+    buttons = game.keyboard_container.findChildren(QtWidgets.QPushButton)
     assert len(buttons) >= 28
