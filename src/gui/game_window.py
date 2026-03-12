@@ -1,15 +1,36 @@
 import os
 import sys
-from typing import List
+from typing import List, Any, Type
 
-from PyQt6 import QtCore, QtWidgets, uic
+# pylint: disable=no-name-in-module, no-member, c-extension-no-member
+try:
+    from PyQt6 import QtCore, QtWidgets, uic
+    HAS_QT = True
+    BaseWindow: Type[Any] = QtWidgets.QMainWindow
+except ImportError:
+    HAS_QT = True
+    HAS_QT = False
+    BaseWindow = object
 
+class GameWindow(BaseWindow):
+    """Classe che gestisce la logica della griglia e della tastiera di gioco."""
 
-class GameWindow(QtWidgets.QMainWindow):
     def __init__(self, nome_giocatore: str = "Giocatore"):
+        """Inizializza la finestra, carica l'UI e prepara la griglia."""
+        if not HAS_QT:
+            self.nome_giocatore = nome_giocatore
+            self.current_row = 0
+            self.current_col = 0
+            self.grid = []
+            return
+        
         super().__init__()
         ui_path = os.path.join(os.path.dirname(__file__), "game_window.ui")
-        uic.loadUi(ui_path, self)
+
+        if os.path.exists(ui_path):
+            uic.loadUi(ui_path, self)
+        else:
+            print(f"Errore: Il file {ui_path} non esiste!")
 
         self.nome_giocatore = nome_giocatore
         self.current_row = 0
