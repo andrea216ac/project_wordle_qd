@@ -1,3 +1,5 @@
+"""Unit test per la finestra di gioco"""
+
 from typing import Any, cast
 from unittest.mock import MagicMock
 
@@ -7,7 +9,7 @@ import pytest
 try:
     from PyQt6 import QtWidgets as real_widgets
     from PyQt6.QtCore import Qt as real_qt
-    
+
     QtWidgets = cast(Any, real_widgets)
     Qt = cast(Any, real_qt)
     HAS_QT = True

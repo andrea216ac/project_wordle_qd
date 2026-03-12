@@ -4,7 +4,7 @@ import os
 import sys
 from typing import Any, List, Type
 
-# pylint: disable=c-extension-no-member, invalid-name, no-member
+# pylint: disable=c-extension-no-member, invalid-name, no-member, too-few-public-methods
 
 try:
     from PyQt6 import QtCore, QtWidgets, uic
