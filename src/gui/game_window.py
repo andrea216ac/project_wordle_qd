@@ -8,12 +8,14 @@ from typing import Any, List, Type
 
 try:
     from PyQt6 import QtCore, QtWidgets, uic
+
     HAS_QT = True
     BaseWindow: Type[Any] = QtWidgets.QMainWindow
 except ImportError:
     HAS_QT = True
     HAS_QT = False
     BaseWindow = object
+
 
 class GameWindow(BaseWindow):
     """Classe che gestisce la logica della griglia e della tastiera di gioco."""
