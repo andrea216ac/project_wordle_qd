@@ -1,14 +1,37 @@
 import pytest
-from PyQt6 import QtWidgets
+from typing import Any, cast
+from unittest.mock import MagicMock
+
+# pylint: disable=no-name-in-module
+try:
+    from PyQt6 import QtWidgets as real_widgets
+    from PyQt6.QtCore import Qt as real_qt
+    
+    QtWidgets = cast(Any, real_widgets)
+    Qt = cast(Any, real_qt)
+    HAS_QT = True
+except ImportError:
+    QtWidgets = cast(Any, MagicMock())
+    Qt = cast(Any, MagicMock())
+    HAS_QT = False
 
 from src.gui.game_window import GameWindow
 
 
-@pytest.fixture
-def app(qtbot):
+@pytest.fixture(name="game_app")
+def app(request):
     """Fixture per inizializzare la finestra prima di ogni test."""
+    if not HAS_QT:
+        pytest.skip("Ambiente headless")
+
+    if "qtbot" not in request.fixturenames:
+        pytest.skip("Plugin pytest-qt non installato o non configurato")
+        return None
+
+    qtbot_inst = request.getfixturevalue("qtbot")
+
     window = GameWindow("TestPlayer")
-    qtbot.addWidget(window)
+    qtbot_inst.addWidget(window)
     return window
 
 

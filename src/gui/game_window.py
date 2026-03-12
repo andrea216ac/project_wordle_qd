@@ -97,7 +97,7 @@ class GameWindow(QtWidgets.QMainWindow):
             self._refresh_ui_state()
 
     def _ui_on_enter(self):
-        """Qui è dove la UI chiama la logica del tuo collaboratore."""
+        """Qui è dove la UI chiama la logica"""
         parola_inserita = "".join(
             [self.grid[self.current_row][c].toPlainText() for c in range(5)]
         )
