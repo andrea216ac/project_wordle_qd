@@ -1,8 +1,9 @@
-import pytest
 from typing import Any, cast
 from unittest.mock import MagicMock
 
-# pylint: disable=no-name-in-module
+import pytest
+
+# pylint: disable=no-name-in-module, disable=protected-access, redefined-outer-name, duplicate-code
 try:
     from PyQt6 import QtWidgets as real_widgets
     from PyQt6.QtCore import Qt as real_qt
@@ -18,8 +19,8 @@ except ImportError:
 from src.gui.game_window import GameWindow
 
 
-@pytest.fixture(name="game_app")
-def app(request):
+@pytest.fixture()
+def game_instance(request):
     """Fixture per inizializzare la finestra prima di ogni test."""
     if not HAS_QT:
         pytest.skip("Ambiente headless")

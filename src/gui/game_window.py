@@ -1,8 +1,10 @@
+"""Modulo per la finestra di gioco di Wordle."""
+
 import os
 import sys
-from typing import List, Any, Type
+from typing import Any, List, Type
 
-# pylint: disable=no-name-in-module, no-member, c-extension-no-member
+# pylint: disable=invalid-name, too-few-public-methods
 try:
     from PyQt6 import QtCore, QtWidgets, uic
     HAS_QT = True
