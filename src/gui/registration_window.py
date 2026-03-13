@@ -16,14 +16,14 @@ except ImportError:
     BaseDialog = object
 
     def pyqt_signal(*_args, **_kwargs):
-        """Funzione che definisce pyqtSignal"""
+        """Funzione che definisce pyqt_signal"""
         return object()
 
 
 class RegistrationWindow(BaseDialog):
     """Classe che gestisce la creazione di un nuovo account."""
 
-    ritorno_al_login = pyqtSignal()
+    ritorno_al_login = pyqt_signal()
 
     def __init__(self):
         """Inizializza la finestra di registrazione."""
