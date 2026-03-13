@@ -83,7 +83,7 @@ class GameRepository:
                 .filter(
                     Game.user_id == db_user.id,
                     Game.mode == "classic",
-                    func.date(Game.date) == today,
+                    func.date(Game.played_at) == today,
                 )
                 .first()
             )

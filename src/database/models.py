@@ -34,9 +34,9 @@ class Game(Base):
     won = Column(Boolean, nullable=False)
     points = Column(Integer, nullable=False)
     mode = Column(String, nullable=False)
-    
+
     # NUOVA COLONNA: Salva automaticamente data e ora correnti
-    played_at = Column(DateTime, default=func.now(), nullable=False)
+    played_at = Column(DateTime, default=func.now(), nullable=False)  # pylint: disable=not-callable
 
     user = relationship("User", back_populates="games")
 
