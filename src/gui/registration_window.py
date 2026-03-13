@@ -10,15 +10,15 @@ try:
 
     HAS_QT = True
     BaseDialog: Type[Any] = QtWidgets.QDialog
-    _signal_factory = QtCore.pyqtSignal 
+    _signal_factory = QtCore.pyqtSignal
 except ImportError:
     HAS_QT = False
     BaseDialog = object
-    
+
     def _mock_signal(*_args: Any, **_kwargs: Any) -> Any:
         """Mock del segnale per ambiente senza Qt."""
         return object()
-    
+
     _signal_factory = _mock_signal # type: ignore[assignment]
 
 pyqt_signal = _signal_factory
