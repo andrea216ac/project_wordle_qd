@@ -13,28 +13,60 @@ logger = logging.getLogger(__name__)
 class GameManager:
     """Gestisce la logica dei giochi e delle modalità."""
 
-    def __init__(self, word_provider: WordProvider) -> None:
+    def __init__(
+        self,
+        word_provider: WordProvider,
+        score_repository: Optional[object] = None,
+    ) -> None:
+        """
+        Inizializza il GameManager.
+
+        Args:
+            word_provider: Provider delle parole.
+            score_repository: Repository per punteggi e storico partite.
+        """
         self.word_provider: WordProvider = word_provider
+        self.score_repository = score_repository
+
         self.current_mode: Optional[ClassicMode | TrainingMode] = None
         self.language: Optional[str] = None
         self.word_length: Optional[int] = None
+        self.current_user: Optional[str] = None
 
-    def start_game(self, mode: str, language: str, word_length: int) -> None:
+    def start_game(
+        self,
+        mode: str,
+        language: str,
+        word_length: int,
+        user: Optional[str] = None,
+    ) -> None:
         """
         Inizia un nuovo gioco nella modalità scelta
 
+        
         Args:
             mode: "classic" or "training".
             language: Language code (e.g., "it", "en").
             word_length: Desired word length.
+            user: Utente corrente.
 
         Raises:
             ModeError: If mode is invalid or game cannot be started.
+            RuntimeError: Se l'utente ha già giocato oggi.
         """
         self.language = language
         self.word_length = word_length
+        self.current_user = user
 
         if mode == "classic":
+            if self.score_repository and user:
+                if self.score_repository.has_played_today(user):
+                    logger.warning(
+                        "User %s already played today's classic game",
+                        user,
+                    )
+                    raise RuntimeError("Classic mode already played today")
+
             self.current_mode = ClassicMode(self.word_provider)
         elif mode == "training":
             self.current_mode = TrainingMode(self.word_provider)
@@ -45,7 +77,8 @@ class GameManager:
         try:
             self.current_mode.start_game(language, word_length)
             logger.info(
-                "Game started | mode=%s language=%s length=%s",
+                "Game started | user=%s mode=%s language=%s length=%s",
+                self.current_user,
                 mode,
                 language,
                 word_length,
@@ -56,61 +89,83 @@ class GameManager:
 
     def submit_guess(self, guess: str) -> List[str]:
         """
-        Submit a guess to the current game.
+        Invia un tentativo alla partita.
 
         Args:
-            guess: Word guessed by the player.
+            guess: Parola inserita dal giocatore.
 
         Returns:
-            List of results for each letter: "Corretto", "Presente", or "Assente".
+            Lista risultati lettere.
 
         Raises:
-            RuntimeError: If no game is active.
+            RuntimeError: Se non esiste una partita attiva.
         """
         if self.current_mode is None:
             logger.error("Attempted guess without active game.")
             raise RuntimeError("No active game")
 
-        result = self.current_mode.submit_guess(guess)
-        logger.info("Guess submitted: %s | result=%s", guess, result)
+        result: List[str] = self.current_mode.submit_guess(guess)
+        logger.info(
+            "Guess submitted | user=%s guess=%s result=%s",
+            self.current_user,
+            guess,
+            result,
+        )
+        game: Optional[Game] = self.current_mode.current_game
+
+        if game and game.is_over:
+            score = self.get_score()
+
+            logger.info(
+                "Game finished | user=%s score=%s attempts=%s",
+                self.current_user,
+                score,
+                game.attempts,
+            )
+
+            if self.score_repository and self.current_user:
+                try:
+                    self.score_repository.save_score(
+                        user=self.current_user,
+                        score=score,
+                        attempts=game.attempts,
+                    )
+                except Exception as exc:  # pylint: disable=broad-exception-caught
+                    logger.error("Failed to save score: %s", exc)
+
         return result
 
     def is_game_over(self) -> bool:
         """
-        Check if the current game is over.
+        Controlla se la partita è terminata.
 
         Returns:
-            True if the game has ended, False otherwise.
+            True se il gioco è finito.
         """
         if self.current_mode is None:
             return True
 
-        if isinstance(self.current_mode, ClassicMode):
-            game = self.current_mode.current_game
-        else:
-            game = self.current_mode.current_game
+        game: Optional[Game] = self.current_mode.current_game
 
         return game.is_over if game else True
 
     def get_attempts(self) -> int:
         """
-        Return the number of attempts made in the current game.
+        Restituisce il numero di tentativi.
 
         Returns:
-            Number of attempts.
+            Numero tentativi.
 
         Raises:
-            RuntimeError: If no game is active.
+            RuntimeError: Se non esiste una partita attiva.
         """
         if self.current_mode is None:
             logger.error("Attempts requested without active game.")
             raise RuntimeError("No active game")
 
         game: Optional[Game] = self.current_mode.current_game
-        if game is None:
-            return 0
-
-        return game.attempts
+        
+        return game.attempts if game else 0
 
     def get_score(self) -> int:
         """
@@ -120,6 +175,15 @@ class GameManager:
         if isinstance(self.current_mode, ClassicMode):
             return self.current_mode.score
         return 0
+    
+    def get_current_user(self) -> Optional[str]:
+        """
+        Restituisce l'utente corrente.
+
+        Returns:
+            Username o None.
+        """
+        return self.current_user
 
     def reset_game(self) -> None:
         """Resetta la sessione di gioco corrente."""
