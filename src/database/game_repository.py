@@ -114,7 +114,7 @@ class GameRepository:
             mode = "classic"
 
             self.save_game(
-                user_id=db_user.id,
+                user_id=db_user.id,  # type: ignore[arg-type]
                 word_to_guess=word_to_guess,
                 attempts=attempts,
                 won=won,
