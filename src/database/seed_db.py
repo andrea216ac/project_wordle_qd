@@ -5,8 +5,8 @@ from pathlib import Path
 
 from sqlalchemy.exc import SQLAlchemyError
 
-from src.database.db import SessionLocal
-from src.database.models import Word
+from src.database.db import SessionLocal, engine
+from src.database.models import Base, Word
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +78,10 @@ def seed_words_from_file(file_path: str, language: str, length: int = 5) -> None
 if __name__ == "__main__":
     # Configurazione base del logger
     logging.basicConfig(level=logging.INFO)
+
+    logger.info("Creazione delle tabelle (se non esistono)...")
+    # Questo comando legge models.py e crea tutte le tabelle mancanti!
+    Base.metadata.create_all(bind=engine)
 
     logger.info("Inizio procedura di popolamento database...")
     seed_words_from_file("data/parole_it.txt", "IT")
