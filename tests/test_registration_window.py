@@ -35,12 +35,8 @@ def test_fields_existence(reg_app):
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
 def test_back_to_login_navigation(reg_app, qtbot):
     """Verifica che il tasto 'Accedi' riporti correttamente al login."""
-    qtbot.mouseClick(reg_app.btn_login, Qt.MouseButton.LeftButton)
-    assert not reg_app.isVisible()
-    # pylint: disable=import-outside-toplevel
-    from src.gui.login_window import LoginWindow
-
-    assert isinstance(reg_app.login_win, LoginWindow)
+    with qtbot.waitSignal(reg_app.ritorno_al_login, timeout=1000):
+        qtbot.mouseClick(reg_app.btn_login, Qt.MouseButton.LeftButton)
 
 
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")

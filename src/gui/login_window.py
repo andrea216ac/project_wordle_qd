@@ -71,11 +71,14 @@ class LoginWindow(BaseDialog):
     def vai_a_registrazione(self):
         """Metodo per aprire la finestra di registrazione."""
         # pylint: disable=import-outside-toplevel, import-error
-        from .registration_window import RegistrationWindow  # type: ignore
+        from src.gui.registration_window import \
+            RegistrationWindow  # type: ignore
 
-        self.reg_window = RegistrationWindow()
-        self.reg_window.show()
-        self.close()
+        self.reg_win = RegistrationWindow()
+        self.reg_win.ritorno_al_login.connect(self.show)
+
+        self.reg_win.show()
+        self.hide()
 
 
 if __name__ == "__main__":

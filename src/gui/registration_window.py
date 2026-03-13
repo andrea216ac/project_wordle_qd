@@ -7,6 +7,7 @@ from typing import Any, Type
 # pylint: disable=no-name-in-module, no-member, c-extension-no-member
 try:
     from PyQt6 import QtWidgets, uic
+    from PyQt6.QtCore import pyqtSignal
 
     HAS_QT = True
     BaseDialog: Type[Any] = QtWidgets.QDialog
@@ -17,6 +18,8 @@ except ImportError:
 
 class RegistrationWindow(BaseDialog):
     """Classe che gestisce la creazione di un nuovo account."""
+
+    ritorno_al_login = pyqtSignal()
 
     def __init__(self):
         """Inizializza la finestra di registrazione."""
@@ -76,8 +79,7 @@ class RegistrationWindow(BaseDialog):
         # pylint: disable=import-outside-toplevel
         from src.gui.login_window import LoginWindow
 
-        self.login_win = LoginWindow()
-        self.login_win.show()
+        self.ritorno_al_login.emit()
         self.close()
 
     def esegui_registrazione(self):
