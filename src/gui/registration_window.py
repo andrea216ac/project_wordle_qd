@@ -21,6 +21,7 @@ class RegistrationWindow(BaseDialog):
     def __init__(self):
         """Inizializza la finestra di registrazione."""
         super().__init__()
+        self.login_win = None
         if not HAS_QT:
             return
 

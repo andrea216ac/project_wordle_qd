@@ -1,19 +1,20 @@
 """Unit tests per la finestra di registrazione."""
 
 import pytest
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt  # pylint: disable=no-name-in-module
 
 from src.gui.registration_window import HAS_QT, RegistrationWindow
 
 
 @pytest.fixture(name="reg_app")
 def fixture_reg_app(request):
+    """Fixture per inizializzare la finestra di registrazione."""
     if not HAS_QT:
         pytest.skip("Ambiente headless")
 
     try:
         qtbot_inst = request.getfixturevalue("qtbot")
-    except Exception:
+    except (AttributeError, KeyError):
         pytest.skip("Plugin pytest-qt non disponibile")
         return None
 
@@ -36,6 +37,7 @@ def test_back_to_login_navigation(reg_app, qtbot):
     """Verifica che il tasto 'Accedi' riporti correttamente al login."""
     qtbot.mouseClick(reg_app.btn_login, Qt.MouseButton.LeftButton)
     assert not reg_app.isVisible()
+    # pylint: disable=import-outside-toplevel
     from src.gui.login_window import LoginWindow
 
     assert isinstance(reg_app.login_win, LoginWindow)
