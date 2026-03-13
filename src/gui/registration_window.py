@@ -15,7 +15,8 @@ except ImportError:
     HAS_QT = False
     BaseDialog = object
 
-    def pyqtSignal(*_args, **_kwargs):
+    def pyqt_signal(*_args, **_kwargs):
+        """Funzione che definisce pyqtSignal"""
         return object()
 
 
