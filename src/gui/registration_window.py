@@ -10,7 +10,7 @@ try:
 
     HAS_QT = True
     BaseDialog: Type[Any] = QtWidgets.QDialog
-    _signal_factory = QtCore.pyqtSignal
+    _signal_factory: Any = QtCore.pyqtSignal
 except ImportError:
     HAS_QT = False
     BaseDialog = object
