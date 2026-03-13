@@ -19,7 +19,7 @@ except ImportError:
         """Mock del segnale per ambiente senza Qt."""
         return object()
 
-    _signal_factory = _mock_signal # type: ignore[assignment]
+    _signal_factory = _mock_signal  # type: ignore[assignment]
 
 pyqt_signal = _signal_factory
 
