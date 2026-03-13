@@ -164,7 +164,7 @@ class GameManager:
             raise RuntimeError("No active game")
 
         game: Optional[Game] = self.current_mode.current_game
-        
+
         return game.attempts if game else 0
 
     def get_score(self) -> int:
@@ -175,7 +175,7 @@ class GameManager:
         if isinstance(self.current_mode, ClassicMode):
             return self.current_mode.score
         return 0
-    
+
     def get_current_user(self) -> Optional[str]:
         """
         Restituisce l'utente corrente.
