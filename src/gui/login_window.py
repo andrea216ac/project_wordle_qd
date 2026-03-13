@@ -24,7 +24,7 @@ class LoginWindow(BaseDialog):
         super().__init__()
 
         self.main_window = None
-        self.reg_window = None
+        self.reg_win = None
 
         if not HAS_QT:
             return
@@ -71,8 +71,7 @@ class LoginWindow(BaseDialog):
     def vai_a_registrazione(self):
         """Metodo per aprire la finestra di registrazione."""
         # pylint: disable=import-outside-toplevel, import-error
-        from src.gui.registration_window import \
-            RegistrationWindow  # type: ignore
+        from src.gui.registration_window import RegistrationWindow
 
         self.reg_win = RegistrationWindow()
         self.reg_win.ritorno_al_login.connect(self.show)

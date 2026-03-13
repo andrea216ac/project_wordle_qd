@@ -6,14 +6,17 @@ from typing import Any, Type
 
 # pylint: disable=no-name-in-module, no-member, c-extension-no-member
 try:
-    from PyQt6 import QtWidgets, uic
-    from PyQt6.QtCore import pyqtSignal
+    from PyQt6 import QtCore, QtWidgets, uic
 
     HAS_QT = True
     BaseDialog: Type[Any] = QtWidgets.QDialog
+    pyqtSignal = QtCore.pyqtSignal
 except ImportError:
     HAS_QT = False
     BaseDialog = object
+
+    def pyqtSignal(*_args, **_kwargs):
+        return object()
 
 
 class RegistrationWindow(BaseDialog):
@@ -76,9 +79,6 @@ class RegistrationWindow(BaseDialog):
 
     def vai_a_login(self):
         """Torna alla finestra di login."""
-        # pylint: disable=import-outside-toplevel
-        from src.gui.login_window import LoginWindow
-
         self.ritorno_al_login.emit()
         self.close()
 
