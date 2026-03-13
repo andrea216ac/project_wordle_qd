@@ -67,7 +67,7 @@ class GameRepository:
 
     def has_played_today(self, user: str) -> bool:
         """
-        Verifica se l'utente specificato (tramite username) ha già 
+        Verifica se l'utente specificato (tramite username) ha già
         completato una partita classica nella giornata odierna.
         """
         try:
