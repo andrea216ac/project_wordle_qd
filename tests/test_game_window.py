@@ -89,8 +89,8 @@ def test_keyboard_buttons_exist(game):
 
 
 def test_exit_button_closes_window(game, qtbot):
-    """Verifica che il tasto 'Esci' chiuda effettivamente la finestra."""
-    btn_exit = game.pushButton
+    """Verifica che il tasto 'Esci' apra la main window."""
+    btn_exit = game.btn_back
 
     assert btn_exit is not None
     assert btn_exit.text() == "Esci"
@@ -98,6 +98,7 @@ def test_exit_button_closes_window(game, qtbot):
     qtbot.mouseClick(btn_exit, Qt.MouseButton.LeftButton)
 
     assert game.isHidden() is True
+    assert game.main_window is not None
 
 
 def test_row_limit(game, qtbot):
@@ -142,9 +143,3 @@ def test_physical_keyboard_enter_progression(game, qtbot):
 
     assert game.current_row == 1
     assert game.current_col == 0
-
-
-def test_physical_escape_closes_window(game, qtbot):
-    """Verifica che il tasto ESC fisico chiuda la finestra."""
-    qtbot.keyClick(game, Qt.Key.Key_Escape)
-    assert game.isHidden() is True
