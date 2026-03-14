@@ -1,3 +1,4 @@
+# pylint: disable=too-few-public-methods
 """Modulo per la finestra di Login dell'applicazione Wordle."""
 
 # pylint: disable=duplicate-code
@@ -70,6 +71,7 @@ class LoginWindow(BaseDialog):
 
     def gestisci_accedi(self):
         """Logica per l'accesso e apertura della MainWindow."""
+        # pylint: disable=import-outside-toplevel
         username = self.lineEdit_username.text().strip()
 
         if not username:
@@ -83,6 +85,7 @@ class LoginWindow(BaseDialog):
 
     def vai_a_registrazione(self):
         """Chiude il Login e apre la Registrazione."""
+        # pylint: disable=import-outside-toplevel
         try:
             from src.gui.registration_window import RegistrationWindow
 

@@ -1,4 +1,4 @@
-# pylint: disable=no-member, invalid-name
+# pylint: disable=no-member, invalid-name, c-extension-no-member
 """Modulo per la finestra di gioco di Wordle."""
 
 import os
