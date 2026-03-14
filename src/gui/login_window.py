@@ -8,12 +8,22 @@ from typing import Any, Type
 # pylint: disable=no-name-in-module, no-member, c-extension-no-member
 try:
     from PyQt6 import QtWidgets, uic
+    from PyQt6.QtCore import Qt
 
     HAS_QT = True
     BaseDialog: Type[Any] = QtWidgets.QDialog
 except ImportError:
     HAS_QT = False
     BaseDialog = object
+
+    class _MockCursorShape:
+        PointingHandCursor = 13
+        ArrowCursor = 0
+
+    class _MockQt:
+        CursorShape = _MockCursorShape
+
+    Qt = _MockQt  # type: ignore
 
 
 class LoginWindow(BaseDialog):
@@ -39,45 +49,48 @@ class LoginWindow(BaseDialog):
             self.btn_login.setEnabled(False)
             self.btn_login.clicked.connect(self.gestisci_accedi)
 
-            if hasattr(self, "textEdit_mail"):
-                self.textEdit_mail.textChanged.connect(self._controlla_campi)
-            if hasattr(self, "textEdit_psw"):
-                self.textEdit_psw.textChanged.connect(self._controlla_campi)
+        if hasattr(self, "lineEdit_username"):
+            self.lineEdit_username.textChanged.connect(self._controlla_campi)
 
         if hasattr(self, "btn_registration"):
+            self.btn_registration.setCursor(Qt.CursorShape.PointingHandCursor)
             self.btn_registration.clicked.connect(self.vai_a_registrazione)
 
     def _controlla_campi(self):
-        """Abilita btn_login solo se mail e password non sono vuote."""
-        mail = self.textEdit_mail.toPlainText().strip()
-        psw = self.textEdit_psw.toPlainText().strip()
+        """Abilita btn_login e cambia il cursore se il nome utente non è vuoto."""
+        username = self.lineEdit_username.text().strip()
 
-        self.btn_login.setEnabled(len(mail) > 0 and len(psw) > 0)
+        is_valid = len(username) > 0
+        self.btn_login.setEnabled(is_valid)
+
+        if is_valid:
+            self.btn_login.setCursor(Qt.CursorShape.PointingHandCursor)
+        else:
+            self.btn_login.setCursor(Qt.CursorShape.ArrowCursor)
 
     def gestisci_accedi(self):
         """Logica per l'accesso e apertura della MainWindow."""
-        email = self.textEdit_mail.toPlainText().strip()
+        username = self.lineEdit_username.text().strip()
 
-        if not email:
-            email = "Ospite"
+        if not username:
+            username = "Ospite"
 
-        # pylint: disable=import-outside-toplevel
         from src.gui.main_window import MainWindow
 
-        self.main_window = MainWindow(nome_giocatore=email)
+        self.main_window = MainWindow(nome_giocatore=username)
         self.main_window.show()
         self.close()
 
     def vai_a_registrazione(self):
-        """Metodo per aprire la finestra di registrazione."""
-        # pylint: disable=import-outside-toplevel, import-error
-        from src.gui.registration_window import RegistrationWindow
+        """Chiude il Login e apre la Registrazione."""
+        try:
+            from src.gui.registration_window import RegistrationWindow
 
-        self.reg_win = RegistrationWindow()
-        self.reg_win.ritorno_al_login.connect(self.show)
-
-        self.reg_win.show()
-        self.hide()
+            self.reg_win = RegistrationWindow()
+            self.reg_win.show()
+            self.close()
+        except ImportError as e:
+            print(f"Errore nell'apertura del Registrazione: {e}")
 
 
 if __name__ == "__main__":
