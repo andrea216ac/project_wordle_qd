@@ -105,7 +105,7 @@ def test_initial_ui_state(login_app):
 
 
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
-def test_login_with_guest_logic(login_app, qtbot):
+def test_login_with_guest_logic(login_app):
     """Verifica la logica di fallback 'Ospite'."""
     login_app.lineEdit_username.setText("")
     login_app.gestisci_accedi()
