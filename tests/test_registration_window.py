@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Unit tests per la finestra di Registrazione."""
 
 import pytest
@@ -7,19 +8,13 @@ from src.gui.registration_window import HAS_QT, RegistrationWindow
 
 
 @pytest.fixture(name="registration_app")
-def fixture_registration_app(request):
+def fixture_registration_app(qtbot):
     """Inizializza la finestra della registration window per i test UI."""
     if not HAS_QT:
-        pytest.skip("Ambiente headless")
-
-    if "qtbot" not in request.fixturenames:
-        pytest.skip("Plugin pytest-qt non installato o non configurato")
-        return None
-
-    qtbot_inst = request.getfixturevalue("qtbot")
+        pytest.skip("Ambiente senza interfaccia grafica (headless)")
 
     window = RegistrationWindow()
-    qtbot_inst.addWidget(window)
+    qtbot.addWidget(window)
     return window
 
 
@@ -136,11 +131,11 @@ def test_initial_ui_state(registration_app):
     )
 
 
-def test_duplicate_username_error_visibility(qtbot):
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_duplicate_username_error_visibility(registration_app, qtbot):
     """Verifica che l'errore appaia se l'username è già nel sistema."""
 
-    window = RegistrationWindow()
-    qtbot.addWidget(window)
+    window = registration_app
     window.show()
 
     qtbot.keyClicks(window.lineEdit_nome, "Andrea")
@@ -156,14 +151,11 @@ def test_duplicate_username_error_visibility(qtbot):
     assert window.lbl_error_username.isVisible() is True
     assert window.lbl_error_username.text() == "nome utente già usato"
 
-
-def test_error_hides_on_new_typing(qtbot):
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_error_hides_on_new_typing(registration_app, qtbot):
     """Verifica che l'errore sparisca quando l'utente ricomincia a scrivere."""
-    window = RegistrationWindow()
-    qtbot.addWidget(window)
-
+    window = registration_app
     window.lbl_error_username.show()
 
     qtbot.keyClick(window.lineEdit_username, Qt.Key.Key_Backspace)
-
     assert window.lbl_error_username.isVisible() is False
