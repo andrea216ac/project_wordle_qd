@@ -11,223 +11,164 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Classifica Wordle</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QDialog {
-    background-color: #4f4f4f;
+   <string notr="true">
+QDialog { background-color: #4f4f4f; }
+QLabel { color: #ffffff; font-weight: bold; font-size: 26px; margin-bottom: 10px; }
+
+QTableWidget { 
+    background-color: #121213; 
+    color: white; 
+    gridline-color: #538d4e; 
+    border: 1px solid #3a3a3c; 
+    font-size: 20px; /* Testo molto grande per riempire */
+    outline: 0; 
 }
 
-QPushButton {
+QHeaderView::section { 
     background-color: #538d4e; 
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10% 15%;
-    font-weight: bold;
+    color: white; 
+    padding: 12px; 
+    border: 1px solid #3a3a3c; 
+    font-weight: bold; 
+    text-transform: uppercase; 
+    font-size: 15px; 
 }
 
-QPushButton:hover {
-    background-color: #6aaa64;
+QPushButton#btn_back { 
+    background-color: #538d4e; 
+    color: white; 
+    border: none; 
+    border-radius: 4px; 
+    padding: 12px 25px; 
+    font-weight: bold; 
+    font-size: 16px; 
 }
-
-QLabel{
-	color: #538d4e;
-    font-weight: bold;
-	font-size: 20px;
-}</string>
+QPushButton#btn_back:hover { background-color: #3a3a3c; }
+   </string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="1">
-    <spacer name="verticalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>37</height>
-      </size>
-     </property>
+    <spacer name="spacer_top">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+     <property name="sizeType"><enum>QSizePolicy::Fixed</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
     </spacer>
    </item>
-   <item row="1" column="0">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>125</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
+
    <item row="1" column="1">
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <property name="leftMargin">
-      <number>120</number>
-     </property>
-     <property name="rightMargin">
-      <number>120</number>
-     </property>
+    <layout class="QVBoxLayout" name="main_vbox">
+     <property name="spacing"><number>20</number></property>
+     <property name="leftMargin"><number>30</number></property>
+     <property name="rightMargin"><number>30</number></property>
+
      <item>
       <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Top 3</string>
-       </property>
+       <property name="text"><string>🏆 TOP 3 GIOCATORI</string></property>
+       <property name="alignment"><set>Qt::AlignCenter</set></property>
       </widget>
      </item>
+
      <item>
       <widget class="QTableWidget" name="table_top3">
        <property name="minimumSize">
         <size>
-         <width>400</width>
-         <height>0</height>
+            <width>600</width>
+            <height>140</height>
         </size>
        </property>
        <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="columnCount">
-        <number>4</number>
-       </property>
-       <column>
-        <property name="text">
-         <string>Posizione</string>
+         <size>
+            <width>16777215</width>
+            <height>150</height>
+          </size>
         </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Utente</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Media Tentativi</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Vittorie</string>
-        </property>
-       </column>
+       <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
+       <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
+       <property name="showGrid"><bool>false</bool></property>
+       <property name="columnCount"><number>4</number></property>
+       <attribute name="horizontalHeaderSectionResizeMode"><enum>QHeaderView::Stretch</enum></attribute>
+       <attribute name="verticalHeaderVisible"><bool>false</bool></attribute>
+       <column><property name="text"><string>Posizione</string></property></column>
+       <column><property name="text"><string>Utente</string></property></column>
+       <column><property name="text"><string>Media Tentativi</string></property></column>
+       <column><property name="text"><string>Vittorie</string></property></column>
       </widget>
      </item>
+
      <item>
-      <spacer name="verticalSpacer_3">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
+      <spacer name="spacer_mid">
+       <property name="orientation"><enum>Qt::Vertical</enum></property>
+       <property name="sizeType"><enum>QSizePolicy::Fixed</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>20</width><height>30</height></size></property>
       </spacer>
      </item>
+
      <item>
       <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>La tua posizione</string>
-       </property>
+       <property name="text"><string>👤 LA TUA POSIZIONE</string></property>
+       <property name="alignment"><set>Qt::AlignCenter</set></property>
       </widget>
      </item>
+
      <item>
       <widget class="QTableWidget" name="table_user_pos">
-       <property name="minimumSize">
-        <size>
-         <width>300</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>300</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="columnCount">
-        <number>3</number>
-       </property>
-       <column>
-        <property name="text">
-         <string>Posizione</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Media Tentativi</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>Vittorie</string>
-        </property>
-       </column>
+       <property name="minimumSize"><size><width>600</width><height>60</height></size></property>
+       <property name="maximumSize"><size><width>16777215</width><height>70</height></size></property>
+       <property name="horizontalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
+       <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
+       <property name="showGrid"><bool>false</bool></property>
+       <property name="columnCount"><number>3</number></property>
+       <attribute name="horizontalHeaderSectionResizeMode"><enum>QHeaderView::Stretch</enum></attribute>
+       <attribute name="verticalHeaderVisible"><bool>false</bool></attribute>
+       <column><property name="text"><string>Posizione</string></property></column>
+       <column><property name="text"><string>Media Tentativi</string></property></column>
+       <column><property name="text"><string>Vittorie</string></property></column>
       </widget>
      </item>
+
      <item>
-      <spacer name="verticalSpacer_4">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
+      <spacer name="spacer_bottom_push">
+       <property name="orientation"><enum>Qt::Vertical</enum></property>
+       <property name="sizeType"><enum>QSizePolicy::Fixed</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>20</width><height>30</height></size></property>
       </spacer>
      </item>
-     <item>
+
+     <item alignment="Qt::AlignHCenter">
       <widget class="QPushButton" name="btn_back">
-       <property name="maximumSize">
-        <size>
-         <width>150</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Torna indietro</string>
+       <property name="text"><string>Torna indietro</string></property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
        </property>
       </widget>
      </item>
     </layout>
    </item>
+
+   <item row="1" column="0">
+    <spacer name="spacer_left">
+     <property name="orientation"><enum>Qt::Horizontal</enum></property>
+     <property name="sizeType"><enum>QSizePolicy::Expanding</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+    </spacer>
+   </item>
    <item row="1" column="2">
-    <spacer name="horizontalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>126</width>
-       <height>20</height>
-      </size>
-     </property>
+    <spacer name="spacer_right">
+     <property name="orientation"><enum>Qt::Horizontal</enum></property>
+     <property name="sizeType"><enum>QSizePolicy::Expanding</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
     </spacer>
    </item>
    <item row="2" column="1">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>36</height>
-      </size>
-     </property>
+    <spacer name="spacer_bottom">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+     <property name="sizeType"><enum>QSizePolicy::Expanding</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
     </spacer>
    </item>
   </layout>
  </widget>
- <resources/>
- <connections/>
 </ui>
