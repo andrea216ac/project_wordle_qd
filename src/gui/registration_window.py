@@ -120,7 +120,7 @@ class RegistrationWindow(BaseDialog):
 
 
 if __name__ == "__main__":
-   if HAS_QT:
+    if HAS_QT:
         app = QtWidgets.QApplication(sys.argv)
         window = RegistrationWindow()
         window.show()
