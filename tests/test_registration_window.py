@@ -151,6 +151,7 @@ def test_duplicate_username_error_visibility(registration_app, qtbot):
     assert window.lbl_error_username.isVisible() is True
     assert window.lbl_error_username.text() == "nome utente già usato"
 
+
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
 def test_error_hides_on_new_typing(registration_app, qtbot):
     """Verifica che l'errore sparisca quando l'utente ricomincia a scrivere."""
