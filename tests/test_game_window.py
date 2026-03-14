@@ -86,3 +86,65 @@ def test_keyboard_buttons_exist(game):
     """Verifica che la tastiera QWERTY sia stata generata nel container."""
     buttons = game.keyboard_container.findChildren(QtWidgets.QPushButton)
     assert len(buttons) >= 28
+
+
+def test_exit_button_closes_window(game, qtbot):
+    """Verifica che il tasto 'Esci' chiuda effettivamente la finestra."""
+    btn_exit = game.pushButton
+
+    assert btn_exit is not None
+    assert btn_exit.text() == "Esci"
+
+    qtbot.mouseClick(btn_exit, Qt.MouseButton.LeftButton)
+
+    assert game.isHidden() is True
+
+
+def test_row_limit(game, qtbot):
+    """Verifica che non si possa andare oltre la sesta riga (6x5)."""
+    game.current_row = 5
+
+    for char in "WORLD":
+        qtbot.keyClick(game, getattr(Qt.Key, f"Key_{char}"))
+
+    qtbot.keyClick(game, Qt.Key.Key_Return)
+
+    assert game.current_row == 5
+
+
+def test_physical_keyboard_typing(game, qtbot):
+    """Verifica che premendo tasti sulla tastiera fisica le lettere appaiano."""
+    qtbot.keyClick(game, Qt.Key.Key_W)
+
+    assert game.grid[0][0].toPlainText() == "W"
+    assert game.current_col == 1
+
+
+def test_physical_keyboard_backspace(game, qtbot):
+    """Verifica che il backspace fisico cancelli correttamente."""
+    qtbot.keyClick(game, Qt.Key.Key_X)
+    assert game.grid[0][0].toPlainText() == "X"
+
+    qtbot.keyClick(game, Qt.Key.Key_Backspace)
+    assert game.grid[0][0].toPlainText() == ""
+    assert game.current_col == 0
+
+
+def test_physical_keyboard_enter_progression(game, qtbot):
+    """Verifica che l'invio fisico faccia avanzare di riga se la parola è completa."""
+    for char in "HELLO":
+        qtbot.keyClick(game, getattr(Qt.Key, f"Key_{char}"))
+
+    assert game.current_row == 0
+    assert game.current_col == 4
+
+    qtbot.keyClick(game, Qt.Key.Key_Return)
+
+    assert game.current_row == 1
+    assert game.current_col == 0
+
+
+def test_physical_escape_closes_window(game, qtbot):
+    """Verifica che il tasto ESC fisico chiuda la finestra."""
+    qtbot.keyClick(game, Qt.Key.Key_Escape)
+    assert game.isHidden() is True
