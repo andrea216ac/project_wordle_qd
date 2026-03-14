@@ -19,7 +19,7 @@ except ImportError:
 class GameWindow(BaseWindow):
     """Classe che gestisce la logica della griglia e della tastiera di gioco."""
 
-    def __init__(self, nome_giocatore: str = "Giocatore"):
+    def __init__(self, main_window=None, nome_giocatore: str = "Giocatore"):
         """Inizializza la finestra, carica l'UI e prepara la griglia."""
         self.grid: List[List[Any]] = [[None for _ in range(5)] for _ in range(6)]
         self.nome_giocatore = nome_giocatore
@@ -30,6 +30,7 @@ class GameWindow(BaseWindow):
             return
 
         super().__init__()
+        self.main_window = main_window
         ui_path = os.path.join(os.path.dirname(__file__), "game_window.ui")
 
         if os.path.exists(ui_path):
@@ -42,8 +43,23 @@ class GameWindow(BaseWindow):
         self.setup_keyboard_focus()
         self._refresh_ui_state()
 
-        if hasattr(self, "pushButton"):
-            self.pushButton.clicked.connect(self.close)
+        btn_game = getattr(self, "btn_back", None)
+        if btn_game:
+            btn_game.clicked.connect(self.torna_indietro)
+
+    def torna_indietro(self):
+        """Metodo per tornare alla main window."""
+        # pylint: disable=import-outside-toplevel, cyclic-import
+        from src.gui.main_window import MainWindow
+
+        if self.main_window is None:
+            self.main_window = MainWindow()
+
+        self.main_window.show()
+        self.main_window.raise_()
+        self.main_window.activateWindow()
+
+        self.close()
 
     def _map_ui_grid(self):
         """Mappa i QTextEdit basandosi sulla loro posizione nel QGridLayout."""
