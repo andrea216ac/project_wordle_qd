@@ -1,3 +1,4 @@
+# pylint: disable=no-member, invalid-name
 """Modulo per la finestra di gioco di Wordle."""
 
 import os
@@ -5,7 +6,7 @@ import sys
 from typing import Any, List, Type
 
 try:
-    from PyQt6 import QtCore, QtWidgets, uic # pylint: disable=no-member, invalid-name
+    from PyQt6 import QtCore, QtWidgets, uic
     from PyQt6.QtGui import QKeyEvent
 
     HAS_QT = True
