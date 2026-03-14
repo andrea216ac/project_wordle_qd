@@ -23,14 +23,14 @@ QLabel {
     font-weight: bold; 
     font-size: 60px; 
 }
-QPushButton#pushButton { 
+QPushButton#btn_back { 
     background-color: red; 
     color: white; 
     border-radius: 4px; 
     padding: 15px; 
     font-weight: bold; 
 }
-QPushButton#pushButton:hover {
+QPushButton#btn_back:hover {
     background-color: #3a3a3c
 }
 QTextEdit { 
@@ -57,7 +57,7 @@ QTextEdit {
     </item>
 
     <item row="0" column="2" alignment="Qt::AlignRight|Qt::AlignTop">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="btn_back">
       <property name="text">
         <string>Esci</string>
       </property>
