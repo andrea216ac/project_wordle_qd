@@ -49,7 +49,9 @@ class RegistrationWindow(BaseDialog):
         if self.input_username:
             # pylint: disable=unnecessary-lambda
             self.input_username.textChanged.connect(
-                lambda: self.lbl_error_username.hide() if self.lbl_error_username else None
+                lambda: (
+                    self.lbl_error_username.hide() if self.lbl_error_username else None
+                )
             )
 
         self.btn_confirm = getattr(self, "btn_registration_submit", None)
@@ -74,7 +76,11 @@ class RegistrationWindow(BaseDialog):
 
         if self.btn_confirm:
             self.btn_confirm.setEnabled(valido)
-            cursor = Qt.CursorShape.PointingHandCursor if valido else Qt.CursorShape.ArrowCursor
+            cursor = (
+                Qt.CursorShape.PointingHandCursor
+                if valido
+                else Qt.CursorShape.ArrowCursor
+            )
             self.btn_confirm.setCursor(cursor)
 
     def vai_a_login(self):
