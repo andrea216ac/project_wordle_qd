@@ -6,665 +6,151 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>818</width>
-    <height>733</height>
+    <width>800</width>
+    <height>850</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Wordle Clone</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QMainWindow {
-    background-color: #4f4f4f;
+   <string notr="true">
+QMainWindow { 
+    background-color: #4f4f4f; 
 }
-
-QPushButton {
+QLabel { 
+    color: #538d4e;
+    font-weight: bold; 
+    font-size: 60px; 
+}
+QPushButton#pushButton { 
     background-color: red; 
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10% 15%;
+    color: white; 
+    border-radius: 4px; 
+    padding: 15px; 
+    font-weight: bold; 
+}
+QPushButton#pushButton:hover {
+    background-color: #3a3a3c
+}
+QTextEdit { 
+    background-color: #121213; 
+    color: white; 
+    border: 2px solid #3a3a3c; 
+    font-size: 25px; 
     font-weight: bold;
 }
-
-QPushButton:hover {
-    background-color: gray;
-}
-
-QLabel{
-	color: #538d4e;
-    font-weight: bold;
-	qproperty-alignment: 'AlignHCenter | AlignVCenter';
-	font-size: 30px;
-}</string>
+   </string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2">
+   <layout class="QGridLayout" name="gridLayout_main">
+    
     <item row="0" column="1">
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>10</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="1" column="0">
-     <spacer name="horizontalSpacer_5">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="1" column="1">
      <widget class="QLabel" name="label">
       <property name="text">
        <string>WORDLE</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
      </widget>
     </item>
-    <item row="3" column="0">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>207</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="5" column="1">
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QWidget" name="keyboard_container" native="true">
-        <property name="maximumSize">
-         <size>
-          <width>600</width>
-          <height>300</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="5" column="0">
-     <spacer name="horizontalSpacer_3">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>207</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="1" column="2">
-     <spacer name="horizontalSpacer_6">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="5" column="2">
-     <spacer name="horizontalSpacer_4">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>273</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="3" column="1">
-     <layout class="QGridLayout" name="gridLayout">
-      <property name="sizeConstraint">
-       <enum>QLayout::SetDefaultConstraint</enum>
-      </property>
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <item row="1" column="0">
-       <widget class="QTextEdit" name="textEdit_6">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="4">
-       <widget class="QTextEdit" name="textEdit_22">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="4">
-       <widget class="QTextEdit" name="textEdit_29">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QTextEdit" name="textEdit_28">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QTextEdit" name="textEdit_11">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QTextEdit" name="textEdit_9">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QTextEdit" name="textEdit_16">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QTextEdit" name="textEdit_3">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="2">
-       <widget class="QTextEdit" name="textEdit_17">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QTextEdit" name="textEdit_14">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QTextEdit" name="textEdit_2">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QTextEdit" name="textEdit_7">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="4">
-       <widget class="QTextEdit" name="textEdit_25">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QTextEdit" name="textEdit_8">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="4">
-       <widget class="QTextEdit" name="textEdit_19">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="2">
-       <widget class="QTextEdit" name="textEdit_20">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3">
-       <widget class="QTextEdit" name="textEdit_27">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QTextEdit" name="textEdit">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3">
-       <widget class="QTextEdit" name="textEdit_23">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="3">
-       <widget class="QTextEdit" name="textEdit_18">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QTextEdit" name="textEdit_30">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QTextEdit" name="textEdit_13">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="3">
-       <widget class="QTextEdit" name="textEdit_21">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4">
-       <widget class="QTextEdit" name="textEdit_5">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QTextEdit" name="textEdit_10">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QTextEdit" name="textEdit_4">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QTextEdit" name="textEdit_15">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QTextEdit" name="textEdit_24">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QTextEdit" name="textEdit_12">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="4">
-       <widget class="QTextEdit" name="textEdit_26">
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>25</pointsize>
-         </font>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="3" column="2">
-     <spacer name="horizontalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>273</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="4" column="1">
-     <spacer name="verticalSpacer_3">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>144</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
+
     <item row="0" column="2" alignment="Qt::AlignRight|Qt::AlignTop">
      <widget class="QPushButton" name="pushButton">
-      <property name="maximumSize">
-       <size>
-        <width>100</width>
-        <height>16777215</height>
-       </size>
-      </property>
       <property name="text">
-       <string>Esci</string>
+        <string>Esci</string>
       </property>
+      <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="maximumSize"><size><width>80</width><height>40</height></size></property>
      </widget>
     </item>
-    <item row="2" column="1">
-     <spacer name="verticalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
+
+    <item row="1" column="1">
+     <spacer name="spacer_top_push">
+      <property name="orientation"><enum>Qt::Vertical</enum></property>
+      <property name="sizeType"><enum>QSizePolicy::Fixed</enum></property>
+      <property name="sizeHint" stdset="0"><size><width>20</width><height>60</height></size></property>
      </spacer>
     </item>
+
+    <item row="2" column="1">
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="spacing"><number>2</number></property>
+      <property name="sizeConstraint"><enum>QLayout::SetFixedSize</enum></property>
+      
+      <item row="0" column="0"><widget class="QTextEdit" name="textEdit"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="0" column="1"><widget class="QTextEdit" name="textEdit_2"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="0" column="2"><widget class="QTextEdit" name="textEdit_3"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="0" column="3"><widget class="QTextEdit" name="textEdit_4"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="0" column="4"><widget class="QTextEdit" name="textEdit_5"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      
+      <item row="1" column="0"><widget class="QTextEdit" name="textEdit_6"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="1" column="1"><widget class="QTextEdit" name="textEdit_7"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="1" column="2"><widget class="QTextEdit" name="textEdit_8"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="1" column="3"><widget class="QTextEdit" name="textEdit_30"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="1" column="4"><widget class="QTextEdit" name="textEdit_29"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+
+      <item row="2" column="0"><widget class="QTextEdit" name="textEdit_9"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="2" column="1"><widget class="QTextEdit" name="textEdit_13"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="2" column="2"><widget class="QTextEdit" name="textEdit_28"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="2" column="3"><widget class="QTextEdit" name="textEdit_27"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="2" column="4"><widget class="QTextEdit" name="textEdit_26"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+
+      <item row="3" column="0"><widget class="QTextEdit" name="textEdit_10"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="3" column="1"><widget class="QTextEdit" name="textEdit_14"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="3" column="2"><widget class="QTextEdit" name="textEdit_24"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="3" column="3"><widget class="QTextEdit" name="textEdit_23"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="3" column="4"><widget class="QTextEdit" name="textEdit_25"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+
+      <item row="4" column="0"><widget class="QTextEdit" name="textEdit_11"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="4" column="1"><widget class="QTextEdit" name="textEdit_15"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="4" column="2"><widget class="QTextEdit" name="textEdit_20"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="4" column="3"><widget class="QTextEdit" name="textEdit_21"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="4" column="4"><widget class="QTextEdit" name="textEdit_22"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+
+      <item row="5" column="0"><widget class="QTextEdit" name="textEdit_12"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="5" column="1"><widget class="QTextEdit" name="textEdit_16"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="5" column="2"><widget class="QTextEdit" name="textEdit_17"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="5" column="3"><widget class="QTextEdit" name="textEdit_18"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+      <item row="5" column="4"><widget class="QTextEdit" name="textEdit_19"><property name="fixedSize"><size><width>60</width><height>60</height></size></property></widget></item>
+     </layout>
+    </item>
+
+    <item row="2" column="0">
+     <spacer name="spacer_left"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeType"><enum>QSizePolicy::Expanding</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer>
+    </item>
+    <item row="2" column="2">
+     <spacer name="spacer_right"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeType"><enum>QSizePolicy::Expanding</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer>
+    </item>
+
+    <item row="3" column="1">
+     <spacer name="spacer_mid_vert">
+      <property name="orientation"><enum>Qt::Vertical</enum></property>
+      <property name="sizeType"><enum>QSizePolicy::Fixed</enum></property>
+      <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+     </spacer>
+    </item>
+
+    <item row="4" column="1">
+     <widget class="QWidget" name="keyboard_container" native="true">
+      <property name="minimumSize"><size><width>0</width><height>180</height></size></property>
+     </widget>
+    </item>
+
+    <item row="5" column="1">
+     <spacer name="spacer_bottom">
+      <property name="orientation"><enum>Qt::Vertical</enum></property>
+      <property name="sizeType"><enum>QSizePolicy::Expanding</enum></property>
+      <property name="sizeHint" stdset="0"><size><width>20</width><height>20</height></size></property>
+     </spacer>
+    </item>
+
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>818</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
+  <widget class="QMenuBar" name="menubar"/>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
- <connections/>
 </ui>
