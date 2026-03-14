@@ -26,8 +26,8 @@ def fixture_login_app(request):
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
 def test_ui_elements_presence(login_app):
     """Verifica che tutti i widget necessari siano caricati."""
-    assert hasattr(login_app, "textEdit_mail")
-    assert hasattr(login_app, "textEdit_psw")
+    assert hasattr(login_app, "lineEdit_username")
+    assert not hasattr(login_app, "textEdit_mail")
     assert hasattr(login_app, "btn_login")
     assert login_app.lbl_title.text() == "Wordle"
 
@@ -35,7 +35,7 @@ def test_ui_elements_presence(login_app):
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
 def test_login_transition(login_app, qtbot):
     """Verifica che il click su Accedi chiuda la finestra e crei la MainWindow."""
-    login_app.textEdit_mail.setPlainText("TestUser")
+    login_app.lineEdit_username.setText("TestUser")
 
     qtbot.mouseClick(login_app.btn_login, Qt.MouseButton.LeftButton)
 
@@ -44,27 +44,27 @@ def test_login_transition(login_app, qtbot):
 
 
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
-def test_button_enabling_logic(login_app):
-    """Verifica che il pulsante si abiliti solo con campi compilati."""
+def test_button_enabling_and_cursor_logic(login_app):
+    """Verifica l'abilitazione del pulsante e il cambio del cursore."""
     assert not login_app.btn_login.isEnabled()
+    assert login_app.btn_login.cursor().shape() == Qt.CursorShape.ArrowCursor
 
-    login_app.textEdit_mail.setPlainText("user@test.it")
-    assert not login_app.btn_login.isEnabled()
+    login_app.lineEdit_username.setText("Mario")
 
-    login_app.textEdit_psw.setPlainText("password123")
     assert login_app.btn_login.isEnabled()
+    assert login_app.btn_login.cursor().shape() == Qt.CursorShape.PointingHandCursor
 
-    login_app.textEdit_mail.setPlainText("")
+    login_app.lineEdit_username.setText("")
     assert not login_app.btn_login.isEnabled()
+    assert login_app.btn_login.cursor().shape() == Qt.CursorShape.ArrowCursor
 
 
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
 def test_successful_login_navigation(login_app, qtbot):
-    """Verifica l'apertura della MainWindow con un utente fittizio."""
-    utente_finto = "Mario Rossi"
+    """Verifica l'apertura della MainWindow con il nome utente corretto."""
+    utente_finto = "MarioRossi"
 
-    login_app.textEdit_mail.setPlainText(utente_finto)
-    login_app.textEdit_psw.setPlainText("secret")
+    qtbot.keyClicks(login_app.lineEdit_username, utente_finto)
 
     qtbot.mouseClick(login_app.btn_login, Qt.MouseButton.LeftButton)
 
@@ -72,3 +72,43 @@ def test_successful_login_navigation(login_app, qtbot):
     assert login_app.main_window is not None
     assert login_app.main_window.isVisible()
     assert utente_finto in login_app.main_window.lbl_welcome.text()
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_registration_transition(login_app, qtbot):
+    """Verifica che il click su Registrati apra la RegistrationWindow."""
+    assert login_app.reg_win is None
+
+    qtbot.mouseClick(login_app.btn_registration, Qt.MouseButton.LeftButton)
+
+    assert not login_app.isVisible()
+    assert login_app.reg_win is not None
+    assert login_app.reg_win.isVisible()
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_whitespace_username_handling(login_app):
+    """Verifica che un nome utente di soli spazi non abiliti il login."""
+    login_app.lineEdit_username.setText("   ")
+    assert not login_app.btn_login.isEnabled()
+    assert login_app.btn_login.cursor().shape() == Qt.CursorShape.ArrowCursor
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_initial_ui_state(login_app):
+    """Verifica lo stato di default all'apertura della finestra."""
+    assert login_app.lineEdit_username.text() == ""
+    assert not login_app.btn_login.isEnabled()
+    assert (
+        login_app.btn_registration.cursor().shape() == Qt.CursorShape.PointingHandCursor
+    )
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_login_with_guest_logic(login_app, qtbot):
+    """Verifica la logica di fallback 'Ospite'."""
+    login_app.lineEdit_username.setText("")
+    login_app.gestisci_accedi()
+
+    assert login_app.main_window is not None
+    assert "Ospite" in login_app.main_window.lbl_welcome.text()
