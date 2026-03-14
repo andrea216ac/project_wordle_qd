@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Registrazione - Wordle</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QDialog {
@@ -32,14 +32,20 @@ QPushButton:hover {
 }
 
 QLabel{
-	color: #538d4e;
+    color: #538d4e;
     font-weight: bold;
-	qproperty-alignment: 'AlignLeft';
-	font-size: 20px;
+    qproperty-alignment: 'AlignLeft';
+    font-size: 20px;
+}
+
+QLineEdit {
+    background-color: white;
+    border-radius: 3px;
+    padding: 2px;
 }
 
 QLabel#lbl_login{
-	qproperty-alignment: 'AlignHCenter | AlignVCenter';
+    qproperty-alignment: 'AlignHCenter | AlignVCenter';
 }</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
@@ -93,10 +99,20 @@ QLabel#lbl_login{
      <property name="verticalSpacing">
       <number>30</number>
      </property>
-     <item row="3" column="0">
-      <widget class="QLabel" name="lbl_mail">
+     <item row="0" column="0">
+      <widget class="QLabel" name="lbl_nome">
        <property name="text">
-        <string>Email</string>
+        <string>Nome</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lineEdit_nome">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>30</height>
+        </size>
        </property>
       </widget>
      </item>
@@ -107,84 +123,41 @@ QLabel#lbl_login{
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="lbl_nome">
-       <property name="text">
-        <string>Nome</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="lbl_psw">
-       <property name="text">
-        <string>Password</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QTextEdit" name="textEdit">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>30</height>
-        </size>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="1">
-      <widget class="QTextEdit" name="textEdit_2">
+      <widget class="QLineEdit" name="lineEdit_cognome">
        <property name="minimumSize">
         <size>
          <width>0</width>
          <height>30</height>
         </size>
        </property>
-       <property name="maximumSize">
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="lbl_username">
+       <property name="text">
+        <string>Nome Utente</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="lineEdit_username">
+       <property name="minimumSize">
         <size>
-         <width>16777215</width>
+         <width>0</width>
          <height>30</height>
         </size>
        </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QTextEdit" name="textEdit_3">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>30</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QTextEdit" name="textEdit_4">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>30</height>
-        </size>
-       </property>
-      </widget>
-     </item>
+        <widget class="QLabel" name="lbl_error_username">
+            <property name="text"><string>nome utente già usato</string></property>
+            <property name="styleSheet">
+                <string notr="true">color: #ff4d4d; font-size: 12px; font-weight: normal; margin-top: -5px;</string>
+            </property>
+        </widget>
+    </item>
     </layout>
    </item>
    <item row="3" column="0">
