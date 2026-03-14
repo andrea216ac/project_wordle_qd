@@ -1,38 +1,24 @@
-"""Modulo per la finestra di registrazione dell'applicazione Wordle."""
-
 import os
 import sys
-from typing import Any, Type
 
-# pylint: disable=no-name-in-module, no-member, c-extension-no-member
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+if ROOT_DIR not in sys.path:
+    sys.path.append(ROOT_DIR)
+
 try:
-    from PyQt6 import QtCore, QtWidgets, uic
+    from PyQt6 import QtWidgets, uic
+    from PyQt6.QtCore import Qt
 
     HAS_QT = True
-    BaseDialog: Type[Any] = QtWidgets.QDialog
-    _signal_factory: Any = QtCore.pyqtSignal
 except ImportError:
     HAS_QT = False
-    BaseDialog = object
-
-    def _mock_signal(*_args: Any, **_kwargs: Any) -> Any:
-        """Mock del segnale per ambiente senza Qt."""
-        return object()
-
-    _signal_factory = _mock_signal  # type: ignore[assignment]
-
-pyqt_signal = _signal_factory
 
 
-class RegistrationWindow(BaseDialog):
+class RegistrationWindow(QtWidgets.QDialog):
     """Classe che gestisce la creazione di un nuovo account."""
 
-    ritorno_al_login = pyqt_signal()
-
-    def __init__(self):
-        """Inizializza la finestra di registrazione."""
-        super().__init__()
-        self.login_win = None
+    def __init__(self, parent=None):
+        super().__init__(parent)
         if not HAS_QT:
             return
 
@@ -42,56 +28,83 @@ class RegistrationWindow(BaseDialog):
         else:
             print(f"Errore: Il file {ui_path} non esiste!")
 
-        self.input_nome = getattr(self, "textEdit", None)
-        self.input_cognome = getattr(self, "textEdit_2", None)
-        self.input_mail = getattr(self, "textEdit_3", None)
-        self.input_psw = getattr(self, "textEdit_4", None)
+        self.input_nome = getattr(self, "lineEdit_nome", None)
+        self.input_cognome = getattr(self, "lineEdit_cognome", None)
+        self.input_username = getattr(self, "lineEdit_username", None)
 
-        if hasattr(self, "btn_login"):
-            self.btn_login.clicked.connect(self.vai_a_login)
+        if self.lbl_error_username:
+            self.lbl_error_username.hide()
+
+        if self.input_username:
+            self.input_username.textChanged.connect(
+                lambda: self.lbl_error_username.hide()
+            )
 
         self.btn_confirm = getattr(self, "btn_registration_submit", None)
+        self.btn_back_to_login = getattr(self, "btn_login", None)
+
         if self.btn_confirm:
             self.btn_confirm.setEnabled(False)
+            self.btn_confirm.setCursor(Qt.CursorShape.ArrowCursor)
             self.btn_confirm.clicked.connect(self.esegui_registrazione)
 
-        self.campi_obbligatori = [
-            self.input_nome,
-            self.input_cognome,
-            self.input_mail,
-            self.input_psw,
-        ]
+        if self.btn_back_to_login:
+            self.btn_back_to_login.clicked.connect(self.vai_a_login)
 
-        for field in self.campi_obbligatori:
-            if field:
-                field.textChanged.connect(self.valida_form)
+        self.campi = [self.input_nome, self.input_cognome, self.input_username]
+        for f in self.campi:
+            if f:
+                f.textChanged.connect(self.valida_form)
 
     def valida_form(self):
-        """Abilita il tasto conferma solo se tutti i campi sono pieni e validi."""
-        if not self.btn_confirm:
-            return
+        """Abilita il tasto e cambia il cursore solo se il form è completo."""
+        valido = all(f.text().strip() != "" for f in self.campi if f)
 
-        stato_campi = []
-        for field in self.campi_obbligatori:
-            if field:
-                testo = field.toPlainText().strip()
-                stato_campi.append(len(testo) > 0)
+        if self.btn_confirm:
+            self.btn_confirm.setEnabled(valido)
+            if valido:
+                self.btn_confirm.setCursor(Qt.CursorShape.PointingHandCursor)
             else:
-                stato_campi.append(False)
-
-        form_valido = all(stato_campi)
-        self.btn_confirm.setEnabled(form_valido)
+                self.btn_confirm.setCursor(Qt.CursorShape.ArrowCursor)
 
     def vai_a_login(self):
-        """Torna alla finestra di login."""
-        self.ritorno_al_login.emit()
-        self.close()
+        """Chiude la registrazione e apre il Login."""
+        try:
+            from src.gui.login_window import LoginWindow
+
+            self.log_win = LoginWindow()
+            self.log_win.show()
+            self.close()
+        except ImportError as e:
+            print(f"Errore nell'apertura del Login: {e}")
 
     def esegui_registrazione(self):
-        """Logica per salvare l'utente e mandarlo al login."""
-        nome = self.input_nome.toPlainText().strip()
-        print(f"Registrazione di: {nome}")
-        self.vai_a_login()
+        """Effettua la registrazione e lancia la MainWindow."""
+        username = self.input_username.text().strip()
+
+        database_utenti_esistenti = ["mario88", "admin", "wordle_master"]
+
+        if username.lower() in database_utenti_esistenti:
+            if self.lbl_error_username:
+                self.lbl_error_username.show()
+            return
+
+        print(f"Utente registrato: {username}")
+
+        try:
+            from src.gui.main_window import MainWindow
+
+            self.main_win = MainWindow()
+
+            if hasattr(self.main_win, "lbl_welcome"):
+                self.main_win.lbl_welcome.setText(f"Benvenuto, {username}!")
+
+            self.main_win.show()
+            self.close()
+        except ImportError as e:
+            QtWidgets.QMessageBox.critical(
+                self, "Errore di Sistema", f"MainWindow non trovata: {e}"
+            )
 
 
 if __name__ == "__main__":
