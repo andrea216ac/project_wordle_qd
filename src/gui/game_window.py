@@ -256,8 +256,8 @@ class GameWindow(BaseWindow):
                         )
                     elif colore == "#3a3a3c" and "#b59f3b" not in old_style:
                         btn.setStyleSheet(
-                            f"""QPushButton {{ background-color: #3a3a3c; color: white;
-                            border-radius: 4px;font-weight:bold;font-size:16px;}}"""
+                            "QPushButton {{ background-color: #3a3a3c; color: white;"
+                            "border-radius: 4px;font-weight:bold;font-size:16px;}}"
                         )
 
         if self.game_manager.is_game_over():
