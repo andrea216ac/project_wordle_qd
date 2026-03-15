@@ -16,6 +16,7 @@ except ImportError:
     BaseWindow = object
 
 
+# pylint: disable=too-many-instance-attributes
 class GameWindow(BaseWindow):
     """Classe che gestisce la logica della griglia e della tastiera di gioco."""
 
@@ -98,7 +99,7 @@ class GameWindow(BaseWindow):
                     widget.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
     def _refresh_ui_state(self):
-        """Aggiorna lo stato visivo SOLO per la riga in corso (per non cancellare i colori vecchi)."""
+        """Aggiorna lo stato visivo SOLO per la riga in corso."""
         if self.gioco_finito or self.current_row > 5:
             return
 
@@ -225,7 +226,7 @@ class GameWindow(BaseWindow):
 
         try:
             risultati = self.game_manager.submit_guess(tentativo)
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             QtWidgets.QMessageBox.warning(self, "Errore", str(e))
             return
 
@@ -237,7 +238,7 @@ class GameWindow(BaseWindow):
             lettera = tentativo[i]
 
             widget.setStyleSheet(f"""
-                background-color: {colore}; 
+                background-color: {colore};
                 color: white; border: 2px solid {colore};
                 font-weight: bold; font-size: 25px;
             """)
@@ -250,11 +251,13 @@ class GameWindow(BaseWindow):
                         colore == "#b59f3b" and "#b59f3b" not in old_style
                     ):
                         btn.setStyleSheet(
-                            f"QPushButton {{ background-color: {colore}; color: white; border-radius: 4px; font-weight: bold; font-size: 16px;}}"
+                            f"""QPushButton {{ background-color: {colore}; color: white;
+                            border-radius: 4px; font-weight: bold; font-size: 16px;}}"""
                         )
                     elif colore == "#3a3a3c" and "#b59f3b" not in old_style:
                         btn.setStyleSheet(
-                            f"QPushButton {{ background-color: #3a3a3c; color: white; border-radius: 4px; font-weight: bold; font-size: 16px;}}"
+                            f"""QPushButton {{ background-color: #3a3a3c; color: white;
+                            border-radius: 4px;font-weight:bold;font-size:16px;}}"""
                         )
 
         if self.game_manager.is_game_over():
@@ -293,8 +296,8 @@ class GameWindow(BaseWindow):
             return
 
         btn.setStyleSheet(f"""
-            QPushButton {{ 
-                background-color: {nuovo_colore}; color: white; 
+            QPushButton {{
+                background-color: {nuovo_colore}; color: white;
                 border-radius: 4px; font-weight: bold; font-size: 16px;
             }}
         """)
