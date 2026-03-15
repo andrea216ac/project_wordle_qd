@@ -19,12 +19,17 @@ except ImportError:
 class GameWindow(BaseWindow):
     """Classe che gestisce la logica della griglia e della tastiera di gioco."""
 
-    def __init__(self, main_window=None, nome_giocatore: str = "Giocatore"):
+    def __init__(self, main_window=None, nome_giocatore: str = "Giocatore", game_manager=None):
         """Inizializza la finestra, carica l'UI e prepara la griglia."""
         self.grid: List[List[Any]] = [[None for _ in range(5)] for _ in range(6)]
+        self.keyboard_buttons = {}
+        
         self.nome_giocatore = nome_giocatore
         self.current_row = 0
         self.current_col = 0
+        
+        self.game_manager = game_manager
+        self.gioco_finito = False
 
         if not HAS_QT:
             return
@@ -58,17 +63,15 @@ class GameWindow(BaseWindow):
         self.main_window.show()
         self.main_window.raise_()
         self.main_window.activateWindow()
-
         self.close()
 
     def _map_ui_grid(self):
         """Mappa i QTextEdit basandosi sulla loro posizione nel QGridLayout."""
         grid_layout = self.findChild(QtWidgets.QGridLayout, "gridLayout")
         if not grid_layout:
-            print("Errore: gridLayout assente")
             return
 
-        grid_layout.setSpacing(0)
+        grid_layout.setSpacing(5)
         grid_layout.setContentsMargins(0, 0, 0, 0)
 
         for i in range(grid_layout.count()):
@@ -81,56 +84,48 @@ class GameWindow(BaseWindow):
                     self.grid[row][col] = widget
                     widget.setFixedSize(60, 60)
                     widget.setReadOnly(True)
-                    widget.setVerticalScrollBarPolicy(
-                        QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff
-                    )
-                    widget.setHorizontalScrollBarPolicy(
-                        QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff
-                    )
-                    widget.setTextInteractionFlags(
-                        QtCore.Qt.TextInteractionFlag.NoTextInteraction
-                    )
+                    widget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+                    widget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+                    widget.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.NoTextInteraction)
+                    widget.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
     def _refresh_ui_state(self):
-        """Aggiorna lo stato visivo."""
-        for r in range(6):
-            for c in range(5):
-                widget = self.grid[r][c]
+        """Aggiorna lo stato visivo SOLO per la riga in corso (per non cancellare i colori vecchi)."""
+        if self.gioco_finito or self.current_row > 5:
+            return
 
-                if widget is None:
-                    continue
+        for c in range(5):
+            widget = self.grid[self.current_row][c]
+            if widget is None:
+                continue
 
-                is_active = r == self.current_row and c == self.current_col
+            is_active = (c == self.current_col)
 
-                if is_active:
-                    widget.setStyleSheet("""
-                        background-color: white; 
-                        color: black; 
-                        border: 3px solid #538d4e; 
-                        font-weight: bold; font-size: 25px;
-                    """)
-                    widget.setFocus()
-                else:
-                    widget.setStyleSheet("""
-                        background-color: white; 
-                        color: black; 
-                        border: 2px solid #d3d6da;
-                        font-size: 25px;
-                    """)
-
-                widget.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+            if is_active:
+                widget.setStyleSheet("""
+                    background-color: #3a3a3c; 
+                    color: white; 
+                    border: 3px solid #538d4e; 
+                    font-weight: bold; font-size: 25px;
+                """)
+            else:
+                has_text = bool(widget.toPlainText())
+                border_color = "#565758" if has_text else "#3a3a3c"
+                widget.setStyleSheet(f"""
+                    background-color: #121213; 
+                    color: white; 
+                    border: 2px solid {border_color};
+                    font-weight: bold; font-size: 25px;
+                """)
 
     def _setup_keyboard(self):
-        """Crea la tastiera dinamica."""
+        """Crea la tastiera dinamica e salva i riferimenti ai bottoni."""
         if not hasattr(self, "keyboard_container") or self.keyboard_container is None:
             return
 
-        if self.keyboard_container.layout():
-            layout = self.keyboard_container.layout()
-        else:
-            layout = QtWidgets.QVBoxLayout(self.keyboard_container)
-
+        layout = self.keyboard_container.layout() or QtWidgets.QVBoxLayout(self.keyboard_container)
         layout.setSpacing(5)
+        
         rows = [
             ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
             ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
@@ -141,12 +136,13 @@ class GameWindow(BaseWindow):
             h_layout = QtWidgets.QHBoxLayout()
             for key in row_keys:
                 btn = QtWidgets.QPushButton(key)
-                btn.setMinimumHeight(40)
+                btn.setMinimumHeight(50)
                 btn.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
+
                 btn.setStyleSheet("""
                     QPushButton { 
-                        background-color: #538d4e; color: white; 
-                        border-radius: 4px; font-weight: bold; 
+                        background-color: #818384; color: white; 
+                        border-radius: 4px; font-weight: bold; font-size: 16px;
                     }
                     QPushButton:hover { background-color: #565758; }
                 """)
@@ -156,44 +152,137 @@ class GameWindow(BaseWindow):
                 elif key == "⌫":
                     btn.clicked.connect(self._ui_on_backspace)
                 else:
+                    self.keyboard_buttons[key] = btn
                     btn.clicked.connect(lambda checked, k=key: self._ui_on_key_press(k))
 
                 h_layout.addWidget(btn)
             layout.addLayout(h_layout)
 
     def _ui_on_key_press(self, char: str):
+        if self.gioco_finito:
+            return
+            
         if self.current_col < 5:
             widget = self.grid[self.current_row][self.current_col]
             if widget:
                 widget.setText(char)
                 widget.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+                
                 if self.current_col < 4:
                     self.current_col += 1
-                    self._refresh_ui_state()
+                elif self.current_col == 4 and not widget.toPlainText():
+                    pass
+                else:
+                    self.current_col = 5
+                
+                self._refresh_ui_state()
 
     def _ui_on_backspace(self):
+        if self.gioco_finito:
+            return
+            
+        if self.current_col == 5:
+            self.current_col = 4
+            
         widget = self.grid[self.current_row][self.current_col]
+        
         if widget and widget.toPlainText():
             widget.clear()
         elif self.current_col > 0:
             self.current_col -= 1
-            if self.grid[self.current_row][self.current_col]:
-                self.grid[self.current_row][self.current_col].clear()
+            self.grid[self.current_row][self.current_col].clear()
+            
         self._refresh_ui_state()
 
     def _ui_on_enter(self):
-        if self.current_col == 4 and self.grid[self.current_row][4].toPlainText():
-            if self.current_row < 5:
-                self.current_row += 1
-                self.current_col = 0
-                self._refresh_ui_state()
+        """Valida la parola inserita, colora le celle e avanza di riga."""
+        if self.gioco_finito or self.current_row > 5:
+            return
+
+        if self.current_col == 5 or (self.current_col == 4 and self.grid[self.current_row][4].toPlainText()):
+            tentativo = "".join([self.grid[self.current_row][c].toPlainText() for c in range(5)])
+            self._controlla_parola(tentativo)
+
+    def _controlla_parola(self, tentativo: str):
+        """Usa il GameManager per validare la parola e colora l'interfaccia."""
+        if not self.game_manager:
+            print("Errore: GameManager non collegato!")
+            return
+
+        try:
+            risultati = self.game_manager.submit_guess(tentativo)
+        except Exception as e:
+            QtWidgets.QMessageBox.warning(self, "Errore", str(e))
+            return
+
+        color_map = {
+            "Corretto": "#538d4e",
+            "Presente": "#b59f3b",
+            "Assente": "#3a3a3c"
+        }
+
+        for i, esito in enumerate(risultati):
+            widget = self.grid[self.current_row][i]
+            colore = color_map.get(esito, "#3a3a3c")
+            lettera = tentativo[i]
+
+            widget.setStyleSheet(f"""
+                background-color: {colore}; 
+                color: white; border: 2px solid {colore};
+                font-weight: bold; font-size: 25px;
+            """)
+
+            btn = self.keyboard_buttons.get(lettera)
+            if btn:
+                old_style = btn.styleSheet()
+                if "#538d4e" not in old_style:
+                    if colore == "#538d4e" or (colore == "#b59f3b" and "#b59f3b" not in old_style):
+                        btn.setStyleSheet(f"QPushButton {{ background-color: {colore}; color: white; border-radius: 4px; font-weight: bold; font-size: 16px;}}")
+                    elif colore == "#3a3a3c" and "#b59f3b" not in old_style:
+                        btn.setStyleSheet(f"QPushButton {{ background-color: #3a3a3c; color: white; border-radius: 4px; font-weight: bold; font-size: 16px;}}")
+
+        if self.game_manager.is_game_over():
+            self.gioco_finito = True
+            vittoria = all(esito == "Corretto" for esito in risultati)
+            
+            if vittoria:
+                QtWidgets.QMessageBox.information(self, "Complimenti!", 
+                    f"Hai indovinato! Tentativi: {self.game_manager.get_attempts()}")
+            else:
+                QtWidgets.QMessageBox.critical(self, "Partita finita", "Peccato, tentativi esauriti!")
+        else:
+            self.current_row += 1
+            self.current_col = 0
+            self._refresh_ui_state()
+
+    def _aggiorna_colore_tasto(self, lettera, nuovo_colore):
+        """Aggiorna il colore del tasto solo se il nuovo colore è 'più importante'."""
+        btn = self.keyboard_buttons.get(lettera)
+        if not btn:
+            return
+
+        stile_attuale = btn.styleSheet()
+        verde = "#538d4e"
+        giallo = "#b59f3b"
+
+        if verde in stile_attuale: 
+            return
+        
+        if giallo in stile_attuale and nuovo_colore != verde:
+            return
+
+        btn.setStyleSheet(f"""
+            QPushButton {{ 
+                background-color: {nuovo_colore}; color: white; 
+                border-radius: 4px; font-weight: bold; font-size: 16px;
+            }}
+        """)
 
     def setup_keyboard_focus(self):
         """Assicura che le celle non rubino il focus alla finestra."""
         for row in self.grid:
             for cell in row:
                 if cell is not None:
-                    cell.setReadOnly(True)
                     cell.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
 
     def keyPressEvent(self, event: QKeyEvent):
@@ -203,19 +292,16 @@ class GameWindow(BaseWindow):
         if QtCore.Qt.Key.Key_A <= key <= QtCore.Qt.Key.Key_Z:
             lettera = event.text().upper()
             self._ui_on_key_press(lettera)
-
         elif key == QtCore.Qt.Key.Key_Backspace:
             self._ui_on_backspace()
-
         elif key in (QtCore.Qt.Key.Key_Return, QtCore.Qt.Key.Key_Enter):
             self._ui_on_enter()
-
         elif key == QtCore.Qt.Key.Key_Escape:
             self.close()
 
-
 if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    window = GameWindow()
-    window.show()
-    sys.exit(app.exec())
+    if HAS_QT:
+        app = QtWidgets.QApplication(sys.argv)
+        window = GameWindow()
+        window.show()
+        sys.exit(app.exec())
