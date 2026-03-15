@@ -33,8 +33,16 @@ def game_instance(request):
 
     qtbot_inst = request.getfixturevalue("qtbot")
 
-    window = GameWindow("TestPlayer")
+    mock_manager = MagicMock()
+
+    mock_manager.is_game_over.return_value = False
+    mock_manager.submit_guess.return_value = ["Assente"] * 5
+    mock_manager.get_attempts.return_value = 1
+
+    window = GameWindow(nome_giocatore="TestPlayer", game_manager=mock_manager)
+
     qtbot_inst.addWidget(window)
+    window.show()
     return window
 
 
@@ -71,6 +79,10 @@ def test_cannot_enter_short_word(game):
 
 def test_row_progression(game):
     """Verifica il passaggio alla riga successiva dopo una parola completa."""
+    game.game_manager = MagicMock()
+    game.game_manager.is_game_over.return_value = False
+    game.game_manager.submit_guess.return_value = ["Assente"] * 5
+
     for char in "HELLO":
         game._ui_on_key_press(char)
 
@@ -133,6 +145,10 @@ def test_physical_keyboard_backspace(game, qtbot):
 
 def test_physical_keyboard_enter_progression(game, qtbot):
     """Verifica che l'invio fisico faccia avanzare di riga se la parola è completa."""
+    game.game_manager = MagicMock()
+    game.game_manager.is_game_over.return_value = False
+    game.game_manager.submit_guess.return_value = ["Assente"] * 5
+
     for char in "HELLO":
         qtbot.keyClick(game, getattr(Qt.Key, f"Key_{char}"))
 
@@ -142,4 +158,76 @@ def test_physical_keyboard_enter_progression(game, qtbot):
     qtbot.keyClick(game, Qt.Key.Key_Return)
 
     assert game.current_row == 1
+    assert game.current_col == 0
+
+
+def test_priorita_colori_tastiera(game):
+    """Verifica che il verde non venga sovrascritto dal giallo o dal grigio."""
+    btn = game.keyboard_buttons.get("A")
+    assert btn is not None
+
+    game._aggiorna_colore_tasto("A", "#b59f3b")
+    assert "#b59f3b" in btn.styleSheet()
+
+    game._aggiorna_colore_tasto("A", "#538d4e")
+    assert "#538d4e" in btn.styleSheet()
+
+    game._aggiorna_colore_tasto("A", "#b59f3b")
+    assert "#538d4e" in btn.styleSheet()
+
+
+def test_colorazione_griglia_con_manager(game):
+    """Verifica che le celle prendano i colori giusti in base alla risposta del backend."""
+    mock_manager = MagicMock()
+    mock_manager.submit_guess.return_value = [
+        "Corretto",
+        "Presente",
+        "Assente",
+        "Assente",
+        "Assente",
+    ]
+    mock_manager.is_game_over.return_value = False
+    game.game_manager = mock_manager
+
+    for char in "PARCO":
+        game._ui_on_key_press(char)
+
+    game._ui_on_enter()
+
+    assert "#538d4e" in game.grid[0][0].styleSheet()
+    assert "#b59f3b" in game.grid[0][1].styleSheet()
+    assert "#3a3a3c" in game.grid[0][2].styleSheet()
+
+    assert game.current_row == 1
+
+
+def test_digitazione_oltre_limite_riga(game):
+    """Verifica che scrivendo 6 lettere sulla stessa riga, l'ultima non sovrascriva la 5°."""
+    for char in "HELLO":
+        game._ui_on_key_press(char)
+
+    assert game.current_col == 5
+    assert game.grid[0][4].toPlainText() == "O"
+
+    game._ui_on_key_press("X")
+
+    assert game.current_col == 5
+    assert game.grid[0][4].toPlainText() == "O"
+
+
+def test_backspace_inizio_riga_sicuro(game):
+    """Verifica che premere backspace colonna 0 non generi errori."""
+    assert game.current_col == 0
+    game._ui_on_backspace()
+    assert game.current_col == 0
+
+
+def test_gioco_finito_blocca_input(game, qtbot):
+    """Verifica che a partita finita l'interfaccia non accetti più input."""
+    game.gioco_finito = True
+
+    game._ui_on_key_press("A")
+    qtbot.keyClick(game, Qt.Key.Key_B)
+
+    assert game.grid[0][0].toPlainText() == ""
     assert game.current_col == 0
