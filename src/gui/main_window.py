@@ -25,6 +25,8 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
             return
 
         super().__init__()
+        self.leaderboard_window = None
+        self.game_window = None
         ui_path = os.path.join(os.path.dirname(__file__), "main_window.ui")
 
         if os.path.exists(ui_path):
@@ -37,8 +39,45 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
             lbl_welcome = getattr(self, "lbl_welcome", None)
             if lbl_welcome:
                 lbl_welcome.setText(f"Bentornato/a, {nome_giocatore}!")
+
+            btn_leaderboard = getattr(self, "btn_leaderboard", None)
+            if btn_leaderboard:
+                btn_leaderboard.clicked.connect(self.apri_classifica)
+
+            btn_new_game = getattr(self, "btn_play", None)
+            if btn_new_game:
+                btn_new_game.clicked.connect(self.apri_nuova_partita)
+
         else:
             print(f"ERRORE: File UI non trovato in {ui_path}")
+
+    def apri_classifica(self):
+        """Metodo per aprire la finestra della classifica."""
+        # pylint: disable=import-outside-toplevel
+        from src.gui.leaderboard_window import LeaderboardWindow
+
+        if self.leaderboard_window is None:
+            self.leaderboard_window = LeaderboardWindow()
+
+        self.leaderboard_window.show()
+        self.leaderboard_window.raise_()
+        self.leaderboard_window.activateWindow()
+
+        self.close()
+
+    def apri_nuova_partita(self):
+        """Metodo per aprire la finestra del gioco."""
+        # pylint: disable=import-outside-toplevel
+        from src.gui.game_window import GameWindow
+
+        if self.game_window is None:
+            self.game_window = GameWindow()
+
+        self.game_window.show()
+        self.game_window.raise_()
+        self.game_window.activateWindow()
+
+        self.close()
 
 
 if __name__ == "__main__":

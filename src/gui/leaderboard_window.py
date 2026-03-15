@@ -1,0 +1,141 @@
+"""Modulo per la finestra della classifica dell'applicazione Wordle."""
+
+# pylint: disable=duplicate-code
+import os
+import sys
+from typing import Any, Type
+
+# pylint: disable=no-name-in-module, no-member, c-extension-no-member
+try:
+    from PyQt6 import QtWidgets, uic
+    from PyQt6.QtWidgets import QHeaderView, QTableWidgetItem
+
+    HAS_QT = True
+    BaseDialog: Type[Any] = QtWidgets.QDialog
+except ImportError:
+    HAS_QT = False
+    BaseDialog = object
+
+
+class LeaderboardWindow(BaseDialog):  # pylint: disable=too-few-public-methods
+    """Classe che gestisce la visualizzazione della classifica utenti."""
+
+    def __init__(self, main_window=None):
+        """Inizializza la finestra e carica i dati della classifica."""
+        super().__init__()
+
+        self.main_window = main_window
+
+        ui_path = os.path.join(os.path.dirname(__file__), "leaderboard_window.ui")
+
+        if not os.path.exists(ui_path):
+            print(f"Errore: Il file {ui_path} non esiste!")
+            return
+
+        uic.loadUi(ui_path, self)
+
+        btn_leaderboard = getattr(self, "btn_back", None)
+        if btn_leaderboard:
+            btn_leaderboard.clicked.connect(self.torna_indietro)
+
+        self.dati_classifica = [
+            {"utente": "Andrea", "media": 3.2, "vittorie": 45},
+            {"utente": "Luca", "media": 3.8, "vittorie": 38},
+            {"utente": "Sara", "media": 4.1, "vittorie": 30},
+            {"utente": "Tu (Esempio)", "media": 4.5, "vittorie": 12},
+        ]
+
+        if hasattr(self, "table_top3") and hasattr(self, "table_user_pos"):
+            self.setup_leaderboard_graphics()
+            self.popola_classifica(
+                self.dati_classifica, nome_utente_corrente="Tu (Esempio)"
+            )
+        else:
+            msg = (
+                "ERRORE: I nomi 'table_top3' o 'table_user_pos' "
+                "non corrispondono all'objectName nel file .ui"
+            )
+            print(msg)
+
+    def setup_leaderboard_graphics(self):
+        """Configura le intestazioni e il comportamento delle tabelle."""
+        self.table_top3.setColumnCount(4)
+        self.table_top3.setHorizontalHeaderLabels(
+            ["Pos.", "Utente", "Media Tentativi", "Vittorie"]
+        )
+        self.table_top3.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch
+        )
+        self.table_top3.setEditTriggers(
+            QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
+        )
+
+        self.table_user_pos.setColumnCount(3)
+        self.table_user_pos.setHorizontalHeaderLabels(
+            ["Pos.", "Media Tentativi", "Vittorie"]
+        )
+        self.table_user_pos.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch
+        )
+        self.table_user_pos.setEditTriggers(
+            QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
+        )
+
+    def popola_classifica(self, dati, nome_utente_corrente):
+        """Inserisce i dati ordinati all'interno dei widget QTableWidget."""
+        dati_ordinati = sorted(dati, key=lambda x: (-x["vittorie"], x["media"]))
+
+        self.table_top3.setRowCount(3)
+        for i in range(min(3, len(dati_ordinati))):
+            giocatore = dati_ordinati[i]
+            self.table_top3.setItem(i, 0, QTableWidgetItem(str(i + 1)))
+            self.table_top3.setItem(i, 1, QTableWidgetItem(giocatore["utente"]))
+            self.table_top3.setItem(i, 2, QTableWidgetItem(str(giocatore["media"])))
+            self.table_top3.setItem(i, 3, QTableWidgetItem(str(giocatore["vittorie"])))
+
+        pos_utente = -1
+        dati_utente = None
+        for index, g in enumerate(dati_ordinati):
+            if g["utente"] == nome_utente_corrente:
+                pos_utente = index + 1
+                dati_utente = g
+                break
+
+        if dati_utente:
+            self.table_user_pos.setRowCount(1)
+            self.table_user_pos.setItem(0, 0, QTableWidgetItem(str(pos_utente)))
+            self.table_user_pos.setItem(
+                0, 1, QTableWidgetItem(str(dati_utente["media"]))
+            )
+            self.table_user_pos.setItem(
+                0, 2, QTableWidgetItem(str(dati_utente["vittorie"]))
+            )
+
+        style = """
+            QTableWidget { background-color: #ffffff; gridline-color: #d3d6da; }
+            QHeaderView::section { background-color: #787c7e; color: white; padding: 5px; }
+            QTableWidget::item { padding: 10px; color: #1a1a1a; }
+        """
+        self.table_top3.setStyleSheet(style)
+        self.table_user_pos.setStyleSheet(style)
+
+    def torna_indietro(self):
+        """Metodo per tornare alla main window."""
+        # pylint: disable=import-outside-toplevel, cyclic-import
+        from src.gui.main_window import MainWindow
+
+        if self.main_window is None:
+            self.main_window = MainWindow()
+
+        self.main_window.show()
+        self.main_window.raise_()
+        self.main_window.activateWindow()
+
+        self.close()
+
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    window = LeaderboardWindow()
+    window.show()
+    sys.exit(app.exec())

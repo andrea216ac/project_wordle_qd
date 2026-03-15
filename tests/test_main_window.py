@@ -28,13 +28,19 @@ if HAS_QT:
 
 
 @pytest.fixture(name="app_window")
-def fixture_app_window(qtbot):
-    """Inizializza la finestra. Salta il test se Qt non è presente."""
+def fixture_app_window(request):
+    """Inizializza la finestra della main window per i test UI."""
     if not HAS_QT:
-        pytest.skip("Librerie Qt (libEGL/OpenGL) non disponibili su questo sistema.")
+        pytest.skip("Librerie Qt non disponibili")
+
+    if "qtbot" not in request.fixturenames:
+        pytest.skip("Plugin pytest-qt non installato o non configurato")
+        return None
+
+    qtbot_inst = request.getfixturevalue("qtbot")
 
     window = MainWindow(nome_giocatore="Tester")
-    qtbot.addWidget(window)
+    qtbot_inst.addWidget(window)
     return window
 
 
@@ -59,6 +65,14 @@ def test_exit_button_functional(app_window, qtbot):
 
 
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI: librerie grafiche mancanti")
+def test_leaderboard_button_functional(app_window, qtbot):
+    """Verifica che il tasto classifica apra la relativa finestra."""
+    # pylint: disable=no-member
+    qtbot.mouseClick(app_window.btn_leaderboard, Qt.MouseButton.LeftButton)
+    assert not app_window.isVisible()
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI: librerie grafiche mancanti")
 def test_ui_structure(app_window):
     """Verifica il caricamento dinamico dei widget dal file .ui."""
     # pylint: disable=c-extension-no-member
@@ -66,3 +80,36 @@ def test_ui_structure(app_window):
     buttons = app_window.findChildren(QtWidgets.QPushButton)
     assert len(labels) > 0
     assert len(buttons) > 0
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI: librerie grafiche mancanti")
+def test_leaderboard_reference_passing(app_window, qtbot):
+    """Verifica che la MainWindow passi se stessa alla LeaderboardWindow."""
+    qtbot.mouseClick(app_window.btn_leaderboard, Qt.MouseButton.LeftButton)
+
+    assert app_window.leaderboard_window is not None
+    assert app_window.leaderboard_window.main_window == app_window
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI: librerie grafiche mancanti")
+def test_mainwindow_initialization_defaults():
+    """Verifica che la MainWindow parta con Andrea se non specificato."""
+    window = MainWindow()
+    if HAS_QT:
+        assert "Andrea" in window.lbl_welcome.text()
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI: librerie grafiche mancanti")
+def test_new_game_button_functional(app_window, qtbot):
+    """Verifica che il tasto Nuova Partita apra la GameWindow e chiuda la MainWindow."""
+    # pylint: disable=no-member
+
+    assert hasattr(app_window, "btn_play")
+
+    qtbot.mouseClick(app_window.btn_play, Qt.MouseButton.LeftButton)
+
+    assert not app_window.isVisible()
+
+    assert app_window.game_window is not None
+
+    assert app_window.game_window.isVisible()
