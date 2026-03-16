@@ -31,10 +31,7 @@ class ClassicMode:
         """
         word = self.word_provider.get_daily_word(language)
         self.current_game = Game(word)
-        logger.info(
-            "Classic mode game started | language=%s",
-            language
-        )
+        logger.info("Classic mode game started | language=%s", language)
 
     def submit_guess(self, guess: str) -> List[str]:
         """
@@ -70,10 +67,7 @@ class TrainingMode:
         """Avvia una nuova partita in modalità allenamento."""
         word = self.word_provider.get_random_word(language)
         self.current_game = Game(word)
-        logger.info(
-            "Training mode game started | language=%s",
-            language
-        )
+        logger.info("Training mode game started | language=%s", language)
 
     def submit_guess(self, guess: str) -> List[str]:
         """Invia un tentativo alla partita di allenamento."""

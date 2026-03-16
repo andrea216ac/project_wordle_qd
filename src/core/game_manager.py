@@ -42,7 +42,7 @@ class GameManager:
         """
         Inizia un nuovo gioco nella modalità scelta
 
-        
+
         Args:
             mode: "classic" or "training".
             language: lingua (e.g., "it", "en").
@@ -79,7 +79,7 @@ class GameManager:
                 "Game started | user=%s mode=%s language=%s",
                 self.current_user,
                 mode,
-                language
+                language,
             )
         except ModeError as exc:
             logger.error("Failed to start game: %s", exc)
