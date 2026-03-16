@@ -11,7 +11,7 @@ class Game:
 
     def __init__(self, target_word: str, max_attempts: int = 6) -> None:
         """
-        Inizializzazione the game.
+        Inizializzazione.
 
         Args:
             target_word: Parola da indovinare.
@@ -30,7 +30,7 @@ class Game:
             guess: Parola indovinata dal giocatore.
 
         Returns:
-            List of strings: "Corretto", "Presente" or "Assente".
+            Lista di stringhe: "Corretto", "Presente" o "Assente".
 
         Raises:
             ValueError: Se le lunghezze non corrispondono.

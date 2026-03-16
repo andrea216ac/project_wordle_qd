@@ -14,59 +14,34 @@ class ModeError(Exception):
 
 
 class ClassicMode:
-    """Handles daily word mode with score tracking."""
+    """Modalità classica (parola del giorno)."""
 
     def __init__(self, word_provider: WordProvider) -> None:
-        """
-        Initialize classic mode.
-
-        Args:
-            word_provider: Provider used to retrieve words.
-        """
         self.word_provider: WordProvider = word_provider
         self.current_game: Optional[Game] = None
-        self.language: Optional[str] = None
-        self.word_length: Optional[int] = None
         self.score: int = 0
 
-    def start_game(self, language: str, word_length: int) -> None:
+    def start_game(self, language: str) -> None:
         """
-        Start a new daily word game.
+        Avvia una nuova partita in modalità classica.
 
-        Args:
-            language: Language code (e.g. "it", "en").
-            word_length: Desired word length.
-
-        Raises:
-            ModeError: If starting the game fails.
+        Recupera la parola del giorno tramite il WordProvider e inizializza
+        una nuova istanza di Game. La parola sarà identica per tutti i
+        giocatori nella stessa giornata.
         """
-        self.language = language
-        self.word_length = word_length
-
-        try:
-            word = self.word_provider.get_daily_word(language, word_length)
-            self.current_game = Game(word)
-            logger.info(
-                "Classic mode game started | language=%s length=%s",
-                language,
-                word_length,
-            )
-        except Exception as exc:
-            logger.error("Failed to start classic mode game: %s", exc)
-            raise ModeError("Cannot start classic mode") from exc
+        word = self.word_provider.get_daily_word(language)
+        self.current_game = Game(word)
+        logger.info("Classic mode game started | language=%s", language)
 
     def submit_guess(self, guess: str) -> List[str]:
         """
-        Submit a guess and update score if correct.
+        Invia un tentativo alla partita in corso.
 
-        Args:
-            guess: Word guessed by the player.
+        Il tentativo viene controllato dal Game e viene restituito il
+        risultato per ogni lettera.
 
-        Returns:
-            Result of the guess evaluation.
-
-        Raises:
-            ModeError: If no game is active.
+        Se il giocatore indovina la parola, il punteggio della modalità
+        classica viene incrementato.
         """
         if self.current_game is None:
             logger.error("Attempted guess without active classic game.")
@@ -82,59 +57,20 @@ class ClassicMode:
 
 
 class TrainingMode:
-    """Handles infinite training games with random words."""
+    """Modalità allenamento"""
 
     def __init__(self, word_provider: WordProvider) -> None:
-        """
-        Initialize training mode.
-
-        Args:
-            word_provider: Provider used to retrieve words.
-        """
         self.word_provider: WordProvider = word_provider
         self.current_game: Optional[Game] = None
-        self.language: Optional[str] = None
-        self.word_length: Optional[int] = None
 
-    def start_game(self, language: str, word_length: int) -> None:
-        """
-        Start a new random word game.
-
-        Args:
-            language: Language code.
-            word_length: Desired word length.
-
-        Raises:
-            ModeError: If starting the game fails.
-        """
-        self.language = language
-        self.word_length = word_length
-
-        try:
-            word = self.word_provider.get_random_word(language, word_length)
-            self.current_game = Game(word)
-            logger.info(
-                "Training mode game started | language=%s length=%s",
-                language,
-                word_length,
-            )
-        except Exception as exc:
-            logger.error("Failed to start training mode game: %s", exc)
-            raise ModeError("Cannot start training mode") from exc
+    def start_game(self, language: str) -> None:
+        """Avvia una nuova partita in modalità allenamento."""
+        word = self.word_provider.get_random_word(language)
+        self.current_game = Game(word)
+        logger.info("Training mode game started | language=%s", language)
 
     def submit_guess(self, guess: str) -> List[str]:
-        """
-        Submit a guess for the current training game.
-
-        Args:
-            guess: Word guessed by the player.
-
-        Returns:
-            Result of the guess evaluation.
-
-        Raises:
-            ModeError: If no game is active.
-        """
+        """Invia un tentativo alla partita di allenamento."""
         if self.current_game is None:
             logger.error("Attempted guess without active training game.")
             raise ModeError("No active game")
