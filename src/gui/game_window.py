@@ -26,6 +26,7 @@ class GameWindow(BaseWindow):
         self,
         main_window=None,
         nome_giocatore: str = "Giocatore",
+        *,
         game_manager: Optional[GameManager] = None,
         modalita: str = "classic", # Parametro generico
         lingua: str = "it"
