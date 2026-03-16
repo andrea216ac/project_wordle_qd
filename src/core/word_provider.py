@@ -25,7 +25,7 @@ class WordProvider:  # pylint: disable=too-few-public-methods
 
         return word.text
 
-    def get_daily_word(self, language: str, length: int) -> str:
+    def get_daily_word(self, language: str) -> str:
         """Restituisce la parola del giorno."""
         today = datetime.date.today()
 
@@ -40,3 +40,4 @@ class WordProvider:  # pylint: disable=too-few-public-methods
             raise ValueError("No word available")
 
         return word.text
+    
