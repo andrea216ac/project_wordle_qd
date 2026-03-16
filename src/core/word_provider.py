@@ -40,5 +40,5 @@ class WordProvider:  # pylint: disable=too-few-public-methods
             raise ValueError("No word available")
 
         return word.text
-
+    
     
