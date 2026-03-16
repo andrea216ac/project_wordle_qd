@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class ModeError(Exception):
     """Custom exception per errori nelle modalità."""
 
- 
+
 class ClassicMode:
     """Modalità classica (parola del giorno)."""
 
@@ -74,7 +74,7 @@ class TrainingMode:
             "Training mode game started | language=%s",
             language
         )
-        
+    
     def submit_guess(self, guess: str) -> List[str]:
         """Invia un tentativo alla partita di allenamento."""
         if self.current_game is None:
