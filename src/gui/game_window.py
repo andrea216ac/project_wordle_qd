@@ -3,8 +3,8 @@
 
 import os
 import sys
-from src.core.game_manager import GameManager 
 from typing import Any, List, Type
+from src.core.game_manager import GameManager
 
 try:
     from PyQt6 import QtCore, QtWidgets, uic
@@ -22,7 +22,7 @@ class GameWindow(BaseWindow):
     """Classe che gestisce la logica della griglia e della tastiera di gioco."""
 
     def __init__(
-        self, main_window=None, nome_giocatore: str = "Giocatore", game_manager=None
+        self, main_window=None, nome_giocatore: str = "Giocatore", GameManager=None
     ):
         """Inizializza la finestra, carica l'UI e prepara la griglia."""
         self.grid: List[List[Any]] = [[None for _ in range(5)] for _ in range(6)]
@@ -32,7 +32,7 @@ class GameWindow(BaseWindow):
         self.current_row = 0
         self.current_col = 0
 
-        self.game_manager = game_manager
+        self.game_manager = GameManager
         self.gioco_finito = False
 
         if not HAS_QT:
