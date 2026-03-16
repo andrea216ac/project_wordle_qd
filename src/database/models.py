@@ -1,7 +1,8 @@
 """Modulo contenente le definizioni dei modelli ORM per il database."""
 
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 from src.database.db import Base
 
@@ -34,6 +35,10 @@ class Game(Base):
     points = Column(Integer, nullable=False)
     mode = Column(String, nullable=False)
 
+    # NUOVA COLONNA: Salva automaticamente data e ora correnti
+    played_at = Column(
+        DateTime, default=func.now(), nullable=False  # pylint: disable=not-callable
+    )
     user = relationship("User", back_populates="games")
 
 
