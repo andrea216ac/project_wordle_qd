@@ -3,7 +3,7 @@
 
 import os
 import sys
-from typing import Any, List, Type, Optional
+from typing import Any, List, Optional, Type
 
 from src.core.game_manager import GameManager
 
