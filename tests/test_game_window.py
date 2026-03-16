@@ -2,8 +2,8 @@
 
 from typing import Any, cast
 from unittest.mock import MagicMock
-
 import pytest
+
 
 from src.core.game_manager import GameManager
 
