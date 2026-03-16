@@ -3,6 +3,7 @@
 
 import os
 import sys
+from src.core.game_manager import GameManager 
 from typing import Any, List, Type
 
 try:
