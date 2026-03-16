@@ -4,7 +4,7 @@
 import os
 import sys
 from typing import Any, List, Type
-from src.core.game_manager import GameManager
+from src.core.GameManager import GameManager
 
 try:
     from PyQt6 import QtCore, QtWidgets, uic
@@ -32,7 +32,7 @@ class GameWindow(BaseWindow):
         self.current_row = 0
         self.current_col = 0
 
-        self.game_manager = GameManager
+        self.GameManager = GameManager
         self.gioco_finito = False
 
         if not HAS_QT:
@@ -221,12 +221,12 @@ class GameWindow(BaseWindow):
 
     def _controlla_parola(self, tentativo: str):
         """Usa il GameManager per validare la parola e colora l'interfaccia."""
-        if not self.game_manager:
+        if not self.GameManager:
             print("Errore: GameManager non collegato!")
             return
 
         try:
-            risultati = self.game_manager.submit_guess(tentativo)
+            risultati = self.GameManager.submit_guess(tentativo)
         except Exception as e:  # pylint: disable=broad-exception-caught
             QtWidgets.QMessageBox.warning(self, "Errore", str(e))
             return
@@ -261,7 +261,7 @@ class GameWindow(BaseWindow):
                             "border-radius: 4px;font-weight:bold;font-size:16px;}}"
                         )
 
-        if self.game_manager.is_game_over():
+        if self.GameManager.is_game_over():
             self.gioco_finito = True
             vittoria = all(esito == "Corretto" for esito in risultati)
 
@@ -269,7 +269,7 @@ class GameWindow(BaseWindow):
                 QtWidgets.QMessageBox.information(
                     self,
                     "Complimenti!",
-                    f"Hai indovinato! Tentativi: {self.game_manager.get_attempts()}",
+                    f"Hai indovinato! Tentativi: {self.GameManager.get_attempts()}",
                 )
             else:
                 QtWidgets.QMessageBox.critical(

@@ -39,7 +39,7 @@ def game_instance(request):
     mock_manager.submit_guess.return_value = ["Assente"] * 5
     mock_manager.get_attempts.return_value = 1
 
-    window = GameWindow(nome_giocatore="TestPlayer", game_manager=mock_manager)
+    window = GameWindow(nome_giocatore="TestPlayer", GameManager=mock_manager)
 
     qtbot_inst.addWidget(window)
     window.show()
@@ -79,9 +79,9 @@ def test_cannot_enter_short_word(game):
 
 def test_row_progression(game):
     """Verifica il passaggio alla riga successiva dopo una parola completa."""
-    game.game_manager = MagicMock()
-    game.game_manager.is_game_over.return_value = False
-    game.game_manager.submit_guess.return_value = ["Assente"] * 5
+    game.GameManager = MagicMock()
+    game.GameManager.is_game_over.return_value = False
+    game.GameManager.submit_guess.return_value = ["Assente"] * 5
 
     for char in "HELLO":
         game._ui_on_key_press(char)
@@ -145,9 +145,9 @@ def test_physical_keyboard_backspace(game, qtbot):
 
 def test_physical_keyboard_enter_progression(game, qtbot):
     """Verifica che l'invio fisico faccia avanzare di riga se la parola è completa."""
-    game.game_manager = MagicMock()
-    game.game_manager.is_game_over.return_value = False
-    game.game_manager.submit_guess.return_value = ["Assente"] * 5
+    game.GameManager = MagicMock()
+    game.GameManager.is_game_over.return_value = False
+    game.GameManager.submit_guess.return_value = ["Assente"] * 5
 
     for char in "HELLO":
         qtbot.keyClick(game, getattr(Qt.Key, f"Key_{char}"))
@@ -187,7 +187,7 @@ def test_colorazione_griglia_con_manager(game):
         "Assente",
     ]
     mock_manager.is_game_over.return_value = False
-    game.game_manager = mock_manager
+    game.GameManager = mock_manager
 
     for char in "PARCO":
         game._ui_on_key_press(char)
