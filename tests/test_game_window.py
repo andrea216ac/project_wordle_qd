@@ -5,6 +5,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from src.core.game_manager import GameManager
+
 # pylint: disable=no-name-in-module, duplicate-code, c-extension-no-member, invalid-name, protected-access, redefined-outer-name
 try:
     from PyQt6 import QtWidgets as real_widgets

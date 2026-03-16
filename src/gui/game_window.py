@@ -4,7 +4,8 @@
 import os
 import sys
 from typing import Any, List, Type
-from src.core.GameManager import GameManager
+
+from src.core.game_manager import GameManager
 
 try:
     from PyQt6 import QtCore, QtWidgets, uic
