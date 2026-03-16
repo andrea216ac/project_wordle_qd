@@ -1,4 +1,4 @@
-"""" Unit test per game.py"""
+""" " Unit test per game.py"""
 
 import pytest
 from src.core.game import Game
@@ -13,6 +13,7 @@ def test_game_initialization():
     assert game.is_over is False
     assert game.max_attempts == 6
 
+
 def test_correct_guess():
     """Verifica che una parola indovinata restituisca tutti 'Corretto'
     e termini la partita."""
@@ -23,6 +24,7 @@ def test_correct_guess():
     assert result == ["Corretto", "Corretto", "Corretto", "Corretto", "Corretto"]
     assert game.is_over is True
     assert game.attempts == 1
+
 
 def test_letter_present():
     """Verifica per lettera presente"""
@@ -54,7 +56,7 @@ def test_attempt_counter():
 
 
 def test_invalid_length():
-    """"Verifica per la lunghezza della parola"""
+    """ "Verifica per la lunghezza della parola"""
     game = Game("APPLE")
 
     with pytest.raises(ValueError):
@@ -92,6 +94,7 @@ def test_guess_after_game_over():
 
     with pytest.raises(RuntimeError):
         game.check_guess("BBBBB")
+
 
 def test_win_before_max_attempts():
     """Verifica che il gioco termini correttamente
