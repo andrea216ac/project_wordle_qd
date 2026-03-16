@@ -1,11 +1,13 @@
 """Modulo contenente il repository per l'accesso ai dati delle partite."""
 
+import datetime
 import logging
 
+from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from src.database.models import Game
+from src.database.models import Game, User
 
 logger = logging.getLogger(__name__)
 
@@ -62,3 +64,65 @@ class GameRepository:
                 error,
             )
             return []
+
+    def has_played_today(self, user: str) -> bool:
+        """
+        Verifica se l'utente specificato (tramite username) ha già
+        completato una partita classica nella giornata odierna.
+        """
+        try:
+            db_user = self.session.query(User).filter(User.username == user).first()
+            if not db_user:
+                return False
+
+            today = datetime.date.today()
+
+            # Assumiamo che la colonna della data si chiami 'date' nel tuo models.py.
+            game_today = (
+                self.session.query(Game)
+                .filter(
+                    Game.user_id == db_user.id,
+                    Game.mode == "classic",
+                    func.date(Game.played_at) == today,
+                )
+                .first()
+            )
+
+            return game_today is not None
+
+        except SQLAlchemyError as error:
+            logger.error(
+                "Errore DB in has_played_today per l'utente %s: %s",
+                user,
+                error,
+            )
+            return False
+
+    def save_score(self, user: str, score: int, attempts: int) -> None:
+        """
+        Adattatore per GameManager. Riceve username, punteggio e tentativi,
+        compila i campi mancanti e chiama il metodo principale save_game.
+        """
+        try:
+            db_user = self.session.query(User).filter(User.username == user).first()
+            if not db_user:
+                logger.error("Utente %s non trovato. Salvataggio annullato.", user)
+                return
+
+            won = attempts <= 6 and score > 0
+            word_to_guess = "SCONOSCIUTA"
+            mode = "classic"
+
+            self.save_game(
+                user_id=db_user.id,  # type: ignore[arg-type]
+                word_to_guess=word_to_guess,
+                attempts=attempts,
+                won=won,
+                points=score,
+                mode=mode,
+            )
+
+            logger.info("Score salvato con successo tramite adattatore per %s", user)
+
+        except Exception as error:  # pylint: disable=broad-exception-caught
+            logger.error("Errore critico nell'adattatore save_score: %s", error)
