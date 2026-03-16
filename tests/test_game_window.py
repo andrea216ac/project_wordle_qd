@@ -43,7 +43,10 @@ def game_instance(request):
     mock_manager.start_game = MagicMock()
 
     window = GameWindow(
-        nome_giocatore="TestPlayer", game_manager=mock_manager, modalita="classic", lingua="it"
+        nome_giocatore="TestPlayer",
+        game_manager=mock_manager,
+        modalita="classic",
+        lingua="it",
     )
 
     mock_manager.start_game.assert_called_once()
