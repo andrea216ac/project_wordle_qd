@@ -19,7 +19,10 @@ except ImportError as e:
 class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
     """Classe che gestisce l'interfaccia principale."""
 
-    def __init__(self, nome_giocatore: str = "Andrea", game_manager=None, modalita: str = "classic", lingua: str = "it"):
+    def __init__(
+            self, nome_giocatore: str = "Andrea", game_manager=None,
+            modalita: str = "classic", lingua: str = "it"
+        ):
         if not HAS_QT:
             self.nome_giocatore = nome_giocatore
             return
@@ -28,7 +31,7 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
         self.leaderboard_window = None
         self.game_window = None
         self.game_manager = game_manager
-        self.nome_giocatore = nome_giocatore 
+        self.nome_giocatore = nome_giocatore
         self.modalita = modalita
         self.lingua = lingua
 

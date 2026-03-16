@@ -22,13 +22,14 @@ except ImportError:
 class GameWindow(BaseWindow):
     """Classe che gestisce la logica della griglia e della tastiera di gioco."""
 
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         main_window=None,
         nome_giocatore: str = "Giocatore",
         *,
         game_manager: Optional[GameManager] = None,
-        modalita: str = "classic", # Parametro generico
+        modalita: str = "classic",
         lingua: str = "it"
     ):
         """Inizializza la finestra, carica l'UI e prepara la griglia."""
