@@ -8,11 +8,11 @@ from src.core.modes import ClassicMode, ModeError, TrainingMode
 class FakeWordProvider:
     """WordProvider finto per i test."""
 
-    def get_daily_word(self, language):
+    def get_daily_word(self, language):  # pylint: disable=unused-argument
         """Restituisce sempre la stessa parola per i test."""
         return "APPLE"
 
-    def get_random_word(self, language):
+    def get_random_word(self, language):  # pylint: disable=unused-argument
         """Restituisce sempre la stessa parola per i test."""
         return "TRAIN"
 
