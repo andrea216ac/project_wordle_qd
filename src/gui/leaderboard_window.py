@@ -40,8 +40,8 @@ class LeaderboardWindow(BaseDialog):  # pylint: disable=too-few-public-methods
 
         self.dati_classifica = [
             {"utente": "Andrea", "media": 3.2, "vittorie": 45},
-            {"utente": "Luca", "media": 3.8, "vittorie": 38},
-            {"utente": "Sara", "media": 4.1, "vittorie": 30},
+            {"utente": "Angelo", "media": 3.8, "vittorie": 38},
+            {"utente": "Lillian", "media": 4.1, "vittorie": 30},
             {"utente": "Tu (Esempio)", "media": 4.5, "vittorie": 12},
         ]
 

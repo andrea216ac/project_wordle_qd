@@ -19,7 +19,7 @@ except ImportError as e:
 class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
     """Classe che gestisce l'interfaccia principale."""
 
-    def __init__(self, nome_giocatore: str = "Andrea"):
+    def __init__(self, nome_giocatore: str = "Andrea", game_manager=None):
         if not HAS_QT:
             self.nome_giocatore = nome_giocatore
             return
@@ -27,6 +27,8 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
         super().__init__()
         self.leaderboard_window = None
         self.game_window = None
+        self.game_manager = game_manager
+
         ui_path = os.path.join(os.path.dirname(__file__), "main_window.ui")
 
         if os.path.exists(ui_path):
@@ -70,8 +72,11 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
         # pylint: disable=import-outside-toplevel
         from src.gui.game_window import GameWindow
 
-        if self.game_window is None:
-            self.game_window = GameWindow()
+        self.game_window = GameWindow(
+            main_window=self,
+            game_manager=self.game_manager,
+            nome_giocatore=self.nome_utente,
+        )
 
         self.game_window.show()
         self.game_window.raise_()

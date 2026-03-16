@@ -23,7 +23,10 @@ class GameWindow(BaseWindow):
     """Classe che gestisce la logica della griglia e della tastiera di gioco."""
 
     def __init__(
-        self, main_window=None, nome_giocatore: str = "Giocatore", GameManager=None
+        self,
+        main_window=None,
+        nome_giocatore: str = "Giocatore",
+        game_manager: GameManager = None,
     ):
         """Inizializza la finestra, carica l'UI e prepara la griglia."""
         self.grid: List[List[Any]] = [[None for _ in range(5)] for _ in range(6)]
@@ -33,7 +36,7 @@ class GameWindow(BaseWindow):
         self.current_row = 0
         self.current_col = 0
 
-        self.game_manager = GameManager
+        self.game_manager = game_manager
         self.gioco_finito = False
 
         if not HAS_QT:
@@ -56,6 +59,9 @@ class GameWindow(BaseWindow):
         btn_game = getattr(self, "btn_back", None)
         if btn_game:
             btn_game.clicked.connect(self.torna_indietro)
+
+        if self.game_manager:
+            self.game_manager.start_game()
 
     def torna_indietro(self):
         """Metodo per tornare alla main window."""
