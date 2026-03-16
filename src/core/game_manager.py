@@ -6,6 +6,7 @@ from typing import List, Optional
 from src.core.game import Game
 from src.core.modes import ClassicMode, ModeError, TrainingMode
 from src.core.word_provider import WordProvider
+from src.database.game_repository import GameRepository
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ class GameManager:
     def __init__(
         self,
         word_provider: WordProvider,
-        score_repository: Optional[object] = None,
+        score_repository: Optional[GameRepository] = None,
     ) -> None:
         """
         Inizializza il GameManager.
