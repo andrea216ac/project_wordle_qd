@@ -30,14 +30,12 @@ class GameManager:
 
         self.current_mode: Optional[ClassicMode | TrainingMode] = None
         self.language: Optional[str] = None
-        self.word_length: Optional[int] = None
         self.current_user: Optional[str] = None
 
     def start_game(
         self,
         mode: str,
         language: str,
-        word_length: int,
         user: Optional[str] = None,
     ) -> None:
         """
@@ -46,16 +44,14 @@ class GameManager:
         
         Args:
             mode: "classic" or "training".
-            language: Language code (e.g., "it", "en").
-            word_length: Desired word length.
+            language: lingua (e.g., "it", "en").
             user: Utente corrente.
 
         Raises:
-            ModeError: If mode is invalid or game cannot be started.
+            ModeError: Modalità non valida o il gioco non può iniziare.
             RuntimeError: Se l'utente ha già giocato oggi.
         """
         self.language = language
-        self.word_length = word_length
         self.current_user = user
 
         if mode == "classic":
@@ -68,20 +64,21 @@ class GameManager:
                     raise RuntimeError("Classic mode already played today")
 
             self.current_mode = ClassicMode(self.word_provider)
+
         elif mode == "training":
             self.current_mode = TrainingMode(self.word_provider)
+
         else:
             logger.error("Invalid mode requested: %s", mode)
             raise ModeError(f"Invalid mode: {mode}")
 
         try:
-            self.current_mode.start_game(language, word_length)
+            self.current_mode.start_game(language)
             logger.info(
-                "Game started | user=%s mode=%s language=%s length=%s",
+                "Game started | user=%s mode=%s language=%s",
                 self.current_user,
                 mode,
-                language,
-                word_length,
+                language
             )
         except ModeError as exc:
             logger.error("Failed to start game: %s", exc)
@@ -136,12 +133,7 @@ class GameManager:
         return result
 
     def is_game_over(self) -> bool:
-        """
-        Controlla se la partita è terminata.
-
-        Returns:
-            True se il gioco è finito.
-        """
+        """Controlla se la partita è terminata."""
         if self.current_mode is None:
             return True
 
@@ -150,15 +142,7 @@ class GameManager:
         return game.is_over if game else True
 
     def get_attempts(self) -> int:
-        """
-        Restituisce il numero di tentativi.
-
-        Returns:
-            Numero tentativi.
-
-        Raises:
-            RuntimeError: Se non esiste una partita attiva.
-        """
+        """Restituisce il numero di tentativi."""
         if self.current_mode is None:
             logger.error("Attempts requested without active game.")
             raise RuntimeError("No active game")
@@ -168,21 +152,13 @@ class GameManager:
         return game.attempts if game else 0
 
     def get_score(self) -> int:
-        """
-        Restituisce il punteggio per la modalità classica.
-
-        """
+        """Restituisce il punteggio per la modalità classica."""
         if isinstance(self.current_mode, ClassicMode):
             return self.current_mode.score
         return 0
 
     def get_current_user(self) -> Optional[str]:
-        """
-        Restituisce l'utente corrente.
-
-        Returns:
-            Username o None.
-        """
+        """Restituisce l'utente corrente."""
         return self.current_user
 
     def reset_game(self) -> None:
