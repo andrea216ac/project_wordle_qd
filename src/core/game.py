@@ -60,7 +60,7 @@ class Game:
 
         # 2° pass: presente
         for i, char in enumerate(guess):
-            if result[i] is "":
+            if result[i] == "":
                 found = False
                 for j, target_char in enumerate(self.target_word):
                     if char == target_char and not used[j]:
