@@ -3,7 +3,7 @@
 
 import os
 import sys
-from typing import Any, List, Type
+from typing import Any, List, Type, Optional
 
 from src.core.game_manager import GameManager
 
@@ -26,7 +26,9 @@ class GameWindow(BaseWindow):
         self,
         main_window=None,
         nome_giocatore: str = "Giocatore",
-        game_manager: GameManager = None,
+        game_manager: Optional[GameManager] = None,
+        modalita: str = "classic", # Parametro generico
+        lingua: str = "it"
     ):
         """Inizializza la finestra, carica l'UI e prepara la griglia."""
         self.grid: List[List[Any]] = [[None for _ in range(5)] for _ in range(6)]
@@ -61,7 +63,7 @@ class GameWindow(BaseWindow):
             btn_game.clicked.connect(self.torna_indietro)
 
         if self.game_manager:
-            self.game_manager.start_game()
+            self.game_manager.start_game(mode=modalita, language=lingua, user=nome_giocatore)
 
     def torna_indietro(self):
         """Metodo per tornare alla main window."""
