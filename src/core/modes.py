@@ -74,7 +74,7 @@ class TrainingMode:
             "Training mode game started | language=%s",
             language
         )
-    
+
     def submit_guess(self, guess: str) -> List[str]:
         """Invia un tentativo alla partita di allenamento."""
         if self.current_game is None:
