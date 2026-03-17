@@ -1,4 +1,4 @@
-"""Game modes module for Wordle."""
+"""Modalità di gioco per Wordle."""
 
 import logging
 from typing import List, Optional
