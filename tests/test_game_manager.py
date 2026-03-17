@@ -11,7 +11,13 @@ from src.core.modes import ModeError
 class FakeWordProvider:  # pylint: disable=too-few-public-methods
     """Provider finto per evitare dipendenze reali."""
 
-    pass
+    def get_daily_word(self, language: str) -> str:
+        """Restituisce sempre una parola fissa per la modalità classica."""
+        return "cane"
+
+    def get_random_word(self, language: str) -> str:
+        """Restituisce sempre una parola fissa per la modalità training."""
+        return "gatto"
 
 
 class FakeGame:  # pylint: disable=too-few-public-methods
