@@ -59,6 +59,10 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
             if btn_new_game:
                 btn_new_game.clicked.connect(self.apri_nuova_partita)
 
+            btn_training = getattr(self, "btn_training", None)
+            if btn_training:
+                btn_training.clicked.connect(self.apri_allenamento)
+
         else:
             print(f"ERRORE: File UI non trovato in {ui_path}")
 
@@ -76,8 +80,16 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
 
         self.close()
 
+    def apri_allenamento(self):
+        """Metodo specifico per aprire la finestra in modalità allenamento."""
+        self._avvia_gioco(modalita_scelta="training")
+
     def apri_nuova_partita(self):
-        """Metodo per aprire la finestra del gioco."""
+        """Metodo per aprire la finestra in modalità standard (classic)."""
+        self._avvia_gioco(modalita_scelta=self.modalita)
+
+    def _avvia_gioco(self, modalita_scelta):
+        """Funzione di supporto per evitare duplicazione di codice."""
         # pylint: disable=import-outside-toplevel
         from src.gui.game_window import GameWindow
 
@@ -85,16 +97,14 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
             self,
             self.nome_giocatore,
             game_manager=self.game_manager,
-            modalita=self.modalita,
+            modalita=modalita_scelta,
             lingua=self.lingua,
         )
 
         self.game_window.show()
         self.game_window.raise_()
         self.game_window.activateWindow()
-
         self.close()
-
 
 if __name__ == "__main__":
     if HAS_QT:
