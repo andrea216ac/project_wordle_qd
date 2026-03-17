@@ -1,13 +1,14 @@
 """tests/test_word_provider.py"""
 
 import datetime
-import pytest
 from unittest.mock import Mock
+
+import pytest
 
 from src.core.word_provider import WordProvider
 
 
-class FakeWord:
+class FakeWord: # pylint: disable=too-few-public-methods
     """Classe finta per simulare l'oggetto restituito da WordRepository."""
 
     def __init__(self, text):
@@ -57,7 +58,6 @@ def test_get_daily_word_success():
 
 def test_get_daily_word_none():
     """Testa che get_daily_word sollevi ValueError se non esiste una parola del giorno."""
-    today = datetime.date.today()
     mock_repo = Mock()
     mock_repo.get_daily_word.return_value = None
 
