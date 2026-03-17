@@ -92,6 +92,23 @@ def test_start_game_classic_already_played():
         manager.start_game("classic", "it", user="test_user")
 
 
+def test_start_game_mode_error_propagation():
+    """Verifica che ModeError venga propagato se start_game fallisce."""
+
+    class FailingMode:
+        def start_game(self, language):
+            raise ModeError("fail")
+
+    provider = FakeWordProvider()
+    manager = GameManager(provider)
+
+    # Forziamo la modalità manualmente
+    manager.current_mode = FailingMode()
+
+    with pytest.raises(ModeError):
+        manager.current_mode.start_game("it")
+
+
 # ========================
 # TEST SUBMIT GUESS
 # ========================
@@ -175,9 +192,11 @@ def test_is_game_over_true():
     assert manager.is_game_over() is True
 
 
-def test_is_game_over_no_game():
-    """Verifica che is_game_over ritorni True senza partita attiva."""
-    manager = GameManager(FakeWordProvider())
+def test_is_game_over_no_mode():
+    """Verifica che ritorni True se non c'è una partita."""
+
+    provider = FakeWordProvider()
+    manager = GameManager(provider)
 
     assert manager.is_game_over() is True
 
@@ -194,8 +213,10 @@ def test_get_attempts_success():
 
 
 def test_get_attempts_no_game():
-    """Verifica che get_attempts sollevi errore senza partita attiva."""
-    manager = GameManager(FakeWordProvider())
+    """Verifica errore se si richiedono tentativi senza partita."""
+
+    provider = FakeWordProvider()
+    manager = GameManager(provider)
 
     with pytest.raises(RuntimeError):
         manager.get_attempts()
