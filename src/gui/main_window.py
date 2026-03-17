@@ -106,6 +106,7 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
         self.game_window.activateWindow()
         self.close()
 
+
 if __name__ == "__main__":
     if HAS_QT:
         app = QtWidgets.QApplication(sys.argv)
