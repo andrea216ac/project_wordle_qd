@@ -8,7 +8,7 @@ import pytest
 from src.core.word_provider import WordProvider
 
 
-class FakeWord: # pylint: disable=too-few-public-methods
+class FakeWord:  # pylint: disable=too-few-public-methods
     """Classe finta per simulare l'oggetto restituito da WordRepository."""
 
     def __init__(self, text):
