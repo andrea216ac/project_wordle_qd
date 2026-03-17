@@ -11,11 +11,11 @@ from src.core.modes import ModeError
 class FakeWordProvider:  # pylint: disable=too-few-public-methods
     """Provider finto per evitare dipendenze reali."""
 
-    def get_daily_word(self, language: str) -> str:
+    def get_daily_word(self, _: str) -> str:
         """Restituisce sempre una parola fissa per la modalità classica."""
         return "cane"
 
-    def get_random_word(self, language: str) -> str:
+    def get_random_word(self, _: str) -> str:
         """Restituisce sempre una parola fissa per la modalità training."""
         return "gatto"
 
@@ -35,11 +35,11 @@ class FakeMode:  # pylint: disable=too-few-public-methods
         self.current_game = FakeGame()
         self.score = 0
 
-    def start_game(self, language):
+    def start_game(self, _: str):
         """Simula avvio partita."""
         self.current_game = FakeGame()
 
-    def submit_guess(self, guess):
+    def submit_guess(self, _: str):
         """Simula invio guess."""
         return ["Corretto"] * 5
 
@@ -228,3 +228,48 @@ def test_reset_game():
     manager.reset_game()
 
     assert manager.current_mode is None
+
+
+def test_save_score_called_on_game_end():
+    """Verifica che save_score venga chiamato quando il gioco termina."""
+
+    provider = FakeWordProvider()
+
+    # Mock del repository
+    mock_repo = Mock()
+    mock_repo.has_played_today.return_value = False
+
+    manager = GameManager(provider, score_repository=mock_repo)
+
+    manager.start_game("classic", "it", user="test_user")
+
+    # Indovina subito la parola → fine gioco
+    manager.submit_guess("cane")
+
+    # Verifica che save_score sia stato chiamato
+    mock_repo.save_score.assert_called_once_with(
+        user="test_user",
+        score=1,
+        attempts=1,
+    )
+
+
+def test_save_score_failure_handled():
+    """Verifica che un errore in save_score non interrompa il gioco."""
+
+    provider = FakeWordProvider()
+
+    mock_repo = Mock()
+    mock_repo.has_played_today.return_value = False
+
+    # Simula errore nel database
+    mock_repo.save_score.side_effect = Exception("DB error")
+
+    manager = GameManager(provider, score_repository=mock_repo)
+
+    manager.start_game("classic", "it", user="test_user")
+
+    # Non deve crashare anche se save_score fallisce
+    result = manager.submit_guess("cane")
+
+    assert result is not None
