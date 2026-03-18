@@ -70,3 +70,19 @@ class WordRepository:
                 error,
             )
             return None
+
+    def word_exists(self, word: str, language: str) -> bool:
+        """Controlla se la parola digitata esiste nel dizionario."""
+        try:
+            result = (
+                self.session.query(Word)
+                .filter(
+                    Word.word == word.upper(),
+                    Word.language == language.upper(),
+                )
+                .first()
+            )
+            return result is not None
+        except SQLAlchemyError as error:
+            logger.error("Errore DB durante word_exists: %s", error)
+            return False

@@ -16,6 +16,9 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
 
+    # NUOVA COLONNA: Salva lo stato temporaneo della partita in formato stringa/JSON
+    saved_state = Column(String, nullable=True)
+
     games = relationship("Game", back_populates="user", cascade="all, delete-orphan")
 
 

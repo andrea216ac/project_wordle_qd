@@ -126,3 +126,46 @@ class GameRepository:
 
         except Exception as error:  # pylint: disable=broad-exception-caught
             logger.error("Errore critico nell'adattatore save_score: %s", error)
+
+    def get_leaderboard_data(self, limit: int = 10) -> list[tuple[str, int]]:
+        """Recupera la classifica generale sommando i punti di ogni utente."""
+        try:
+            # Esegue: SELECT username, SUM(points) FROM users JOIN games ...
+            results = (
+                self.session.query(
+                    User.username, func.sum(Game.points).label("total_score")
+                )
+                .join(Game, User.id == Game.user_id)
+                .group_by(User.id, User.username)
+                .order_by(func.sum(Game.points).desc())
+                .limit(limit)
+                .all()
+            )
+            # Converte il risultato di SQLAlchemy in una semplice lista di tuple
+            return [(row.username, int(row.total_score or 0)) for row in results]
+        except SQLAlchemyError as error:
+            logger.error("Errore DB in get_leaderboard_data: %s", error)
+            return []
+
+    def save_game_state(self, user: str, state_data: str) -> None:
+        """Salva lo stato della partita in sospeso (es. JSON) per l'utente."""
+        try:
+            db_user = self.session.query(User).filter(User.username == user).first()
+            if db_user:
+                db_user.saved_state = state_data  # type: ignore[assignment]
+                self.session.commit()
+                logger.info("Stato partita salvato con successo per %s", user)
+            else:
+                logger.warning("Utente %s non trovato. Salvataggio ignorato.", user)
+        except SQLAlchemyError as error:
+            self.session.rollback()
+            logger.error("Errore critico DB in save_game_state: %s", error)
+
+    def load_game_state(self, user: str) -> str | None:
+        """Carica lo stato della partita in sospeso dell'utente, se esiste."""
+        try:
+            db_user = self.session.query(User).filter(User.username == user).first()
+            return db_user.saved_state if db_user else None  # type: ignore[return-value]
+        except SQLAlchemyError as error:
+            logger.error("Errore DB in load_game_state: %s", error)
+            return None
