@@ -347,7 +347,7 @@ class GameWindow(BaseWindow):
                     f"Hai indovinato! Tentativi: {self.game_manager.get_attempts()}",
                 )
             else:
-                parola_corretta = self.game_manager.get_target_word() # type: ignore
+                parola_corretta = self.game_manager.get_target_word()  # type: ignore
                 QtWidgets.QMessageBox.critical(
                     self,
                     "Partita finita",
