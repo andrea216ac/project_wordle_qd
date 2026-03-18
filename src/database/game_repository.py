@@ -152,7 +152,7 @@ class GameRepository:
         try:
             db_user = self.session.query(User).filter(User.username == user).first()
             if db_user:
-                db_user.saved_state = state_data # type: ignore[assignment]
+                db_user.saved_state = state_data  # type: ignore[assignment]
                 self.session.commit()
                 logger.info("Stato partita salvato con successo per %s", user)
             else:
@@ -165,7 +165,7 @@ class GameRepository:
         """Carica lo stato della partita in sospeso dell'utente, se esiste."""
         try:
             db_user = self.session.query(User).filter(User.username == user).first()
-            return db_user.saved_state if db_user else None # type: ignore[return-value]
+            return db_user.saved_state if db_user else None  # type: ignore[return-value]
         except SQLAlchemyError as error:
             logger.error("Errore DB in load_game_state: %s", error)
             return None
