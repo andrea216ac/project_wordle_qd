@@ -65,3 +65,38 @@ def test_get_daily_word_none():
     # Controlla che venga sollevata l'eccezione corretta
     with pytest.raises(ValueError, match="No word available"):
         provider.get_daily_word("it")
+
+def test_is_valid_word_true():
+    """Verifica che una parola valida venga accettata."""
+    repo = Mock()
+    repo.word_exists.return_value = True
+
+    provider = WordProvider(repo)
+
+    assert provider.is_valid_word("cane", "it") is True
+
+
+def test_is_valid_word_false():
+    """Verifica che una parola inesistente venga rifiutata."""
+    repo = Mock()
+    repo.word_exists.return_value = None
+
+    provider = WordProvider(repo)
+
+    assert provider.is_valid_word("xxxxx", "it") is False
+
+
+def test_is_valid_word_wrong_length():
+    """Verifica che parole con lunghezza errata siano rifiutate."""
+    repo = Mock()
+    provider = WordProvider(repo)
+
+    assert provider.is_valid_word("ciao", "it") is False
+
+
+def test_is_valid_word_empty():
+    """Verifica che una parola vuota venga rifiutata."""
+    repo = Mock()
+    provider = WordProvider(repo)
+
+    assert provider.is_valid_word("", "it") is False
