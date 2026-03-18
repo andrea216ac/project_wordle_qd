@@ -96,7 +96,7 @@ class GameWindow(BaseWindow):
     def _calcola_colori(self, guess: str, target: str) -> List[str]:
         """Calcola Verde/Giallo/Grigio senza alterare il punteggio interno."""
         res = ["Assente"] * 5
-        t_chars = list(target)
+        t_chars: List[Optional[str]] = list(target)
         g_chars = list(guess)
         for i in range(5):
             if g_chars[i] == t_chars[i]:
@@ -113,12 +113,13 @@ class GameWindow(BaseWindow):
         color_map = {"Corretto": "#538d4e", "Presente": "#b59f3b", "Assente": "#3a3a3c"}
         for i, esito in enumerate(risultati):
             widget = self.grid[riga][i]
-            colore = color_map.get(esito, "#3a3a3c")
-            widget.setText(parola[i])
-            widget.setStyleSheet(f"""
-                background-color: {colore}; color: white;
-                border: 2px solid {colore}; font-weight: bold; font-size: 25px;
-            """)
+            if widget:
+                colore = color_map.get(esito, "#3a3a3c")
+                widget.setText(parola[i])
+                widget.setStyleSheet(f"""
+                    background-color: {colore}; color: white;
+                    border: 2px solid {colore}; font-weight: bold; font-size: 25px;
+                """)
             self._aggiorna_colore_tasto(parola[i], colore)
 
     def torna_indietro(self):
@@ -172,7 +173,7 @@ class GameWindow(BaseWindow):
 
         for c in range(5):
             widget = self.grid[self.current_row][c]
-            if widget is None:
+            if not widget:
                 continue
 
             is_active = c == self.current_col
