@@ -19,13 +19,6 @@ class GameManager:
         word_provider: WordProvider,
         score_repository: Optional[GameRepository] = None,
     ) -> None:
-        """
-        Inizializza il GameManager.
-
-        Args:
-            word_provider: Provider delle parole.
-            score_repository: Repository per punteggi e storico partite.
-        """
         self.word_provider: WordProvider = word_provider
         self.score_repository = score_repository
 
@@ -101,8 +94,14 @@ class GameManager:
         if self.current_mode is None:
             logger.error("Attempted guess without active game.")
             raise RuntimeError("No active game")
+        
+        # VALIDAZIONE PAROLA
+        if not self.word_provider.is_valid_word(guess, self.language):
+            logger.warning("Invalid word attempted: %s", guess)
+            raise ValueError("Questa parola non esiste")
 
         result: List[str] = self.current_mode.submit_guess(guess)
+
         logger.info(
             "Guess submitted | user=%s guess=%s result=%s",
             self.current_user,
@@ -111,6 +110,22 @@ class GameManager:
         )
         game: Optional[Game] = self.current_mode.current_game
 
+        # SALVATAGGIO STATO PARTITA
+        if game and self.score_repository and self.current_user:
+            try:
+                self.score_repository.save_game_state(
+                    user=self.current_user,
+                    word=game.target_word,
+                    attempts=game.attempts,
+                    guesses=game.guesses,
+                    is_over=game.is_over,
+                    mode=type(self.current_mode).__name__,
+                    language=self.language,
+                )
+            except Exception as exc:  # pylint: disable=broad-exception-caught
+                logger.error("Failed to save game state: %s", exc)
+
+        # FINE PARTITA → salva score
         if game and game.is_over:
             score = self.get_score()
 
@@ -133,6 +148,34 @@ class GameManager:
 
         return result
 
+    def load_game(self, user: str) -> bool:
+        """Carica una partita salvata se esiste."""
+        if not self.score_repository:
+            return False
+
+        saved = self.score_repository.load_game_state(user)
+
+        if not saved:
+            return False
+
+        game = Game(saved.word)
+        game.attempts = saved.attempts
+        game.is_over = saved.is_over
+        game.guesses = saved.guesses
+
+        if saved.mode == "ClassicMode":
+            self.current_mode = ClassicMode(self.word_provider)
+        else:
+            self.current_mode = TrainingMode(self.word_provider)
+
+        self.current_mode.current_game = game
+        self.language = saved.language
+        self.current_user = user
+
+        logger.info("Game state loaded for user %s", user)
+
+        return True
+    
     def is_game_over(self) -> bool:
         """Controlla se la partita è terminata."""
         if self.current_mode is None:
@@ -166,3 +209,37 @@ class GameManager:
         """Resetta la sessione di gioco corrente."""
         logger.info("Resetting game session.")
         self.current_mode = None
+
+    def get_target_word(self) -> str:
+        """Restituisce la parola segreta da indovinare."""
+        if (
+            self.current_mode
+            and hasattr(self.current_mode, "current_game")
+            and self.current_mode.current_game
+        ):
+            return self.current_mode.current_game.target_word
+        return ""
+
+    def has_played_classic_today(self, user: str) -> bool:
+        """Verifica se l'utente ha già giocato la partita classica di oggi."""
+        if self.score_repository and user:
+            return self.score_repository.has_played_today(user)
+        return False
+
+    def get_leaderboard(self) -> list[dict]:
+        """
+        Recupera i dati della classifica dal repository.
+        Restituisce una lista vuota se il repository non è configurato
+        o se la funzione non esiste ancora nel repository.
+        """
+        if self.score_repository:
+            try:
+                return self.score_repository.get_leaderboard_data()
+            except AttributeError:
+                logger.warning(
+                    "get_leaderboard_data non implementato nel repository."
+                )
+        else:
+            logger.warning("Score repository non configurato. Impossibile caricare la classifica.")
+        return []
+    

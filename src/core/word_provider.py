@@ -23,7 +23,7 @@ class WordProvider:  # pylint: disable=too-few-public-methods
             logger.error("No random word available")
             raise ValueError("Language not available")
 
-        return word.text
+        return word.word
 
     def get_daily_word(self, language: str) -> str:
         """Restituisce la parola del giorno."""
@@ -39,4 +39,38 @@ class WordProvider:  # pylint: disable=too-few-public-methods
             logger.error("No daily word available")
             raise ValueError("No word available")
 
-        return word.text
+        return word.word
+
+    def is_valid_word(self, word: str, language: str) -> bool:
+        """
+        Controlla se una parola esiste nel database.
+
+        Args:
+            word: parola inserita dall'utente
+            language: lingua corrente
+
+        Returns:
+            True se la parola esiste, False altrimenti
+        """
+        if not word:
+            logger.warning("Empty word provided for validation")
+            return False
+
+        if len(word) != self.word_length:
+            logger.warning(
+                "Invalid word length: expected %d, got %d",
+                self.word_length,
+                len(word),
+            )
+            return False
+
+        # normalizzazione (utile per evitare problemi tipo Maiuscole/minuscole)
+        word = word.lower()
+
+        try:
+            result = self.word_repository.word_exists(word, language)
+            return result is not None
+
+        except Exception as exc:  # pylint: disable=broad-exception-caught
+            logger.error("Error validating word: %s", exc)
+            return False
