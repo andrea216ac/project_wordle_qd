@@ -1,4 +1,5 @@
 """Modulo per la finestra principale dell'applicazione Wordle."""
+# pylint: disable=import-outside-toplevel, cyclic-import
 
 import os
 import sys
@@ -103,12 +104,15 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
         self.close()
 
     def apri_allenamento(self):
+        """Metodo per aprire la finestra di allenamento."""
         self._avvia_gioco(modalita_scelta="training")
 
     def apri_nuova_partita(self):
+        """Metodo per aprire la finestra di nuova partita."""
         self._avvia_gioco(modalita_scelta="classic")
 
     def _avvia_gioco(self, modalita_scelta):
+        """Metodo usato per aprire la finestra di gioco."""
         from src.gui.game_window import GameWindow
 
         try:

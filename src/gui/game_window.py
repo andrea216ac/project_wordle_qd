@@ -114,7 +114,7 @@ class GameWindow(BaseWindow):
             colore = color_map.get(esito, "#3a3a3c")
             widget.setText(parola[i])
             widget.setStyleSheet(f"""
-                background-color: {colore}; color: white; 
+                background-color: {colore}; color: white;
                 border: 2px solid {colore}; font-weight: bold; font-size: 25px;
             """)
             self._aggiorna_colore_tasto(parola[i], colore)

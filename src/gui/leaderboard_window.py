@@ -1,4 +1,5 @@
 """Modulo per la finestra della classifica dell'applicazione Wordle."""
+# pylint: disable=import-outside-toplevel, cyclic-import
 
 # pylint: disable=duplicate-code
 import os
