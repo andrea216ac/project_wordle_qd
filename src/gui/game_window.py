@@ -33,7 +33,7 @@ class GameWindow(BaseWindow):
         lingua: str = "it",
     ):
         """Inizializza la finestra, carica l'UI e prepara la griglia."""
-        self.grid: List[List[Any]] = [[None for _ in range(5)] for _ in range(6)]
+        self.grid: List[List[Optional[QtWidgets.QLabel]]] = [[None for _ in range(5)] for _ in range(6)]
         self.keyboard_buttons: dict[str, QtWidgets.QPushButton] = {}
 
         self.nome_giocatore = nome_giocatore
@@ -343,7 +343,7 @@ class GameWindow(BaseWindow):
                     f"Hai indovinato! Tentativi: {self.game_manager.get_attempts()}",
                 )
             else:
-                parola_corretta = self.game_manager.get_target_word()
+                parola_corretta = self.game_manager.get_target_word() # type: ignore
                 QtWidgets.QMessageBox.critical(
                     self,
                     "Partita finita",
