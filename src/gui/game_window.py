@@ -319,22 +319,22 @@ class GameWindow(BaseWindow):
                     font-weight: bold; font-size: 25px;
                 """)
 
-            btn = self.keyboard_buttons.get(lettera)
-            if btn:
-                old_style = btn.styleSheet()
-                if "#538d4e" not in old_style:
-                    if colore == "#538d4e" or (
-                        colore == "#b59f3b" and "#b59f3b" not in old_style
-                    ):
-                        btn.setStyleSheet(
-                            f"""QPushButton {{ background-color: {colore}; color: white;
-                            border-radius: 4px; font-weight: bold; font-size: 16px;}}"""
-                        )
-                    elif colore == "#3a3a3c" and "#b59f3b" not in old_style:
-                        btn.setStyleSheet(
-                            "QPushButton {{ background-color: #3a3a3c; color: white;"
-                            "border-radius: 4px;font-weight:bold;font-size:16px;}}"
-                        )
+                btn = self.keyboard_buttons.get(lettera)
+                if btn:
+                    old_style = btn.styleSheet()
+                    if "#538d4e" not in old_style:
+                        if colore == "#538d4e" or (
+                            colore == "#b59f3b" and "#b59f3b" not in old_style
+                        ):
+                            btn.setStyleSheet(
+                                f"""QPushButton {{ background-color: {colore}; color: white;
+                                border-radius: 4px; font-weight: bold; font-size: 16px;}}"""
+                            )
+                        elif colore == "#3a3a3c" and "#b59f3b" not in old_style:
+                            btn.setStyleSheet(
+                                "QPushButton {{ background-color: #3a3a3c; color: white;"
+                                "border-radius: 4px;font-weight:bold;font-size:16px;}}"
+                            )
 
         if self.game_manager.is_game_over():
             self.gioco_finito = True
