@@ -309,14 +309,15 @@ class GameWindow(BaseWindow):
 
         for i, esito in enumerate(risultati):
             widget = self.grid[self.current_row][i]
-            colore = color_map.get(esito, "#3a3a3c")
-            lettera = tentativo[i]
+            if widget is not None:
+                colore = color_map.get(esito, "#3a3a3c")
+                lettera = tentativo[i]
 
-            widget.setStyleSheet(f"""
-                background-color: {colore};
-                color: white; border: 2px solid {colore};
-                font-weight: bold; font-size: 25px;
-            """)
+                widget.setStyleSheet(f"""
+                    background-color: {colore};
+                    color: white; border: 2px solid {colore};
+                    font-weight: bold; font-size: 25px;
+                """)
 
             btn = self.keyboard_buttons.get(lettera)
             if btn:
