@@ -33,6 +33,7 @@ class RegistrationWindow(BaseDialog):
         self.game_manager = game_manager
         self.log_win = None
         self.main_win = None
+        self.user_name = ""
 
         ui_path = os.path.join(os.path.dirname(__file__), "registration_window.ui")
         if os.path.exists(ui_path):
@@ -125,7 +126,7 @@ class RegistrationWindow(BaseDialog):
                 nuovo_utente = User(username=username)
                 self.sessione_db.add(nuovo_utente)
                 self.sessione_db.commit()
-            except Exception as e:
+            except Exception as e: # pylint: disable=broad-exception-caught
                 self.sessione_db.rollback()
                 print(f"Errore durante il salvataggio: {e}")
                 return
