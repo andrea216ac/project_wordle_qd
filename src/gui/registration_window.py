@@ -5,6 +5,8 @@ import os
 import sys
 from typing import Any, Type
 
+from src.database.models import User
+
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if ROOT_DIR not in sys.path:
     sys.path.append(ROOT_DIR)
@@ -111,8 +113,6 @@ class RegistrationWindow(BaseDialog):
         username = self.input_username.text().strip()
 
         if self.sessione_db:
-            from src.database.models import User
-
             utente_esiste = (
                 self.sessione_db.query(User).filter_by(username=username).first()
             )
@@ -126,7 +126,7 @@ class RegistrationWindow(BaseDialog):
                 nuovo_utente = User(username=username)
                 self.sessione_db.add(nuovo_utente)
                 self.sessione_db.commit()
-            except Exception as e: # pylint: disable=broad-exception-caught
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 self.sessione_db.rollback()
                 print(f"Errore durante il salvataggio: {e}")
                 return

@@ -1,4 +1,5 @@
 """Modulo per la finestra principale dell'applicazione Wordle."""
+
 # pylint: disable=import-outside-toplevel, cyclic-import
 
 import os

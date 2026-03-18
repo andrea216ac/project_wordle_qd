@@ -1,4 +1,5 @@
 """Punto di ingresso principale dell'applicazione Wordle."""
+
 # pylint: disable=no-name-in-module, c-extension-no-member
 
 import os
