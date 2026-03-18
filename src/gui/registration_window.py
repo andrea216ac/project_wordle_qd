@@ -23,12 +23,14 @@ except ImportError:
 class RegistrationWindow(BaseDialog):
     """Classe che gestisce la creazione di un nuovo account."""
 
-    def __init__(self, parent=None):
+    def __init__(self, sessione_db=None, game_manager=None, parent=None):
         if not HAS_QT:
             super().__init__()
             return
 
         super().__init__(parent)
+        self.sessione_db = sessione_db
+        self.game_manager = game_manager
         self.log_win = None
         self.main_win = None
 
@@ -89,40 +91,48 @@ class RegistrationWindow(BaseDialog):
             # pylint: disable=import-outside-toplevel, cyclic-import
             from src.gui.login_window import LoginWindow
 
-            self.log_win = LoginWindow()
+            self.log_win = LoginWindow(
+                sessione_db=self.sessione_db,
+                game_manager=getattr(self, "game_manager", None),
+            )
             self.log_win.show()
-            self.close()
+            self.hide()
+            if self.log_win.exec() == QtWidgets.QDialog.DialogCode.Accepted:
+                self.user_name = self.log_win.user_name
+                self.accept()
+            else:
+                self.show()
         except ImportError as e:
             print(f"Errore nell'apertura del Login: {e}")
 
     def esegui_registrazione(self):
-        """Effettua la registrazione e lancia la MainWindow."""
+        """Effettua la registrazione e chiude il dialogo con successo."""
         username = self.input_username.text().strip()
 
-        database_utenti_esistenti = ["mario88", "admin", "wordle_master"]
+        if self.sessione_db:
+            from src.database.models import User
 
-        if username.lower() in database_utenti_esistenti:
-            if self.lbl_error_username:
-                self.lbl_error_username.show()
-            return
-
-        print(f"Utente registrato: {username}")
-
-        try:
-            # pylint: disable=import-outside-toplevel
-            from src.gui.main_window import MainWindow
-
-            self.main_win = MainWindow()
-
-            if hasattr(self.main_win, "lbl_welcome"):
-                self.main_win.lbl_welcome.setText(f"Benvenuto, {username}!")
-
-            self.main_win.show()
-            self.close()
-        except ImportError as e:
-            QtWidgets.QMessageBox.critical(
-                self, "Errore di Sistema", f"MainWindow non trovata: {e}"
+            utente_esiste = (
+                self.sessione_db.query(User).filter_by(username=username).first()
             )
+
+            if utente_esiste:
+                if self.lbl_error_username:
+                    self.lbl_error_username.show()
+                return
+
+            try:
+                nuovo_utente = User(username=username)
+                self.sessione_db.add(nuovo_utente)
+                self.sessione_db.commit()
+            except Exception as e:
+                self.sessione_db.rollback()
+                print(f"Errore durante il salvataggio: {e}")
+                return
+
+        self.user_name = username
+
+        self.accept()
 
 
 if __name__ == "__main__":

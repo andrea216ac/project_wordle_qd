@@ -31,6 +31,9 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
             return
 
         super().__init__()
+
+        self.logout_richiesto = False
+
         self.leaderboard_window = None
         self.game_window = None
         self.game_manager = game_manager
@@ -45,7 +48,7 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
 
             btn_exit = getattr(self, "btn_exit", None)
             if btn_exit:
-                btn_exit.clicked.connect(self.close)
+                btn_exit.clicked.connect(self.esegui_logout)
 
             lbl_welcome = getattr(self, "lbl_welcome", None)
             if lbl_welcome:
@@ -63,56 +66,79 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
             if btn_training:
                 btn_training.clicked.connect(self.apri_allenamento)
 
+            if self.game_manager and btn_new_game:
+                if self.game_manager.has_played_classic_today(self.nome_giocatore):
+                    btn_new_game.setEnabled(False)
+                    btn_new_game.setText("Già giocato")
+                    btn_new_game.setStyleSheet("""
+                        QPushButton { 
+                            background-color: #3a3a3c; 
+                            color: #818384; 
+                            border: 1px solid #565758;
+                        }
+                    """)
         else:
             print(f"ERRORE: File UI non trovato in {ui_path}")
 
+    def esegui_logout(self):
+        """
+        Imposta il flag di logout e chiude la finestra.
+        Il ciclo nel main.py intercetterà questo flag e riaprirà il Login.
+        """
+        self.logout_richiesto = True
+        self.close()
+
     def apri_classifica(self):
         """Metodo per aprire la finestra della classifica."""
-        # pylint: disable=import-outside-toplevel
         from src.gui.leaderboard_window import LeaderboardWindow
 
         if self.leaderboard_window is None:
-            self.leaderboard_window = LeaderboardWindow()
+            self.leaderboard_window = LeaderboardWindow(
+                main_window=self, 
+                game_manager=self.game_manager
+            )
 
         self.leaderboard_window.show()
         self.leaderboard_window.raise_()
         self.leaderboard_window.activateWindow()
-
-        self.close()
+        self.hide()
 
     def apri_allenamento(self):
-        """Metodo specifico per aprire la finestra in modalità allenamento."""
         self._avvia_gioco(modalita_scelta="training")
 
     def apri_nuova_partita(self):
-        """Metodo per aprire la finestra in modalità standard (classic)."""
-        self._avvia_gioco(modalita_scelta=self.modalita)
+        self._avvia_gioco(modalita_scelta="classic")
 
     def _avvia_gioco(self, modalita_scelta):
-        """Funzione di supporto per evitare duplicazione di codice."""
-        # pylint: disable=import-outside-toplevel
         from src.gui.game_window import GameWindow
 
-        self.game_window = GameWindow(
-            self,
-            self.nome_giocatore,
-            game_manager=self.game_manager,
-            modalita=modalita_scelta,
-            lingua=self.lingua,
-        )
+        try:
+            self.game_window = GameWindow(
+                self,
+                self.nome_giocatore,
+                game_manager=self.game_manager,
+                modalita=modalita_scelta,
+                lingua=self.lingua,
+            )
 
-        self.game_window.show()
-        self.game_window.raise_()
-        self.game_window.activateWindow()
-        self.close()
+            self.game_window.show()
+            self.game_window.raise_()
+            self.game_window.activateWindow()
+            self.close()
+
+        except RuntimeError as e:
+            QtWidgets.QMessageBox.warning(self, "Limite raggiunto", str(e))
+            if modalita_scelta == "classic":
+                btn_play = getattr(self, "btn_play", None)
+                if btn_play:
+                    btn_play.setEnabled(False)
+                    btn_play.setText("Già giocato")
 
 
 if __name__ == "__main__":
     if HAS_QT:
         app = QtWidgets.QApplication(sys.argv)
+        # Mock per test rapido
         window = MainWindow()
         window.show()
-        print("Finestra avviata correttamente.")
         sys.exit(app.exec())
-    else:
-        print("Impossibile avviare l'interfaccia: PyQt6 non è configurato.")

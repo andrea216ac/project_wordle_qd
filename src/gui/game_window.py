@@ -69,6 +69,13 @@ class GameWindow(BaseWindow):
                 mode=modalita, language=lingua, user=nome_giocatore
             )
 
+        tentativi_precedenti = self.game_manager.get_guesses() # Dovrai creare questo getter
+        for i, guess in enumerate(tentativi_precedenti):
+            result = self.game_manager.check_guess(guess) # Verifica colori
+            self._update_grid_row(i, guess, result) # Colora la riga i-esima
+        
+        self.current_row = len(tentativi_precedenti)
+
     def torna_indietro(self):
         """Metodo per tornare alla main window."""
         # pylint: disable=import-outside-toplevel, cyclic-import
@@ -90,6 +97,7 @@ class GameWindow(BaseWindow):
 
         grid_layout.setSpacing(5)
         grid_layout.setContentsMargins(0, 0, 0, 0)
+        grid_layout.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetFixedSize)
 
         for i in range(grid_layout.count()):
             item = grid_layout.itemAt(i)
@@ -150,6 +158,7 @@ class GameWindow(BaseWindow):
             self.keyboard_container
         )
         layout.setSpacing(5)
+        # layout.setContentsMargins(5, 5, 5, 5)
 
         rows = [
             ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
@@ -162,6 +171,10 @@ class GameWindow(BaseWindow):
             for key in row_keys:
                 btn = QtWidgets.QPushButton(key)
                 btn.setMinimumHeight(50)
+                if len(key) > 1:
+                    btn.setFixedWidth(25)
+                else:
+                    btn.setFixedWidth(25)
                 btn.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
 
                 btn.setStyleSheet("""
@@ -232,6 +245,9 @@ class GameWindow(BaseWindow):
             )
             self._controlla_parola(tentativo)
 
+        tutti_i_tentativi = ",".join(self.game_manager.get_guesses())
+        self.game_manager.save_checkpoint(tutti_i_tentativi)
+
     def _controlla_parola(self, tentativo: str):
         """Usa il GameManager per validare la parola e colora l'interfaccia."""
         if not self.game_manager:
@@ -285,8 +301,11 @@ class GameWindow(BaseWindow):
                     f"Hai indovinato! Tentativi: {self.game_manager.get_attempts()}",
                 )
             else:
+                parola_corretta = self.game_manager.get_target_word()
                 QtWidgets.QMessageBox.critical(
-                    self, "Partita finita", "Peccato, tentativi esauriti!"
+                    self,
+                    "Partita finita",
+                    f"Peccato, tentativi esauriti!\nLa parola era: {parola_corretta}",
                 )
         else:
             self.current_row += 1

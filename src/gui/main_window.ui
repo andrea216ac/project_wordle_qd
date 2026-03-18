@@ -40,7 +40,7 @@ QPushButton#btn_exit:hover {
     background-color: #818384;
 }
 
-QPushButton#btn_play, QPushButton#btn_leaderboard{
+QPushButton#btn_play, QPushButton#btn_leaderboard, QPushButton#btn_training{
 	font-size: 16px;
 }
 
