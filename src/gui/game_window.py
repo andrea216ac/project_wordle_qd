@@ -33,7 +33,9 @@ class GameWindow(BaseWindow):
         lingua: str = "it",
     ):
         """Inizializza la finestra, carica l'UI e prepara la griglia."""
-        self.grid: List[List[Optional[QtWidgets.QLabel]]] = [[None for _ in range(5)] for _ in range(6)]
+        self.grid: List[
+            List[Optional[QtWidgets.QLabel]]
+            ] = [[None for _ in range(5)] for _ in range(6)]
         self.keyboard_buttons: dict[str, QtWidgets.QPushButton] = {}
 
         self.nome_giocatore = nome_giocatore
