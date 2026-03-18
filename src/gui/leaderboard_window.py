@@ -7,7 +7,7 @@ from typing import Any, Type
 
 # pylint: disable=no-name-in-module, no-member, c-extension-no-member
 try:
-    from PyQt6 import QtCore,QtWidgets, uic
+    from PyQt6 import QtWidgets, uic
     from PyQt6.QtWidgets import QHeaderView, QTableWidgetItem
 
     HAS_QT = True
@@ -35,8 +35,8 @@ class LeaderboardWindow(BaseDialog):
 
         uic.loadUi(ui_path, self)
 
-        self.table_top3.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.table_user_pos.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.table_user_pos.setColumnCount(3)
+        self.table_user_pos.setHorizontalHeaderLabels(["Posizione", "Vittorie", "Media Tentativi"])
 
         # Configurazione bottone indietro
         btn_back = getattr(self, "btn_back", None)
@@ -47,7 +47,6 @@ class LeaderboardWindow(BaseDialog):
         if hasattr(self, "table_top3") and hasattr(self, "table_user_pos"):
             self.setup_leaderboard_graphics()
             self.aggiorna_classifica() # Carica i dati reali
-            self.adatta_font_dinamico()
         else:
             print("ERRORE: Tabelle non trovate nel file .ui. Verifica gli objectName.")
 
@@ -64,6 +63,15 @@ class LeaderboardWindow(BaseDialog):
         self.table_user_pos.setHorizontalHeaderLabels(["Posizione", "Vittorie", "Media Tentativi"])
         self.table_user_pos.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.table_user_pos.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        
+        # Stile grafico
+        style = """
+            QTableWidget { background-color: #ffffff; gridline-color: #d3d6da; border-radius: 5px; }
+            QHeaderView::section { background-color: #787c7e; color: white; font-weight: bold; }
+            QTableWidget::item { color: #1a1a1a; }
+        """
+        self.table_top3.setStyleSheet(style)
+        self.table_user_pos.setStyleSheet(style)
 
     def aggiorna_classifica(self):
         """Recupera i dati aggiornati tramite GameManager e popola la UI."""
@@ -82,60 +90,36 @@ class LeaderboardWindow(BaseDialog):
         self.popola_classifica(dati, nome_utente)
 
     def popola_classifica(self, dati, nome_utente_corrente):
-        """Popola le tabelle e forza la ricerca dell'utente corrente."""
+        """Inserisce i dati reali all'interno dei widget QTableWidget."""
+        # I dati arrivano già ordinati dal Repository (vittorie DESC, media ASC)
         
-        # 1. Popola Top 3
-        self.table_top3.setRowCount(0) # Reset totale
+        print(f"Debug: Cerco utente '{nome_utente_corrente}' in classifica") # DEBUG
+        print(f"Debug: Dati ricevuti: {dati}")
+        # Popolamento Top 3
         self.table_top3.setRowCount(min(3, len(dati)))
         for i in range(min(3, len(dati))):
-            g = dati[i]
-            self._inserisci_riga_centrata(self.table_top3, i, [
-                str(i + 1), g["utente"], str(g["vittorie"]), f"{g['media']:.2f}"
-            ])
+            giocatore = dati[i]
+            self.table_top3.setItem(i, 0, QTableWidgetItem(str(i + 1)))
+            self.table_top3.setItem(i, 1, QTableWidgetItem(giocatore["utente"]))
+            self.table_top3.setItem(i, 2, QTableWidgetItem(str(giocatore["vittorie"])))
+            self.table_top3.setItem(i, 3, QTableWidgetItem(str(giocatore["media"])))
 
-        # 2. Logica per la posizione dell'utente corrente
-        self.table_user_pos.setRowCount(1)
-        self.table_user_pos.setRowHeight(0, 60)
-        
-        dati_utente = None
+        # Trova la posizione dell'utente corrente nell'intera lista
         pos_utente = -1
-        
-        # Normalizzazione del nome (rimuove spazi e rende minuscolo)
-        target = str(nome_utente_corrente or "").strip().lower()
-        
-        # DEBUG (Opzionale: controlla la console se non lo trovi)
-        # print(f"DEBUG: Cerco '{target}' tra {len(dati)} utenti")
-
-        if target and target != "ospite":
-            for index, g in enumerate(dati):
-                # Confronto ultra-sicuro
-                nome_in_lista = str(g.get("utente", "")).strip().lower()
-                if nome_in_lista == target:
-                    pos_utente = index + 1
-                    dati_utente = g
-                    break
+        dati_utente = None
+        for index, g in enumerate(dati):
+            if g["utente"].lower() == nome_utente_corrente:
+                pos_utente = index + 1
+                dati_utente = g
+                break
 
         if dati_utente:
-            self._inserisci_riga_centrata(self.table_user_pos, 0, [
-                f"{pos_utente}°", 
-                str(dati_utente["vittorie"]), 
-                f"{dati_utente['media']:.2f}"
-            ])
+            self.table_user_pos.setRowCount(1)
+            self.table_user_pos.setItem(0, 0, QTableWidgetItem(f"{pos_utente}°"))
+            self.table_user_pos.setItem(0, 1, QTableWidgetItem(str(dati_utente["vittorie"])))
+            self.table_user_pos.setItem(0, 2, QTableWidgetItem(str(dati_utente["media"])))
         else:
-            # Se non trovato o se è "Ospite", mostra valori di default
-            self._inserisci_riga_centrata(self.table_user_pos, 0, ["-", "0", "0.00"])
-
-    def _inserisci_riga_centrata(self, tabella, riga, valori):
-        """Utility per inserire una riga con testo centrato."""
-        for col, valore in enumerate(valori):
-            item = QTableWidgetItem(valore)
-            item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-            tabella.setItem(riga, col, item)
-            
-    def showEvent(self, event):
-        """Metodo standard di Qt chiamato ogni volta che la finestra viene mostrata."""
-        super().showEvent(event)
-        self.aggiorna_classifica() # Riesegue la query al DB ogni volta che la finestra si apre
+            self.table_user_pos.setRowCount(0) # Utente non ha ancora giocato
 
     def torna_indietro(self):
         """Metodo per tornare alla main window evitando crash se il manager è None."""
@@ -156,72 +140,6 @@ class LeaderboardWindow(BaseDialog):
         self.main_window.show()
         self.close()
 
-    def resizeEvent(self, event):
-        """Ricalcola la dimensione dei font quando la finestra cambia dimensione."""
-        super().resizeEvent(event)
-        self.adatta_font_dinamico()
-
-    def adatta_font_dinamico(self):
-        """Calcola una dimensione del font proporzionale alla larghezza della finestra."""
-        w = self.width()
-        # Calcolo dimensioni proporzionali
-        size_titolo = max(22, int(w / 30))
-        size_tabella = max(16, int(w / 40))
-        size_header = max(14, int(w / 50))
-
-        stile_globale = f"""
-            QDialog {{ background-color: #121213; }}
-            QLabel {{ 
-                color: #ffffff; 
-                font-weight: bold; 
-                font-size: {size_titolo}px; 
-                margin-bottom: 10px;
-            }}
-            
-            QTableWidget {{ 
-                background-color: #121213; 
-                color: white; 
-                gridline-color: #3a3a3c; 
-                border: 1px solid #3a3a3c; 
-                font-size: {size_tabella}px;
-                outline: 0; 
-            }}
-            QTableWidget::item {{ 
-                padding: 10px;
-            }}
-            QHeaderView::section {{ 
-                background-color: #538d4e; 
-                color: white; 
-                font-weight: bold; 
-                font-size: {size_header}px; 
-                border: 1px solid #3a3a3c;
-                text-align: center;
-            }}
-            QPushButton#btn_back {{ 
-                background-color: #538d4e; color: white; border-radius: 4px; 
-                padding: 10px; font-size: {max(16, size_header)}px; 
-            }}
-            QPushButton#btn_back:hover {{ background-color: #6aaa64; }}
-        """
-        self.setStyleSheet(stile_globale)
-
-        # Centriamo il testo di TUTTE le celle e delle intestazioni
-        for table in [self.table_top3, self.table_user_pos]:
-            # 1. Centra le intestazioni delle colonne
-            table.horizontalHeader().setDefaultAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-            
-            # 2. Centra il contenuto di ogni cella
-            for row in range(table.rowCount()):
-                for col in range(table.columnCount()):
-                    item = table.item(row, col)
-                    if item:
-                        item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-
-    def _crea_item_centrato(self, testo):
-        """Utility per creare un item già centrato."""
-        item = QTableWidgetItem(str(testo))
-        item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        return item
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

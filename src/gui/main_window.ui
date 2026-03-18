@@ -33,7 +33,7 @@ QPushButton:hover {
 
 QPushButton#btn_exit {
     background-color: red;
-	font-size: 10px;
+	font-size: 16px;
 }
 
 QPushButton#btn_exit:hover {

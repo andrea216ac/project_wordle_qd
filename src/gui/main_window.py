@@ -101,7 +101,7 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
         self.leaderboard_window.show()
         self.leaderboard_window.raise_()
         self.leaderboard_window.activateWindow()
-        self.hide()
+        self.close()
 
     def apri_allenamento(self):
         self._avvia_gioco(modalita_scelta="training")

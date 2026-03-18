@@ -58,23 +58,64 @@ class GameWindow(BaseWindow):
         self._map_ui_grid()
         self._setup_keyboard()
         self.setup_keyboard_focus()
-        self._refresh_ui_state()
 
-        btn_game = getattr(self, "btn_back", None)
-        if btn_game:
-            btn_game.clicked.connect(self.torna_indietro)
+        btn_back = getattr(self, "btn_back", None)
+        if btn_back:
+            btn_back.clicked.connect(self.torna_indietro)
 
         if self.game_manager:
             self.game_manager.start_game(
                 mode=modalita, language=lingua, user=nome_giocatore
             )
-
-        tentativi_precedenti = self.game_manager.get_guesses() # Dovrai creare questo getter
-        for i, guess in enumerate(tentativi_precedenti):
-            result = self.game_manager.check_guess(guess) # Verifica colori
-            self._update_grid_row(i, guess, result) # Colora la riga i-esima
+            self._ripristina_interfaccia()
         
-        self.current_row = len(tentativi_precedenti)
+        self._refresh_ui_state()
+
+    def _ripristina_interfaccia(self):
+        """Carica visivamente i tentativi passati sulla griglia."""
+        if not self.game_manager or not self.game_manager.current_mode: return
+        
+        game = self.game_manager.current_mode.current_game
+        if not game or not hasattr(game, 'guesses') or not game.guesses: return
+
+        target = game.target_word.upper()
+        
+        for i, guess in enumerate(game.guesses):
+            guess = guess.upper()
+            risultati = self._calcola_colori(guess, target)
+            self._colora_riga(i, guess, risultati)
+            self.current_row += 1
+
+        if game.is_over:
+            self.gioco_finito = True
+
+    def _calcola_colori(self, guess: str, target: str) -> List[str]:
+        """Calcola Verde/Giallo/Grigio senza alterare il punteggio interno."""
+        res = ["Assente"] * 5
+        t_chars = list(target)
+        g_chars = list(guess)
+        for i in range(5):
+            if g_chars[i] == t_chars[i]:
+                res[i] = "Corretto"
+                t_chars[i] = None 
+        for i in range(5):
+            if res[i] != "Corretto" and g_chars[i] in t_chars:
+                res[i] = "Presente"
+                t_chars[t_chars.index(g_chars[i])] = None
+        return res
+
+    def _colora_riga(self, riga: int, parola: str, risultati: List[str]):
+        """Applica i CSS alla riga specifica."""
+        color_map = {"Corretto": "#538d4e", "Presente": "#b59f3b", "Assente": "#3a3a3c"}
+        for i, esito in enumerate(risultati):
+            widget = self.grid[riga][i]
+            colore = color_map.get(esito, "#3a3a3c")
+            widget.setText(parola[i])
+            widget.setStyleSheet(f"""
+                background-color: {colore}; color: white; 
+                border: 2px solid {colore}; font-weight: bold; font-size: 25px;
+            """)
+            self._aggiorna_colore_tasto(parola[i], colore)
 
     def torna_indietro(self):
         """Metodo per tornare alla main window."""
@@ -245,19 +286,18 @@ class GameWindow(BaseWindow):
             )
             self._controlla_parola(tentativo)
 
-        tutti_i_tentativi = ",".join(self.game_manager.get_guesses())
-        self.game_manager.save_checkpoint(tutti_i_tentativi)
-
     def _controlla_parola(self, tentativo: str):
         """Usa il GameManager per validare la parola e colora l'interfaccia."""
         if not self.game_manager:
             print("Errore: GameManager non collegato!")
             return
 
-        try:
-            risultati = self.game_manager.submit_guess(tentativo)
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            QtWidgets.QMessageBox.warning(self, "Errore", str(e))
+        risultati = self.game_manager.submit_guess(tentativo)
+
+        # AGGIUNGI QUESTO CONTROLLO:
+        if risultati is None:
+            # Mostra un messaggio all'utente o semplicemente ignora l'invio
+            QtWidgets.QMessageBox.warning(self, "Parola non valida", "La parola non è presente nel dizionario.")
             return
 
         color_map = {"Corretto": "#538d4e", "Presente": "#b59f3b", "Assente": "#3a3a3c"}
