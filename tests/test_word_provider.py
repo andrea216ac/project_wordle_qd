@@ -11,8 +11,8 @@ from src.core.word_provider import WordProvider
 class FakeWord:  # pylint: disable=too-few-public-methods
     """Classe finta per simulare l'oggetto restituito da WordRepository."""
 
-    def __init__(self, text):
-        self.text = text
+    def __init__(self, word):
+        self.word = word
 
 
 def test_get_random_word_success():
