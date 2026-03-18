@@ -277,3 +277,118 @@ def test_save_score_failure_handled():
     result = manager.submit_guess("cane")
 
     assert result is not None
+
+# -------------------------
+# TEST VALIDAZIONE PAROLA
+# -------------------------
+def test_submit_guess_invalid_word():
+    """Verifica che una parola non valida venga rifiutata."""
+    provider = Mock()
+    provider.is_valid_word.return_value = False
+
+    manager = GameManager(provider)
+    manager.current_mode = FakeMode()
+    manager.language = "it"
+
+    with pytest.raises(ValueError):
+        manager.submit_guess("xxxxx")
+
+
+# -------------------------
+# TEST SALVATAGGIO STATO
+# -------------------------
+def test_submit_guess_saves_game_state():
+    """Verifica che lo stato della partita venga salvato dopo un tentativo."""
+    provider = Mock()
+    provider.is_valid_word.return_value = True
+
+    repo = Mock()
+
+    manager = GameManager(provider, repo)
+    manager.current_mode = FakeMode()
+    manager.language = "it"
+    manager.current_user = "test_user"
+
+    manager.submit_guess("cane")
+
+    assert repo.save_game_state.called
+
+
+# -------------------------
+# TEST CONTENUTO SALVATAGGIO
+# -------------------------
+def test_save_game_state_data():
+    """Verifica che i dati salvati siano corretti."""
+    provider = Mock()
+    provider.is_valid_word.return_value = True
+
+    repo = Mock()
+
+    manager = GameManager(provider, repo)
+    manager.current_mode = FakeMode()
+    manager.language = "it"
+    manager.current_user = "test_user"
+
+    manager.submit_guess("cane")
+
+    args = repo.save_game_state.call_args.kwargs
+
+    assert args["user"] == "test_user"
+    assert args["word"] == "cane"
+    assert args["attempts"] == 1
+    assert args["is_over"] is True
+
+
+# -------------------------
+# TEST LOAD GAME
+# -------------------------
+def test_load_game_success():
+    """Verifica che una partita salvata venga caricata correttamente."""
+    provider = Mock()
+    repo = Mock()
+
+    saved_game = Mock()
+    saved_game.word = "cane"
+    saved_game.attempts = 2
+    saved_game.is_over = False
+    saved_game.guesses = ["pane", "lane"]
+    saved_game.mode = "TrainingMode"
+    saved_game.language = "it"
+
+    repo.load_game_state.return_value = saved_game
+
+    manager = GameManager(provider, repo)
+
+    result = manager.load_game("test_user")
+
+    assert result is True
+    assert manager.current_mode is not None
+    assert manager.get_attempts() == 2
+
+
+# -------------------------
+# TEST LOAD GAME FALLITO
+# -------------------------
+def test_load_game_not_found():
+    """Verifica che load_game ritorni False se non esiste una partita."""
+    provider = Mock()
+    repo = Mock()
+    repo.load_game_state.return_value = None
+
+    manager = GameManager(provider, repo)
+
+    result = manager.load_game("user")
+
+    assert result is False
+
+
+# -------------------------
+# TEST NO ACTIVE GAME
+# -------------------------
+def test_submit_guess_no_game():
+    """Verifica errore se non c'è una partita attiva."""
+    provider = Mock()
+    manager = GameManager(provider)
+
+    with pytest.raises(RuntimeError):
+        manager.submit_guess("cane")
