@@ -68,18 +68,20 @@ class GameWindow(BaseWindow):
                 mode=modalita, language=lingua, user=nome_giocatore
             )
             self._ripristina_interfaccia()
-        
+
         self._refresh_ui_state()
 
     def _ripristina_interfaccia(self):
         """Carica visivamente i tentativi passati sulla griglia."""
-        if not self.game_manager or not self.game_manager.current_mode: return
-        
+        if not self.game_manager or not self.game_manager.current_mode:
+            return
+
         game = self.game_manager.current_mode.current_game
-        if not game or not hasattr(game, 'guesses') or not game.guesses: return
+        if not game or not hasattr(game, "guesses") or not game.guesses:
+            return
 
         target = game.target_word.upper()
-        
+
         for i, guess in enumerate(game.guesses):
             guess = guess.upper()
             risultati = self._calcola_colori(guess, target)
@@ -97,7 +99,7 @@ class GameWindow(BaseWindow):
         for i in range(5):
             if g_chars[i] == t_chars[i]:
                 res[i] = "Corretto"
-                t_chars[i] = None 
+                t_chars[i] = None
         for i in range(5):
             if res[i] != "Corretto" and g_chars[i] in t_chars:
                 res[i] = "Presente"
@@ -199,7 +201,6 @@ class GameWindow(BaseWindow):
             self.keyboard_container
         )
         layout.setSpacing(5)
-        # layout.setContentsMargins(5, 5, 5, 5)
 
         rows = [
             ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
@@ -294,10 +295,11 @@ class GameWindow(BaseWindow):
 
         risultati = self.game_manager.submit_guess(tentativo)
 
-        # AGGIUNGI QUESTO CONTROLLO:
         if risultati is None:
             # Mostra un messaggio all'utente o semplicemente ignora l'invio
-            QtWidgets.QMessageBox.warning(self, "Parola non valida", "La parola non è presente nel dizionario.")
+            QtWidgets.QMessageBox.warning(
+                self, "Parola non valida", "La parola non è presente nel dizionario."
+            )
             return
 
         color_map = {"Corretto": "#538d4e", "Presente": "#b59f3b", "Assente": "#3a3a3c"}

@@ -27,7 +27,7 @@ except ImportError:
     Qt = _MockQt  # type: ignore
 
 
-class LoginWindow(QtWidgets.QDialog):
+class LoginWindow(BaseDialog):
     """Classe che gestisce il login dell'utente."""
 
     def __init__(self, sessione_db=None, game_manager=None, parent=None):

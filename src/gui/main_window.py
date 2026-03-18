@@ -94,8 +94,7 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
 
         if self.leaderboard_window is None:
             self.leaderboard_window = LeaderboardWindow(
-                main_window=self, 
-                game_manager=self.game_manager
+                main_window=self, game_manager=self.game_manager
             )
 
         self.leaderboard_window.show()
