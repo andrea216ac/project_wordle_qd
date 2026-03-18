@@ -94,7 +94,7 @@ class GameManager:
         if self.current_mode is None:
             logger.error("Attempted guess without active game.")
             raise RuntimeError("No active game")
-        
+
         # VALIDAZIONE PAROLA
         if not self.word_provider.is_valid_word(guess, self.language):
             logger.warning("Invalid word attempted: %s", guess)
@@ -175,7 +175,7 @@ class GameManager:
         logger.info("Game state loaded for user %s", user)
 
         return True
-    
+
     def is_game_over(self) -> bool:
         """Controlla se la partita è terminata."""
         if self.current_mode is None:
@@ -236,10 +236,9 @@ class GameManager:
             try:
                 return self.score_repository.get_leaderboard_data()
             except AttributeError:
-                logger.warning(
-                    "get_leaderboard_data non implementato nel repository."
-                )
+                logger.warning("get_leaderboard_data non implementato nel repository.")
         else:
-            logger.warning("Score repository non configurato. Impossibile caricare la classifica.")
+            logger.warning(
+                "Score repository non configurato. Impossibile caricare la classifica."
+            )
         return []
-    

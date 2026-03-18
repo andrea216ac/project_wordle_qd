@@ -21,8 +21,8 @@ class Game:
         self.attempts: int = 0
         self.is_over: bool = False
         self.max_attempts: int = max_attempts
-        
-        #salva storico tentativi
+
+        # salva storico tentativi
         self.guesses: List[str] = []
 
     def check_guess(self, guess: str) -> List[str]:
