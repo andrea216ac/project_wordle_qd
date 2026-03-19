@@ -17,13 +17,12 @@ class Game:
             target_word: Parola da indovinare.
             max_attempts: Numero massimo di tentativi possibili.
         """
-        self.target_word: str = target_word
-        self.attempts: int = 0
-        self.is_over: bool = False
-        self.max_attempts: int = max_attempts
-
-        # salva storico tentativi
+        self.target_word = target_word
+        self.attempts = 0
         self.guesses: List[str] = []
+        self.is_over = False
+        self.won = False
+        self.max_attempts = max_attempts
 
     def check_guess(self, guess: str) -> List[str]:
         """
@@ -80,6 +79,7 @@ class Game:
         # Controllo vittoria o fine tentativi
         if guess == self.target_word:
             self.is_over = True
+            self.won = True
             logger.info("Word guessed correctly!")
 
         if self.attempts >= self.max_attempts:

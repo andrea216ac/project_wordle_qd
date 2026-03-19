@@ -42,16 +42,7 @@ class WordProvider:  # pylint: disable=too-few-public-methods
         return word.word
 
     def is_valid_word(self, word: str, language: str) -> bool:
-        """
-        Controlla se una parola esiste nel database.
-
-        Args:
-            word: parola inserita dall'utente
-            language: lingua corrente
-
-        Returns:
-            True se la parola esiste, False altrimenti
-        """
+        """Controlla se una parola esiste nel database."""
         if not word:
             logger.warning("Empty word provided for validation")
             return False
@@ -64,12 +55,11 @@ class WordProvider:  # pylint: disable=too-few-public-methods
             )
             return False
 
-        # normalizzazione (utile per evitare problemi tipo Maiuscole/minuscole)
         word = word.lower()
 
         try:
             result = self.word_repository.word_exists(word, language)
-            return result is not None
+            return bool(result)
 
         except Exception as exc:  # pylint: disable=broad-exception-caught
             logger.error("Error validating word: %s", exc)
