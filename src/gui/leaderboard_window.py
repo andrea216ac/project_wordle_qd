@@ -1,5 +1,7 @@
 """Modulo per la finestra della classifica dell'applicazione Wordle."""
 
+# pylint: disable=import-outside-toplevel, cyclic-import
+
 # pylint: disable=duplicate-code
 import os
 import sys
@@ -17,14 +19,15 @@ except ImportError:
     BaseDialog = object
 
 
-class LeaderboardWindow(BaseDialog):  # pylint: disable=too-few-public-methods
+class LeaderboardWindow(BaseDialog):
     """Classe che gestisce la visualizzazione della classifica utenti."""
 
-    def __init__(self, main_window=None):
+    def __init__(self, main_window=None, game_manager=None):
         """Inizializza la finestra e carica i dati della classifica."""
         super().__init__()
 
         self.main_window = main_window
+        self.game_manager = game_manager
 
         ui_path = os.path.join(os.path.dirname(__file__), "leaderboard_window.ui")
 
@@ -34,34 +37,29 @@ class LeaderboardWindow(BaseDialog):  # pylint: disable=too-few-public-methods
 
         uic.loadUi(ui_path, self)
 
-        btn_leaderboard = getattr(self, "btn_back", None)
-        if btn_leaderboard:
-            btn_leaderboard.clicked.connect(self.torna_indietro)
+        self.table_user_pos.setColumnCount(3)
+        self.table_user_pos.setHorizontalHeaderLabels(
+            ["Posizione", "Vittorie", "Media Tentativi"]
+        )
 
-        self.dati_classifica = [
-            {"utente": "Andrea", "media": 3.2, "vittorie": 45},
-            {"utente": "Luca", "media": 3.8, "vittorie": 38},
-            {"utente": "Sara", "media": 4.1, "vittorie": 30},
-            {"utente": "Tu (Esempio)", "media": 4.5, "vittorie": 12},
-        ]
+        # Configurazione bottone indietro
+        btn_back = getattr(self, "btn_back", None)
+        if btn_back:
+            btn_back.clicked.connect(self.torna_indietro)
 
+        # Controllo esistenza tabelle nell'UI
         if hasattr(self, "table_top3") and hasattr(self, "table_user_pos"):
             self.setup_leaderboard_graphics()
-            self.popola_classifica(
-                self.dati_classifica, nome_utente_corrente="Tu (Esempio)"
-            )
+            self.aggiorna_classifica()  # Carica i dati reali
         else:
-            msg = (
-                "ERRORE: I nomi 'table_top3' o 'table_user_pos' "
-                "non corrispondono all'objectName nel file .ui"
-            )
-            print(msg)
+            print("ERRORE: Tabelle non trovate nel file .ui. Verifica gli objectName.")
 
     def setup_leaderboard_graphics(self):
         """Configura le intestazioni e il comportamento delle tabelle."""
+        # Tabella Top 3
         self.table_top3.setColumnCount(4)
         self.table_top3.setHorizontalHeaderLabels(
-            ["Pos.", "Utente", "Media Tentativi", "Vittorie"]
+            ["Pos.", "Utente", "Vittorie", "Media Tentativi"]
         )
         self.table_top3.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
@@ -70,9 +68,10 @@ class LeaderboardWindow(BaseDialog):  # pylint: disable=too-few-public-methods
             QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
         )
 
+        # Tabella Posizione Utente
         self.table_user_pos.setColumnCount(3)
         self.table_user_pos.setHorizontalHeaderLabels(
-            ["Pos.", "Media Tentativi", "Vittorie"]
+            ["Posizione", "Vittorie", "Media Tentativi"]
         )
         self.table_user_pos.horizontalHeader().setSectionResizeMode(
             QHeaderView.ResizeMode.Stretch
@@ -81,56 +80,80 @@ class LeaderboardWindow(BaseDialog):  # pylint: disable=too-few-public-methods
             QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
         )
 
-    def popola_classifica(self, dati, nome_utente_corrente):
-        """Inserisce i dati ordinati all'interno dei widget QTableWidget."""
-        dati_ordinati = sorted(dati, key=lambda x: (-x["vittorie"], x["media"]))
+        # Stile grafico
+        style = """
+            QTableWidget { background-color: #ffffff; gridline-color: #d3d6da; border-radius: 5px; }
+            QHeaderView::section { background-color: #787c7e; color: white; font-weight: bold; }
+            QTableWidget::item { color: #1a1a1a; }
+        """
+        self.table_top3.setStyleSheet(style)
+        self.table_user_pos.setStyleSheet(style)
 
-        self.table_top3.setRowCount(3)
-        for i in range(min(3, len(dati_ordinati))):
-            giocatore = dati_ordinati[i]
+    def aggiorna_classifica(self):
+        """Recupera i dati aggiornati tramite GameManager e popola la UI."""
+        dati = []
+        nome_utente = "Ospite"
+
+        if self.game_manager:
+            dati = self.game_manager.get_leaderboard()
+            nome_utente = self.game_manager.get_current_user() or "Ospite"
+        else:
+            print("Attenzione: GameManager non passato alla LeaderboardWindow.")
+
+        self.popola_classifica(dati, nome_utente)
+
+    def popola_classifica(self, dati, nome_utente_corrente):
+        """Inserisce i dati reali all'interno dei widget QTableWidget."""
+        # I dati arrivano già ordinati dal Repository (vittorie DESC, media ASC)
+
+        print(f"Debug: Cerco utente '{nome_utente_corrente}' in classifica")  # DEBUG
+        print(f"Debug: Dati ricevuti: {dati}")
+        # Popolamento Top 3
+        self.table_top3.setRowCount(min(3, len(dati)))
+        for i in range(min(3, len(dati))):
+            giocatore = dati[i]
             self.table_top3.setItem(i, 0, QTableWidgetItem(str(i + 1)))
             self.table_top3.setItem(i, 1, QTableWidgetItem(giocatore["utente"]))
-            self.table_top3.setItem(i, 2, QTableWidgetItem(str(giocatore["media"])))
-            self.table_top3.setItem(i, 3, QTableWidgetItem(str(giocatore["vittorie"])))
+            self.table_top3.setItem(i, 2, QTableWidgetItem(str(giocatore["vittorie"])))
+            self.table_top3.setItem(i, 3, QTableWidgetItem(str(giocatore["media"])))
 
+        # Trova la posizione dell'utente corrente nell'intera lista
         pos_utente = -1
         dati_utente = None
-        for index, g in enumerate(dati_ordinati):
-            if g["utente"] == nome_utente_corrente:
+        for index, g in enumerate(dati):
+            if g["utente"].lower() == nome_utente_corrente:
                 pos_utente = index + 1
                 dati_utente = g
                 break
 
         if dati_utente:
             self.table_user_pos.setRowCount(1)
-            self.table_user_pos.setItem(0, 0, QTableWidgetItem(str(pos_utente)))
+            self.table_user_pos.setItem(0, 0, QTableWidgetItem(f"{pos_utente}°"))
             self.table_user_pos.setItem(
-                0, 1, QTableWidgetItem(str(dati_utente["media"]))
+                0, 1, QTableWidgetItem(str(dati_utente["vittorie"]))
             )
             self.table_user_pos.setItem(
-                0, 2, QTableWidgetItem(str(dati_utente["vittorie"]))
+                0, 2, QTableWidgetItem(str(dati_utente["media"]))
             )
-
-        style = """
-            QTableWidget { background-color: #ffffff; gridline-color: #d3d6da; }
-            QHeaderView::section { background-color: #787c7e; color: white; padding: 5px; }
-            QTableWidget::item { padding: 10px; color: #1a1a1a; }
-        """
-        self.table_top3.setStyleSheet(style)
-        self.table_user_pos.setStyleSheet(style)
+        else:
+            self.table_user_pos.setRowCount(0)  # Utente non ha ancora giocato
 
     def torna_indietro(self):
-        """Metodo per tornare alla main window."""
-        # pylint: disable=import-outside-toplevel, cyclic-import
+        """Metodo per tornare alla main window evitando crash se il manager è None."""
         from src.gui.main_window import MainWindow
 
+        # Recuperiamo il nome in sicurezza
+        username = "Ospite"
+        if self.game_manager is not None:
+            username = self.game_manager.get_current_user() or "Ospite"
+
         if self.main_window is None:
-            self.main_window = MainWindow()
+            # Passiamo i dati necessari alla MainWindow
+            self.main_window = MainWindow(
+                nome_giocatore=username, game_manager=self.game_manager
+            )
 
         self.main_window.show()
-        self.main_window.raise_()
-        self.main_window.activateWindow()
-
         self.close()
 
 

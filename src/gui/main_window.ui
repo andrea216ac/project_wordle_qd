@@ -33,14 +33,14 @@ QPushButton:hover {
 
 QPushButton#btn_exit {
     background-color: red;
-	font-size: 10px;
+	font-size: 16px;
 }
 
 QPushButton#btn_exit:hover {
     background-color: #818384;
 }
 
-QPushButton#btn_play, QPushButton#btn_leaderboard{
+QPushButton#btn_play, QPushButton#btn_leaderboard, QPushButton#btn_training{
 	font-size: 16px;
 }
 
@@ -179,6 +179,37 @@ QLabel#lbl_welcome{
         </property>
         <property name="text">
          <string>Nuova partita</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_training">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>252</width>
+          <height>52</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>400</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="text">
+         <string>Nuovo Allenamento</string>
         </property>
        </widget>
       </item>

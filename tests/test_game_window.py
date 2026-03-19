@@ -18,6 +18,7 @@ except ImportError:
     Qt = cast(Any, MagicMock())
     HAS_QT = False
 
+from src.core.game_manager import GameManager
 from src.gui.game_window import GameWindow
 
 
@@ -33,13 +34,22 @@ def game_instance(request):
 
     qtbot_inst = request.getfixturevalue("qtbot")
 
-    mock_manager = MagicMock()
+    mock_manager = MagicMock(spec=GameManager)
 
     mock_manager.is_game_over.return_value = False
     mock_manager.submit_guess.return_value = ["Assente"] * 5
     mock_manager.get_attempts.return_value = 1
 
-    window = GameWindow(nome_giocatore="TestPlayer", game_manager=mock_manager)
+    mock_manager.start_game = MagicMock()
+
+    window = GameWindow(
+        nome_giocatore="TestPlayer",
+        game_manager=mock_manager,
+        modalita="classic",
+        lingua="it",
+    )
+
+    mock_manager.start_game.assert_called_once()
 
     qtbot_inst.addWidget(window)
     window.show()
@@ -79,7 +89,6 @@ def test_cannot_enter_short_word(game):
 
 def test_row_progression(game):
     """Verifica il passaggio alla riga successiva dopo una parola completa."""
-    game.game_manager = MagicMock()
     game.game_manager.is_game_over.return_value = False
     game.game_manager.submit_guess.return_value = ["Assente"] * 5
 

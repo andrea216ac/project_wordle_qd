@@ -3,7 +3,9 @@
 
 import os
 import sys
-from typing import Any, List, Type
+from typing import Any, List, Optional, Type
+
+from src.core.game_manager import GameManager
 
 try:
     from PyQt6 import QtCore, QtWidgets, uic
@@ -20,11 +22,20 @@ except ImportError:
 class GameWindow(BaseWindow):
     """Classe che gestisce la logica della griglia e della tastiera di gioco."""
 
+    # pylint: disable=too-many-arguments
     def __init__(
-        self, main_window=None, nome_giocatore: str = "Giocatore", game_manager=None
+        self,
+        main_window=None,
+        nome_giocatore: str = "Giocatore",
+        *,
+        game_manager: Optional[GameManager] = None,
+        modalita: str = "classic",
+        lingua: str = "it",
     ):
         """Inizializza la finestra, carica l'UI e prepara la griglia."""
-        self.grid: List[List[Any]] = [[None for _ in range(5)] for _ in range(6)]
+        self.grid: List[List[Optional[QtWidgets.QTextEdit]]] = [
+            [None for _ in range(5)] for _ in range(6)
+        ]
         self.keyboard_buttons: dict[str, QtWidgets.QPushButton] = {}
 
         self.nome_giocatore = nome_giocatore
@@ -49,11 +60,67 @@ class GameWindow(BaseWindow):
         self._map_ui_grid()
         self._setup_keyboard()
         self.setup_keyboard_focus()
+
+        btn_back = getattr(self, "btn_back", None)
+        if btn_back:
+            btn_back.clicked.connect(self.torna_indietro)
+
+        if self.game_manager:
+            self.game_manager.start_game(
+                mode=modalita, language=lingua, user=nome_giocatore
+            )
+            self._ripristina_interfaccia()
+
         self._refresh_ui_state()
 
-        btn_game = getattr(self, "btn_back", None)
-        if btn_game:
-            btn_game.clicked.connect(self.torna_indietro)
+    def _ripristina_interfaccia(self):
+        """Carica visivamente i tentativi passati sulla griglia."""
+        if not self.game_manager or not self.game_manager.current_mode:
+            return
+
+        game = self.game_manager.current_mode.current_game
+        if not game or not hasattr(game, "guesses") or not game.guesses:
+            return
+
+        target = game.target_word.upper()
+
+        for i, guess in enumerate(game.guesses):
+            guess = guess.upper()
+            risultati = self._calcola_colori(guess, target)
+            self._colora_riga(i, guess, risultati)
+            self.current_row += 1
+
+        if game.is_over:
+            self.gioco_finito = True
+
+    def _calcola_colori(self, guess: str, target: str) -> List[str]:
+        """Calcola Verde/Giallo/Grigio senza alterare il punteggio interno."""
+        res = ["Assente"] * 5
+        t_chars: List[Optional[str]] = list(target)
+        g_chars = list(guess)
+        for i in range(5):
+            if g_chars[i] == t_chars[i]:
+                res[i] = "Corretto"
+                t_chars[i] = None
+        for i in range(5):
+            if res[i] != "Corretto" and g_chars[i] in t_chars:
+                res[i] = "Presente"
+                t_chars[t_chars.index(g_chars[i])] = None
+        return res
+
+    def _colora_riga(self, riga: int, parola: str, risultati: List[str]):
+        """Applica i CSS alla riga specifica."""
+        color_map = {"Corretto": "#538d4e", "Presente": "#b59f3b", "Assente": "#3a3a3c"}
+        for i, esito in enumerate(risultati):
+            widget = self.grid[riga][i]
+            if widget:
+                colore = color_map.get(esito, "#3a3a3c")
+                widget.setText(parola[i])
+                widget.setStyleSheet(f"""
+                    background-color: {colore}; color: white;
+                    border: 2px solid {colore}; font-weight: bold; font-size: 25px;
+                """)
+            self._aggiorna_colore_tasto(parola[i], colore)
 
     def torna_indietro(self):
         """Metodo per tornare alla main window."""
@@ -76,6 +143,7 @@ class GameWindow(BaseWindow):
 
         grid_layout.setSpacing(5)
         grid_layout.setContentsMargins(0, 0, 0, 0)
+        grid_layout.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetFixedSize)
 
         for i in range(grid_layout.count()):
             item = grid_layout.itemAt(i)
@@ -105,7 +173,7 @@ class GameWindow(BaseWindow):
 
         for c in range(5):
             widget = self.grid[self.current_row][c]
-            if widget is None:
+            if not widget:
                 continue
 
             is_active = c == self.current_col
@@ -148,6 +216,10 @@ class GameWindow(BaseWindow):
             for key in row_keys:
                 btn = QtWidgets.QPushButton(key)
                 btn.setMinimumHeight(50)
+                if len(key) > 1:
+                    btn.setFixedWidth(25)
+                else:
+                    btn.setFixedWidth(25)
                 btn.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
 
                 btn.setStyleSheet("""
@@ -224,41 +296,45 @@ class GameWindow(BaseWindow):
             print("Errore: GameManager non collegato!")
             return
 
-        try:
-            risultati = self.game_manager.submit_guess(tentativo)
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            QtWidgets.QMessageBox.warning(self, "Errore", str(e))
+        risultati = self.game_manager.submit_guess(tentativo)
+
+        if risultati is None:
+            # Mostra un messaggio all'utente o semplicemente ignora l'invio
+            QtWidgets.QMessageBox.warning(
+                self, "Parola non valida", "La parola non è presente nel dizionario."
+            )
             return
 
         color_map = {"Corretto": "#538d4e", "Presente": "#b59f3b", "Assente": "#3a3a3c"}
 
         for i, esito in enumerate(risultati):
             widget = self.grid[self.current_row][i]
-            colore = color_map.get(esito, "#3a3a3c")
-            lettera = tentativo[i]
+            if widget is not None:
+                colore = color_map.get(esito, "#3a3a3c")
+                lettera = tentativo[i]
 
-            widget.setStyleSheet(f"""
-                background-color: {colore};
-                color: white; border: 2px solid {colore};
-                font-weight: bold; font-size: 25px;
-            """)
+                widget.setStyleSheet(f"""
+                    background-color: {colore};
+                    color: white; border: 2px solid {colore};
+                    font-weight: bold; font-size: 25px;
+                """)
 
-            btn = self.keyboard_buttons.get(lettera)
-            if btn:
-                old_style = btn.styleSheet()
-                if "#538d4e" not in old_style:
-                    if colore == "#538d4e" or (
-                        colore == "#b59f3b" and "#b59f3b" not in old_style
-                    ):
-                        btn.setStyleSheet(
-                            f"""QPushButton {{ background-color: {colore}; color: white;
-                            border-radius: 4px; font-weight: bold; font-size: 16px;}}"""
-                        )
-                    elif colore == "#3a3a3c" and "#b59f3b" not in old_style:
-                        btn.setStyleSheet(
-                            "QPushButton {{ background-color: #3a3a3c; color: white;"
-                            "border-radius: 4px;font-weight:bold;font-size:16px;}}"
-                        )
+                btn = self.keyboard_buttons.get(lettera)
+                if btn:
+                    old_style = btn.styleSheet()
+                    if "#538d4e" not in old_style:
+                        if colore == "#538d4e" or (
+                            colore == "#b59f3b" and "#b59f3b" not in old_style
+                        ):
+                            btn.setStyleSheet(
+                                f"""QPushButton {{ background-color: {colore}; color: white;
+                                border-radius: 4px; font-weight: bold; font-size: 16px;}}"""
+                            )
+                        elif colore == "#3a3a3c" and "#b59f3b" not in old_style:
+                            btn.setStyleSheet(
+                                "QPushButton {{ background-color: #3a3a3c; color: white;"
+                                "border-radius: 4px;font-weight:bold;font-size:16px;}}"
+                            )
 
         if self.game_manager.is_game_over():
             self.gioco_finito = True
@@ -271,8 +347,11 @@ class GameWindow(BaseWindow):
                     f"Hai indovinato! Tentativi: {self.game_manager.get_attempts()}",
                 )
             else:
+                parola_corretta = self.game_manager.get_target_word()  # type: ignore
                 QtWidgets.QMessageBox.critical(
-                    self, "Partita finita", "Peccato, tentativi esauriti!"
+                    self,
+                    "Partita finita",
+                    f"Peccato, tentativi esauriti!\nLa parola era: {parola_corretta}",
                 )
         else:
             self.current_row += 1

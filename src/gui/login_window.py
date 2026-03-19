@@ -30,10 +30,13 @@ except ImportError:
 class LoginWindow(BaseDialog):
     """Classe che gestisce il login dell'utente."""
 
-    def __init__(self):
+    def __init__(self, sessione_db=None, game_manager=None, parent=None):
         """Inizializza la finestra di login."""
-        super().__init__()
+        super().__init__(parent)
 
+        self.sessione_db = sessione_db
+        self.game_manager = game_manager
+        self.user_name = None
         self.main_window = None
         self.reg_win = None
 
@@ -49,6 +52,9 @@ class LoginWindow(BaseDialog):
         if hasattr(self, "btn_login"):
             self.btn_login.setEnabled(False)
             self.btn_login.clicked.connect(self.gestisci_accedi)
+
+        if hasattr(self, "lbl_error_login"):
+            self.lbl_error_login.hide()
 
         if hasattr(self, "lineEdit_username"):
             self.lineEdit_username.textChanged.connect(self._controlla_campi)
@@ -75,13 +81,20 @@ class LoginWindow(BaseDialog):
         username = self.lineEdit_username.text().strip()
 
         if not username:
-            username = "Ospite"
+            return
 
-        from src.gui.main_window import MainWindow
+        if self.sessione_db:
+            from src.database.models import User
 
-        self.main_window = MainWindow(nome_giocatore=username)
-        self.main_window.show()
-        self.close()
+            utente = self.sessione_db.query(User).filter_by(username=username).first()
+            if utente:
+                # L'utente esiste, procediamo
+                self.user_name = username
+                self.accept()
+            else:
+                # L'utente NON esiste: mostriamo il messaggio di errore
+                if hasattr(self, "lbl_error_login"):
+                    self.lbl_error_login.show()
 
     def vai_a_registrazione(self):
         """Chiude il Login e apre la Registrazione."""
@@ -89,9 +102,18 @@ class LoginWindow(BaseDialog):
         try:
             from src.gui.registration_window import RegistrationWindow
 
-            self.reg_win = RegistrationWindow()
+            self.reg_win = RegistrationWindow(
+                sessione_db=self.sessione_db,
+                game_manager=getattr(self, "game_manager", None),
+            )
             self.reg_win.show()
-            self.close()
+            self.hide()
+
+            if self.reg_win.exec() == QtWidgets.QDialog.DialogCode.Accepted:
+                self.user_name = self.reg_win.user_name
+                self.accept()
+            else:
+                self.show()
         except ImportError as e:
             print(f"Errore nell'apertura del Registrazione: {e}")
 

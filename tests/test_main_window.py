@@ -21,6 +21,7 @@ except ImportError:
     Qt = cast(Any, MagicMock())  # pylint: disable=invalid-name
     HAS_QT = False
 
+from src.core.game_manager import GameManager
 from src.gui.main_window import MainWindow
 
 if HAS_QT:
@@ -39,7 +40,9 @@ def fixture_app_window(request):
 
     qtbot_inst = request.getfixturevalue("qtbot")
 
-    window = MainWindow(nome_giocatore="Tester")
+    mock_manager = MagicMock(spec=GameManager)
+
+    window = MainWindow(nome_giocatore="Tester", game_manager=mock_manager)
     qtbot_inst.addWidget(window)
     return window
 
@@ -113,3 +116,33 @@ def test_new_game_button_functional(app_window, qtbot):
     assert app_window.game_window is not None
 
     assert app_window.game_window.isVisible()
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI: librerie grafiche mancanti")
+def test_training_button_functional(app_window, qtbot):
+    """Verifica che il tasto Allenamento apra la GameWindow in modalità training."""
+    assert hasattr(
+        app_window, "btn_training"
+    ), "Il bottone btn_training non è presente nel file .ui"
+
+    # pylint: disable=no-member
+    qtbot.mouseClick(app_window.btn_training, Qt.MouseButton.LeftButton)
+
+    assert not app_window.isVisible()
+
+    assert app_window.game_window is not None
+
+    assert app_window.game_window.modalita == "training"
+    assert app_window.game_window.isVisible()
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI: librerie grafiche mancanti")
+def test_different_modes_setup(app_window, qtbot):
+    """Verifica che i due bottoni (Play e Training) lancino modalità diverse."""
+    qtbot.mouseClick(app_window.btn_play, Qt.MouseButton.LeftButton)
+    assert app_window.game_window.modalita == "classic"
+
+    app_window.show()
+
+    qtbot.mouseClick(app_window.btn_training, Qt.MouseButton.LeftButton)
+    assert app_window.game_window.modalita == "training"
