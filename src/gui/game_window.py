@@ -300,9 +300,9 @@ class GameWindow(BaseWindow):
             risultati = self.game_manager.submit_guess(tentativo)
         except ValueError:
             QtWidgets.QMessageBox.warning(
-                self, 
-                "Parola non valida", 
-                f"La parola '{tentativo}' non è presente nel dizionario."
+                self,
+                "Parola non valida",
+                f"La parola '{tentativo}' non è presente nel dizionario.",
             )
             return
 
