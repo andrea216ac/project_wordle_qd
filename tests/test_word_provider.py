@@ -18,13 +18,13 @@ def test_get_random_word_success():
     """Testa che get_random_word restituisca correttamente la parola dal repository."""
     # Creiamo un mock di WordRepository che restituisce un oggetto FakeWord
     mock_repo = Mock()
-    mock_repo.get_random_word.return_value = FakeWord("ciao")
+    mock_repo.get_random_word.return_value = FakeWord("palla")
 
     provider = WordProvider(mock_repo)
     result = provider.get_random_word("it")
 
     # Verifica che la parola restituita sia quella corretta
-    assert result == "ciao"
+    assert result == "palla"
     # Verifica che il metodo del repository sia stato chiamato con i parametri giusti
     mock_repo.get_random_word.assert_called_once_with("it", 5)
 
@@ -44,13 +44,13 @@ def test_get_daily_word_success():
     """Testa che get_daily_word restituisca correttamente la parola del giorno."""
     today = datetime.date.today()
     mock_repo = Mock()
-    mock_repo.get_daily_word.return_value = FakeWord("parola")
+    mock_repo.get_daily_word.return_value = FakeWord("pasta")
 
     provider = WordProvider(mock_repo)
     result = provider.get_daily_word("it")
 
     # Verifica che la parola restituita sia quella corretta
-    assert result == "parola"
+    assert result == "pasta"
     # Verifica che il metodo del repository sia stato chiamato con data e parametri giusti
     mock_repo.get_daily_word.assert_called_once_with(today, "it", 5)
 
@@ -69,17 +69,17 @@ def test_get_daily_word_none():
 def test_is_valid_word_true():
     """Verifica che una parola valida venga accettata."""
     repo = Mock()
-    repo.word_exists.return_value = FakeWord("cane")
+    repo.word_exists.return_value = FakeWord("palla")
 
     provider = WordProvider(repo)
 
-    assert provider.is_valid_word("cane", "it") is True
+    assert provider.is_valid_word("palla", "it") is True
 
 
 def test_is_valid_word_false():
     """Verifica che una parola inesistente venga rifiutata."""
     repo = Mock()
-    repo.word_exists.return_value = None
+    repo.word_exists.return_value = FakeWord("cane")
 
     provider = WordProvider(repo)
 

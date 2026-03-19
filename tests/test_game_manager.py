@@ -55,15 +55,15 @@ def test_submit_guess_correct_game_over(mock_word_provider, mock_repo):
     manager.start_game("classic", "it", "user")
 
     game = manager.current_mode.current_game
-    game.target_word = "cane"
+    game.target_word = "gatto"
     game.max_attempts = 1
 
-    manager.submit_guess("cane")
+    manager.submit_guess("gatto")
 
     assert game.is_over
     assert game.won
     assert game.attempts == 1
-    assert game.guesses[-1] == "cane"
+    assert game.guesses[-1] == "gatto"
     mock_repo.save_score.assert_called_once()
     assert mock_repo.save_game_state.call_count >= 2
 
@@ -74,15 +74,15 @@ def test_submit_guess_wrong_max_attempts(mock_word_provider, mock_repo):
     manager.start_game("classic", "it", "user")
 
     game = manager.current_mode.current_game
-    game.target_word = "cane"
+    game.target_word = "gatto"
     game.max_attempts = 1
 
-    manager.submit_guess("pane")
+    manager.submit_guess("pacco")
 
     assert game.is_over
     assert not game.won
     assert game.attempts == 1
-    assert game.guesses[-1] == "pane"
+    assert game.guesses[-1] == "pacco"
     mock_repo.save_score.assert_called_once()
 
 
@@ -100,9 +100,9 @@ def test_submit_guess_invalid_word_raises(mock_word_provider, mock_repo):
 def test_restore_saved_game(mock_word_provider, mock_repo):
     """Verifica che una partita salvata venga ripristinata correttamente."""
     saved_state = {
-        "target_word": "cane",
+        "target_word": "gatto",
         "attempts": 2,
-        "guesses": ["pane", "lane"],
+        "guesses": ["pacco", "ratto"],
         "is_over": False,
         "language": "it",
         "mode": "classic",
@@ -113,9 +113,9 @@ def test_restore_saved_game(mock_word_provider, mock_repo):
     manager.start_game("classic", "it", "user")
 
     game = manager.current_mode.current_game
-    assert game.target_word == "cane"
+    assert game.target_word == "gatto"
     assert game.attempts == 2
-    assert game.guesses == ["pane", "lane"]
+    assert game.guesses == ["pacco", "ratto"]
     assert not game.is_over
 
 
