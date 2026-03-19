@@ -278,6 +278,7 @@ def test_save_score_failure_handled():
 
     assert result is not None
 
+
 # -------------------------
 # TEST VALIDAZIONE PAROLA
 # -------------------------

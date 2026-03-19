@@ -66,6 +66,7 @@ def test_get_daily_word_none():
     with pytest.raises(ValueError, match="No word available"):
         provider.get_daily_word("it")
 
+
 def test_is_valid_word_true():
     """Verifica che una parola valida venga accettata."""
     repo = Mock()
