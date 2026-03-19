@@ -62,13 +62,13 @@ class GameManager:
                             game = self.current_mode.current_game
 
                             # Ripristino dati
-                            if game is not None:
-                                game.target_word = state.get(
-                                    "target_word", game.target_word
-                                )
-                                game.attempts = state.get("attempts", 0)
-                                game.guesses = state.get("guesses", [])
-                                game.is_over = state.get("is_over", False)
+                            assert game is not None
+                            game.target_word = state.get(
+                                "target_word", game.target_word
+                            )
+                            game.attempts = state.get("attempts", 0)
+                            game.guesses = state.get("guesses", [])
+                            game.is_over = state.get("is_over", False)
 
                             return
 
@@ -110,8 +110,7 @@ class GameManager:
             raise RuntimeError("No active game")
 
         # VALIDAZIONE PAROLA
-        if self.language is None:
-            raise RuntimeError("Language not set")
+        assert self.language is not None
         if not self.word_provider.is_valid_word(guess, self.language):
             logger.warning("Invalid word attempted: %s", guess)
             raise ValueError("Questa parola non esiste")
