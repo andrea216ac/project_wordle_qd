@@ -360,7 +360,7 @@ def test_load_game_success():
 
     manager = GameManager(provider, repo)
 
-    result = manager.load_game("test_user")
+    result = manager.load_game_state("test_user")
 
     assert result is True
     assert manager.current_mode is not None
@@ -378,7 +378,7 @@ def test_load_game_not_found():
 
     manager = GameManager(provider, repo)
 
-    result = manager.load_game("user")
+    result = manager.load_game_state("user")
 
     assert result is False
 
