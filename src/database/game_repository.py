@@ -127,22 +127,41 @@ class GameRepository:
         except Exception as error:  # pylint: disable=broad-exception-caught
             logger.error("Errore critico nell'adattatore save_score: %s", error)
 
-    def get_leaderboard_data(self, limit: int = 10) -> list[tuple[str, int]]:
-        """Recupera la classifica generale sommando i punti di ogni utente."""
+    def get_leaderboard_data(self, limit: int = 10) -> list[dict]:
+        """Recupera la classifica generale calcolando vittorie e media tentativi."""
         try:
-            # Esegue: SELECT username, SUM(points) FROM users JOIN games ...
+            from sqlalchemy import case, desc
+
+            self.session.expire_all()
+
+            # Conta come "vittoria" le partite in cui won == True
+            # Calcola la media (avg) sulla colonna attempts
             results = (
                 self.session.query(
-                    User.username, func.sum(Game.points).label("total_score")
+                    User.username,
+                    func.sum(case((Game.won == True, 1), else_=0)).label("vittorie"),
+                    func.avg(Game.attempts).label("media"),
                 )
                 .join(Game, User.id == Game.user_id)
+                # Filtra solo le partite finite (Classic o Training se vuoi)
+                .filter(Game.mode == "classic")
                 .group_by(User.id, User.username)
-                .order_by(func.sum(Game.points).desc())
+                .order_by(
+                    desc("vittorie"), "media"
+                )  # Ordina per vittorie (decrescente), poi per media tentativi (crescente)
                 .limit(limit)
                 .all()
             )
-            # Converte il risultato di SQLAlchemy in una semplice lista di tuple
-            return [(row.username, int(row.total_score or 0)) for row in results]
+
+            # Trasforma il risultato SQL in una lista di dizionari
+            return [
+                {
+                    "utente": row.username,
+                    "vittorie": int(row.vittorie or 0),
+                    "media": round(float(row.media or 0), 2),
+                }
+                for row in results
+            ]
         except SQLAlchemyError as error:
             logger.error("Errore DB in get_leaderboard_data: %s", error)
             return []
