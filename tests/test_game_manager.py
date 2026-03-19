@@ -6,6 +6,7 @@ import json
 from unittest.mock import Mock
 
 import pytest
+
 from src.core.game_manager import GameManager
 from src.core.modes import ClassicMode, TrainingMode
 from src.core.word_provider import WordProvider

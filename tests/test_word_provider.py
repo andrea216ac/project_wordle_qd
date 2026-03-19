@@ -4,6 +4,7 @@ import datetime
 from unittest.mock import Mock
 
 import pytest
+
 from src.core.word_provider import WordProvider
 
 
