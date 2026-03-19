@@ -17,12 +17,12 @@ class Game:
             target_word: Parola da indovinare.
             max_attempts: Numero massimo di tentativi possibili.
         """
-        self.target_word = target_word
-        self.attempts = 0
+        self.target_word: str = target_word
+        self.attempts: int = 0
         self.guesses: List[str] = []
-        self.is_over = False
-        self.won = False
-        self.max_attempts = max_attempts
+        self.is_over: bool = False
+        self.won: bool = False
+        self.max_attempts: int = max_attempts
 
     def check_guess(self, guess: str) -> List[str]:
         """
