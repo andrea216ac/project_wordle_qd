@@ -19,7 +19,9 @@ class Game:
         """
         self.target_word: str = target_word
         self.attempts: int = 0
+        self.guesses: List[str] = []
         self.is_over: bool = False
+        self.won: bool = False
         self.max_attempts: int = max_attempts
 
     def check_guess(self, guess: str) -> List[str]:
@@ -48,7 +50,6 @@ class Game:
             )
             raise ValueError("Invalid guess length")
 
-        self.attempts += 1
         result: List[str] = [""] * len(self.target_word)
         used: List[bool] = [False] * len(self.target_word)
 
@@ -69,9 +70,16 @@ class Game:
                         break
                 result[i] = "Presente" if found else "Assente"
 
+        # salva il tentativo SOLO se valido
+        self.guesses.append(guess)
+
+        # incremento tentativi DOPO validazione
+        self.attempts += 1
+
         # Controllo vittoria o fine tentativi
         if guess == self.target_word:
             self.is_over = True
+            self.won = True
             logger.info("Word guessed correctly!")
 
         if self.attempts >= self.max_attempts:

@@ -10,11 +10,11 @@ class FakeWordProvider:
 
     def get_daily_word(self, language):  # pylint: disable=unused-argument
         """Restituisce sempre la stessa parola per i test."""
-        return "APPLE"
+        return "PASTA"
 
     def get_random_word(self, language):  # pylint: disable=unused-argument
         """Restituisce sempre la stessa parola per i test."""
-        return "TRAIN"
+        return "TRENO"
 
 
 def test_classic_mode_start_game():
@@ -25,7 +25,7 @@ def test_classic_mode_start_game():
     mode.start_game("it")
 
     assert mode.current_game is not None
-    assert mode.current_game.target_word == "APPLE"
+    assert mode.current_game.target_word == "PASTA"
 
 
 def test_classic_mode_submit_guess():
@@ -35,7 +35,7 @@ def test_classic_mode_submit_guess():
 
     mode.start_game("it")
 
-    result = mode.submit_guess("APPLE")
+    result = mode.submit_guess("PASTA")
 
     assert result == ["Corretto"] * 5
 
@@ -47,7 +47,7 @@ def test_classic_mode_score_increment():
 
     mode.start_game("it")
 
-    mode.submit_guess("APPLE")
+    mode.submit_guess("PASTA")
 
     assert mode.score == 1
 
@@ -58,7 +58,7 @@ def test_classic_mode_no_active_game():
     mode = ClassicMode(provider)
 
     with pytest.raises(ModeError):
-        mode.submit_guess("APPLE")
+        mode.submit_guess("PASTA")
 
 
 def test_training_mode_start_game():
@@ -69,7 +69,7 @@ def test_training_mode_start_game():
     mode.start_game("it")
 
     assert mode.current_game is not None
-    assert mode.current_game.target_word == "TRAIN"
+    assert mode.current_game.target_word == "TRENO"
 
 
 def test_training_mode_submit_guess():
@@ -79,7 +79,7 @@ def test_training_mode_submit_guess():
 
     mode.start_game("it")
 
-    result = mode.submit_guess("TRAIN")
+    result = mode.submit_guess("TRENO")
 
     assert result == ["Corretto"] * 5
 
@@ -90,4 +90,4 @@ def test_training_mode_no_active_game():
     mode = TrainingMode(provider)
 
     with pytest.raises(ModeError):
-        mode.submit_guess("TRAIN")
+        mode.submit_guess("TRENO")
