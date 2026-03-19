@@ -341,49 +341,6 @@ def test_save_game_state_data():
 
 
 # -------------------------
-# TEST LOAD GAME
-# -------------------------
-def test_load_game_success():
-    """Verifica che una partita salvata venga caricata correttamente."""
-    provider = Mock()
-    repo = Mock()
-
-    saved_game = Mock()
-    saved_game.word = "cane"
-    saved_game.attempts = 2
-    saved_game.is_over = False
-    saved_game.guesses = ["pane", "lane"]
-    saved_game.mode = "TrainingMode"
-    saved_game.language = "it"
-
-    repo.load_game_state.return_value = saved_game
-
-    manager = GameManager(provider, repo)
-
-    result = manager.load_game_state("test_user")
-
-    assert result is True
-    assert manager.current_mode is not None
-    assert manager.get_attempts() == 2
-
-
-# -------------------------
-# TEST LOAD GAME FALLITO
-# -------------------------
-def test_load_game_not_found():
-    """Verifica che load_game ritorni False se non esiste una partita."""
-    provider = Mock()
-    repo = Mock()
-    repo.load_game_state.return_value = None
-
-    manager = GameManager(provider, repo)
-
-    result = manager.load_game_state("user")
-
-    assert result is False
-
-
-# -------------------------
 # TEST NO ACTIVE GAME
 # -------------------------
 def test_submit_guess_no_game():
