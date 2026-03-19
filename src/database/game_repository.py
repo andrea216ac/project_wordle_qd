@@ -3,7 +3,7 @@
 import datetime
 import logging
 
-from sqlalchemy import func
+from sqlalchemy import case, desc, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -130,7 +130,6 @@ class GameRepository:
     def get_leaderboard_data(self, limit: int = 10) -> list[dict]:
         """Recupera la classifica generale calcolando vittorie e media tentativi."""
         try:
-            from sqlalchemy import case, desc
 
             self.session.expire_all()
 
@@ -139,7 +138,7 @@ class GameRepository:
             results = (
                 self.session.query(
                     User.username,
-                    func.sum(case((Game.won == True, 1), else_=0)).label("vittorie"),
+                    func.sum(case((Game.won.is_(True), 1), else_=0)).label("vittorie"),
                     func.avg(Game.attempts).label("media"),
                 )
                 .join(Game, User.id == Game.user_id)
