@@ -1,4 +1,4 @@
-""" " Unit test per game_manager.py"""
+"""Unit test per game_manager.py"""
 
 import json
 from unittest.mock import Mock
@@ -11,6 +11,7 @@ from src.core.word_provider import WordProvider
 
 @pytest.fixture
 def mock_word_provider():
+    """Fixture per creare un WordProvider mockato."""
     provider = Mock(spec=WordProvider)
     provider.is_valid_word.return_value = True
     return provider
@@ -18,6 +19,7 @@ def mock_word_provider():
 
 @pytest.fixture
 def mock_repo():
+    """Fixture per creare un GameRepository mockato."""
     repo = Mock()
     repo.load_game_state.return_value = None
     repo.has_played_today.return_value = False
@@ -26,6 +28,7 @@ def mock_repo():
 
 
 def test_start_game_classic_new(mock_word_provider, mock_repo):
+    """Verifica che start_game in modalità classic crei una partita nuova correttamente."""
     manager = GameManager(mock_word_provider, mock_repo)
     manager.start_game("classic", "it", "test_user")
 
@@ -37,6 +40,7 @@ def test_start_game_classic_new(mock_word_provider, mock_repo):
 
 
 def test_start_game_training(mock_word_provider, mock_repo):
+    """Verifica che start_game in modalità training crei correttamente la partita."""
     manager = GameManager(mock_word_provider, mock_repo)
     manager.start_game("training", "it")
 
@@ -46,6 +50,7 @@ def test_start_game_training(mock_word_provider, mock_repo):
 
 
 def test_submit_guess_correct_game_over(mock_word_provider, mock_repo):
+    """Verifica che una parola corretta faccia terminare il gioco e salvi il punteggio."""
     manager = GameManager(mock_word_provider, mock_repo)
     manager.start_game("classic", "it", "user")
 
@@ -53,7 +58,6 @@ def test_submit_guess_correct_game_over(mock_word_provider, mock_repo):
     game.target_word = "cane"
     game.max_attempts = 1
 
-    # invio guess corretto → game over
     manager.submit_guess("cane")
 
     assert game.is_over
@@ -65,6 +69,7 @@ def test_submit_guess_correct_game_over(mock_word_provider, mock_repo):
 
 
 def test_submit_guess_wrong_max_attempts(mock_word_provider, mock_repo):
+    """Verifica che il gioco termini se si esauriscono i tentativi sbagliando."""
     manager = GameManager(mock_word_provider, mock_repo)
     manager.start_game("classic", "it", "user")
 
@@ -72,7 +77,6 @@ def test_submit_guess_wrong_max_attempts(mock_word_provider, mock_repo):
     game.target_word = "cane"
     game.max_attempts = 1
 
-    # invio guess sbagliato → game over per tentativi
     manager.submit_guess("pane")
 
     assert game.is_over
@@ -83,6 +87,7 @@ def test_submit_guess_wrong_max_attempts(mock_word_provider, mock_repo):
 
 
 def test_submit_guess_invalid_word_raises(mock_word_provider, mock_repo):
+    """Verifica che submit_guess lanci ValueError se la parola non è valida."""
     manager = GameManager(mock_word_provider, mock_repo)
     manager.start_game("classic", "it", "user")
 
@@ -93,6 +98,7 @@ def test_submit_guess_invalid_word_raises(mock_word_provider, mock_repo):
 
 
 def test_restore_saved_game(mock_word_provider, mock_repo):
+    """Verifica che una partita salvata venga ripristinata correttamente."""
     saved_state = {
         "target_word": "cane",
         "attempts": 2,
@@ -114,12 +120,14 @@ def test_restore_saved_game(mock_word_provider, mock_repo):
 
 
 def test_has_played_classic_today(mock_word_provider, mock_repo):
+    """Verifica has_played_classic_today restituisce True se l'utente ha già giocato."""
     manager = GameManager(mock_word_provider, mock_repo)
     mock_repo.has_played_today.return_value = True
     assert manager.has_played_classic_today("user") is True
 
 
 def test_leaderboard_conversion(mock_word_provider, mock_repo):
+    """Verifica che la classifica venga convertita correttamente da tuple a dict."""
     manager = GameManager(mock_word_provider, mock_repo)
     leaderboard = manager.get_leaderboard()
 
@@ -130,6 +138,7 @@ def test_leaderboard_conversion(mock_word_provider, mock_repo):
 
 
 def test_reset_game(mock_word_provider, mock_repo):
+    """Verifica che reset_game azzeri la partita corrente."""
     manager = GameManager(mock_word_provider, mock_repo)
     manager.start_game("classic", "it", "user")
     manager.reset_game()

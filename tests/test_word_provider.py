@@ -69,7 +69,7 @@ def test_get_daily_word_none():
 def test_is_valid_word_true():
     """Verifica che una parola valida venga accettata."""
     repo = Mock()
-    repo.word_exists.return_value = True
+    repo.word_exists.return_value = FakeWord("cane")
 
     provider = WordProvider(repo)
 
