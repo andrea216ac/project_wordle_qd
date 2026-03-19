@@ -1,5 +1,7 @@
 """Unit test per game_manager.py"""
 
+# pylint: disable=redefined-outer-name
+
 import json
 from unittest.mock import Mock
 

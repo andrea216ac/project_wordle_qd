@@ -79,7 +79,7 @@ def test_is_valid_word_true():
 def test_is_valid_word_false():
     """Verifica che una parola inesistente venga rifiutata."""
     repo = Mock()
-    repo.word_exists.return_value = FakeWord("cane")
+    repo.word_exists.return_value = None
 
     provider = WordProvider(repo)
 
