@@ -1,7 +1,6 @@
 """Unit test per modes.py."""
 
 import pytest
-
 from src.core.modes import ClassicMode, ModeError, TrainingMode
 
 
