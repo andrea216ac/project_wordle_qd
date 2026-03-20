@@ -116,6 +116,7 @@ class GameWindow(BaseWindow):
             if widget:
                 colore = color_map.get(esito, "#3a3a3c")
                 widget.setText(parola[i])
+                widget.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                 widget.setStyleSheet(f"""
                     background-color: {colore}; color: white;
                     border: 2px solid {colore}; font-weight: bold; font-size: 25px;
