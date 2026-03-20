@@ -1,7 +1,7 @@
 """Unit test per la finestra di gioco"""
 
 from typing import Any, cast
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -243,17 +243,17 @@ def test_gioco_finito_blocca_input(game, qtbot):
     assert game.current_col == 0
 
 
-def test_invalid_word_error_handling(game, qtbot):
+def test_invalid_word_error_handling(game):
     """Verifica che una parola non valida non faccia crashare l'app."""
     game.game_manager.submit_guess.side_effect = ValueError("Parola non esistente")
 
     for char in "CACCA":  # LOL
         game._ui_on_key_press(char)
 
-    with MagicMock() as mock_msg:
-        QtWidgets.QMessageBox.warning = mock_msg
+    with patch.object(QtWidgets.QMessageBox, "warning") as mock_warn:
         game._ui_on_enter()
-        assert mock_msg.called
+
+        mock_warn.assert_called_once()
 
     assert game.current_row == 0
 
