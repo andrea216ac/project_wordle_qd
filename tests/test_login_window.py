@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-# pylint: disable=no-name-in-module, c-extension-no-member
+# pylint: disable=no-name-in-module, c-extension-no-member, invalid-name
 try:
     from PyQt6 import QtWidgets as real_widgets
     from PyQt6.QtCore import Qt as real_qt
@@ -14,8 +14,8 @@ try:
     Qt = cast(Any, real_qt)
     HAS_QT = True
 except ImportError:
-    QtWidgets = cast(Any, MagicMock())
-    Qt = cast(Any, MagicMock())
+    QtWidgets = cast(Any, MagicMock()) # type: ignore
+    Qt = cast(Any, MagicMock()) # type: ignore
     HAS_QT = False
 
 from src.gui.login_window import HAS_QT, LoginWindow
