@@ -14,8 +14,8 @@ try:
     Qt = cast(Any, real_qt)
     HAS_QT = True
 except ImportError:
-    QtWidgets = cast(Any, MagicMock()) # type: ignore
-    Qt = cast(Any, MagicMock()) # type: ignore
+    QtWidgets = cast(Any, MagicMock())  # type: ignore
+    Qt = cast(Any, MagicMock())  # type: ignore
     HAS_QT = False
 
 from src.gui.login_window import HAS_QT, LoginWindow
