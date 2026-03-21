@@ -1,12 +1,13 @@
 """Unit test per la finestra di gioco"""
 
 from typing import Any, cast
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 # pylint: disable=no-name-in-module, duplicate-code, c-extension-no-member, invalid-name, protected-access, redefined-outer-name
 try:
+    from PyQt6 import QtCore
     from PyQt6 import QtWidgets as real_widgets
     from PyQt6.QtCore import Qt as real_qt
 
@@ -240,3 +241,32 @@ def test_gioco_finito_blocca_input(game, qtbot):
 
     assert game.grid[0][0].toPlainText() == ""
     assert game.current_col == 0
+
+
+def test_invalid_word_error_handling(game):
+    """Verifica che una parola non valida non faccia crashare l'app."""
+    game.game_manager.submit_guess.side_effect = ValueError("Parola non esistente")
+
+    for char in "CACCA":  # LOL
+        game._ui_on_key_press(char)
+
+    with patch.object(QtWidgets.QMessageBox, "warning") as mock_warn:
+        game._ui_on_enter()
+
+        mock_warn.assert_called_once()
+
+    assert game.current_row == 0
+
+
+def test_ripristino_partita_alignment(game):
+    """Verifica che il ripristino delle righe mantenga l'allineamento centrato."""
+    mock_game = MagicMock()
+    mock_game.guesses = ["CASA"]
+    mock_game.target_word = "COSA"
+    mock_game.is_over = False
+    game.game_manager.current_mode.current_game = mock_game
+
+    game._ripristina_interfaccia()
+
+    if game.grid[0][0]:
+        assert game.grid[0][0].alignment() == QtCore.Qt.AlignmentFlag.AlignCenter

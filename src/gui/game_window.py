@@ -116,6 +116,7 @@ class GameWindow(BaseWindow):
             if widget:
                 colore = color_map.get(esito, "#3a3a3c")
                 widget.setText(parola[i])
+                widget.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                 widget.setStyleSheet(f"""
                     background-color: {colore}; color: white;
                     border: 2px solid {colore}; font-weight: bold; font-size: 25px;
@@ -296,12 +297,13 @@ class GameWindow(BaseWindow):
             print("Errore: GameManager non collegato!")
             return
 
-        risultati = self.game_manager.submit_guess(tentativo)
-
-        if risultati is None:
-            # Mostra un messaggio all'utente o semplicemente ignora l'invio
+        try:
+            risultati = self.game_manager.submit_guess(tentativo)
+        except ValueError:
             QtWidgets.QMessageBox.warning(
-                self, "Parola non valida", "La parola non è presente nel dizionario."
+                self,
+                "Parola non valida",
+                f"La parola '{tentativo}' non è presente nel dizionario.",
             )
             return
 
