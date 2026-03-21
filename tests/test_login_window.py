@@ -1,11 +1,22 @@
 """Unit tests per la finestra di Login."""
 
+from typing import Any, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 # pylint: disable=no-name-in-module, c-extension-no-member
-from PyQt6 import QtWidgets
-from PyQt6.QtCore import Qt
+try:
+    from PyQt6 import QtWidgets as real_widgets
+    from PyQt6.QtCore import Qt as real_qt
+
+    QtWidgets = cast(Any, real_widgets)
+    Qt = cast(Any, real_qt)
+    HAS_QT = True
+except ImportError:
+    QtWidgets = cast(Any, MagicMock())
+    Qt = cast(Any, MagicMock())
+    HAS_QT = False
 
 from src.gui.login_window import HAS_QT, LoginWindow
 
