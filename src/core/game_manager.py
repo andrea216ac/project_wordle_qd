@@ -233,8 +233,7 @@ class GameManager:
         """Restituisce la classifica."""
         if self.score_repository:
             try:
-                data = self.score_repository.get_leaderboard_data()
-                return [{"user": user, "score": score} for user, score in data]
+                return self.score_repository.get_leaderboard_data()
             except AttributeError:
                 logger.warning("get_leaderboard_data non implementato nel repository.")
         else:

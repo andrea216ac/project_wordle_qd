@@ -129,17 +129,6 @@ def test_has_played_classic_today(mock_word_provider, mock_repo):
     assert manager.has_played_classic_today("user") is True
 
 
-def test_leaderboard_conversion(mock_word_provider, mock_repo):
-    """Verifica che la classifica venga convertita correttamente da tuple a dict."""
-    manager = GameManager(mock_word_provider, mock_repo)
-    leaderboard = manager.get_leaderboard()
-
-    assert isinstance(leaderboard, list)
-    assert all(isinstance(item, dict) for item in leaderboard)
-    assert leaderboard[0]["user"] == "alice"
-    assert leaderboard[0]["score"] == 100
-
-
 def test_reset_game(mock_word_provider, mock_repo):
     """Verifica che reset_game azzeri la partita corrente."""
     manager = GameManager(mock_word_provider, mock_repo)
@@ -147,3 +136,40 @@ def test_reset_game(mock_word_provider, mock_repo):
     manager.reset_game()
     assert manager.current_mode is None
     assert manager.get_target_word() == ""
+
+
+def test_get_leaderboard_success(mock_word_provider, mock_repo):
+    """Verifica che la leaderboard venga restituita correttamente."""
+    mock_repo.get_leaderboard_data.return_value = [
+        {"user": "alice", "score": 100},
+        {"user": "bob", "score": 80},
+    ]
+
+    manager = GameManager(mock_word_provider, mock_repo)
+
+    result = manager.get_leaderboard()
+
+    assert isinstance(result, list)
+    assert result[0]["user"] == "alice"
+    assert result[0]["score"] == 100
+
+
+def test_get_leaderboard_attribute_error(mock_word_provider, mock_repo):
+    """Verifica che venga restituita lista vuota se il metodo non esiste."""
+    # Simula metodo non implementato
+    del mock_repo.get_leaderboard_data
+
+    manager = GameManager(mock_word_provider, mock_repo)
+
+    result = manager.get_leaderboard()
+
+    assert result == []
+
+
+def test_get_leaderboard_no_repository(mock_word_provider):
+    """Verifica che venga restituita lista vuota se il repository è None."""
+    manager = GameManager(mock_word_provider, None)
+
+    result = manager.get_leaderboard()
+
+    assert result == []
