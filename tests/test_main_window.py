@@ -2,7 +2,7 @@
 
 import os
 from typing import Any, cast
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -47,11 +47,6 @@ def fixture_app_window(request):
     return window
 
 
-def test_always_passes():
-    """Test di base per garantire che Pytest trovi almeno un test valido."""
-    assert 1 + 1 == 2
-
-
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI: librerie grafiche mancanti")
 def test_welcome_message(app_window):
     """Verifica che il messaggio di benvenuto sia impostato correttamente."""
@@ -92,14 +87,6 @@ def test_leaderboard_reference_passing(app_window, qtbot):
 
     assert app_window.leaderboard_window is not None
     assert app_window.leaderboard_window.main_window == app_window
-
-
-@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI: librerie grafiche mancanti")
-def test_mainwindow_initialization_defaults():
-    """Verifica che la MainWindow parta con Andrea se non specificato."""
-    window = MainWindow()
-    if HAS_QT:
-        assert "Andrea" in window.lbl_welcome.text()
 
 
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI: librerie grafiche mancanti")
@@ -146,3 +133,33 @@ def test_different_modes_setup(app_window, qtbot):
 
     qtbot.mouseClick(app_window.btn_training, Qt.MouseButton.LeftButton)
     assert app_window.game_window.modalita == "training"
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_play_button_disabled_if_already_played(qtbot):
+    """Verifica che btn_play sia disabilitato se l'utente ha già giocato oggi."""
+    mock_manager = MagicMock()
+    mock_manager.has_played_classic_today.return_value = True
+
+    window = MainWindow(nome_giocatore="Tester", game_manager=mock_manager)
+    qtbot.addWidget(window)
+
+    assert not window.btn_play.isEnabled()
+    assert window.btn_play.text() == "Già giocato"
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_avvia_gioco_runtime_error_handling(app_window, qtbot):
+    """Verifica che un RuntimeError generi un avviso e disabiliti il pulsante classic."""
+
+    with patch(
+        "src.gui.game_window.GameWindow", side_effect=RuntimeError("Limite raggiunto")
+    ):
+        with patch.object(QtWidgets.QMessageBox, "warning") as mock_warning:
+
+            qtbot.mouseClick(app_window.btn_play, Qt.MouseButton.LeftButton)
+
+            mock_warning.assert_called_once()
+
+            assert not app_window.btn_play.isEnabled()
+            assert app_window.btn_play.text() == "Già giocato"

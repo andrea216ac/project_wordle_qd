@@ -283,12 +283,13 @@ class GameWindow(BaseWindow):
         if self.gioco_finito or self.current_row > 5:
             return
 
-        if self.current_col == 5 or (
-            self.current_col == 4 and self.grid[self.current_row][4].toPlainText()
-        ):
-            tentativo = "".join(
-                [self.grid[self.current_row][c].toPlainText() for c in range(5)]
-            )
+        tentativo = ""
+        for c in range(5):
+            widget = self.grid[self.current_row][c]
+            if widget:
+                tentativo += widget.toPlainText().strip().upper()
+
+        if len(tentativo) == 5:
             self._controlla_parola(tentativo)
 
     def _controlla_parola(self, tentativo: str):
