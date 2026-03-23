@@ -6,19 +6,20 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+# pylint: disable=no-name-in-module, c-extension-no-member, invalid-name
 try:
     from PyQt6 import QtCore as real_core
-    from PyQt6 import QtWidgets as real_widgets  # pylint: disable=c-extension-no-member
-    from PyQt6.QtCore import Qt as real_qt  # pylint: disable=no-name-in-module
+    from PyQt6 import QtWidgets as real_widgets
+    from PyQt6.QtCore import Qt as real_qt
 
-    QtWidgets = cast(Any, real_widgets)  # pylint: disable=invalid-name
-    QtCore = cast(Any, real_core)  # pylint: disable=invalid-name
-    Qt = cast(Any, real_qt)  # pylint: disable=invalid-name
+    QtWidgets = cast(Any, real_widgets)
+    QtCore = cast(Any, real_core)
+    Qt = cast(Any, real_qt)
     HAS_QT = True
 except ImportError:
-    QtWidgets = cast(Any, MagicMock())  # pylint: disable=invalid-name
-    QtCore = cast(Any, MagicMock())  # pylint: disable=invalid-name
-    Qt = cast(Any, MagicMock())  # pylint: disable=invalid-name
+    QtWidgets = cast(Any, MagicMock())
+    QtCore = cast(Any, MagicMock())
+    Qt = cast(Any, MagicMock())
     HAS_QT = False
 
 from src.core.game_manager import GameManager
