@@ -54,6 +54,10 @@ class LeaderboardWindow(BaseDialog):
 
     def setup_leaderboard_graphics(self):
         """Configura le intestazioni e il comportamento delle tabelle."""
+        self.table_top3.verticalHeader().setSectionResizeMode(
+            QtWidgets.QHeaderView.ResizeMode.Stretch
+        )
+
         self.table_top3.setColumnCount(4)
         self.table_top3.setHorizontalHeaderLabels(
             ["Pos.", "Utente", "Vittorie", "Media Tentativi"]

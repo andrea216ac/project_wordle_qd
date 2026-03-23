@@ -13,6 +13,60 @@
   <property name="windowTitle">
    <string>Classifica Wordle</string>
   </property>
+
+  <property name="styleSheet">
+   <string>
+    /* Sfondo grigio della finestra e testo bianco */
+    QDialog {
+        background-color: #4f4f4f;
+        color: white;
+        font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    /* Titoli grandi */
+    QLabel {
+        font-size: 28px;
+        font-weight: bold;
+        color: white;
+    }
+
+    /* Celle delle tabelle grandi e leggibili */
+    QTableWidget {
+        background-color: #3a3a3a;
+        alternate-background-color: #444444;
+        color: white;
+        font-size: 24px;
+        gridline-color: #555555;
+        border: 2px solid #666666;
+        border-radius: 8px;
+    }
+
+    /* Testo delle intestazioni delle tabelle (Header) */
+    QHeaderView::section {
+        background-color: #2c2c2c;
+        color: white;
+        font-size: 22px;
+        font-weight: bold;
+        border: 1px solid #555555;
+        padding: 6px;
+    }
+
+    /* Bottone Indietro */
+    QPushButton {
+        background-color: #818384;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 12px 30px;
+        min-width: 250px;
+    }
+    QPushButton:hover {
+        background-color: #565758;
+    }
+   </string>
+  </property>
+
   <layout class="QVBoxLayout" name="mainLayout">
    <property name="spacing">
     <number>15</number>
@@ -46,7 +100,8 @@
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
-       <verstretch>3</verstretch> </sizepolicy>
+       <verstretch>3</verstretch>
+      </sizepolicy>
      </property>
      <property name="showGrid">
       <bool>false</bool>
