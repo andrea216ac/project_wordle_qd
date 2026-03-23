@@ -8,7 +8,7 @@ import pytest
 
 try:
     from PyQt6 import QtCore as real_core
-    from PyQt6 import QtWidgets as real_widgets
+    from PyQt6 import QtWidgets as real_widgets # pylint: disable=c-extension-no-member
     from PyQt6.QtCore import Qt as real_qt  # pylint: disable=no-name-in-module
 
     QtWidgets = cast(Any, real_widgets)  # pylint: disable=invalid-name

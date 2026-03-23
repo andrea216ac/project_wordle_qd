@@ -3,7 +3,7 @@
 # pylint: disable=no-name-in-module, import-outside-toplevel
 import os
 from typing import Any, cast
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -106,16 +106,13 @@ def test_user_not_in_leaderboard(leaderboard_app):
 
 
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
-def test_aggiorna_classifica_with_mock_manager(request): # <-- Sostituisci qtbot con request
+def test_aggiorna_classifica_with_mock_manager(request):
     """Verifica che la finestra scarichi e mostri i dati dal GameManager all'avvio."""
-    
-    # --- PROTEZIONE PER CI HEADLESS ---
     if "qtbot" not in request.fixturenames:
         pytest.skip("Plugin pytest-qt non installato o non configurato")
         return
-        
+
     qtbot = request.getfixturevalue("qtbot")
-    # ----------------------------------
 
     mock_manager = MagicMock()
     mock_manager.get_leaderboard.return_value = [
@@ -123,10 +120,8 @@ def test_aggiorna_classifica_with_mock_manager(request): # <-- Sostituisci qtbot
     ]
     mock_manager.get_current_user.return_value = "Mario"
 
-    from src.gui.leaderboard_window import LeaderboardWindow
     window = LeaderboardWindow(game_manager=mock_manager)
     qtbot.addWidget(window)
 
     assert window.table_top3.rowCount() == 1
     assert window.table_top3.item(0, 1).text() == "Mario"
-    
