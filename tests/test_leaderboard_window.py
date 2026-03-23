@@ -105,16 +105,28 @@ def test_user_not_in_leaderboard(leaderboard_app):
     assert leaderboard_app.table_user_pos.rowCount() == 0
 
 
-def test_aggiorna_classifica_with_mock_manager(qtbot):
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_aggiorna_classifica_with_mock_manager(request): # <-- Sostituisci qtbot con request
     """Verifica che la finestra scarichi e mostri i dati dal GameManager all'avvio."""
+    
+    # --- PROTEZIONE PER CI HEADLESS ---
+    if "qtbot" not in request.fixturenames:
+        pytest.skip("Plugin pytest-qt non installato o non configurato")
+        return
+        
+    qtbot = request.getfixturevalue("qtbot")
+    # ----------------------------------
+
     mock_manager = MagicMock()
     mock_manager.get_leaderboard.return_value = [
         {"utente": "Mario", "vittorie": 10, "media": 3.5}
     ]
     mock_manager.get_current_user.return_value = "Mario"
 
+    from src.gui.leaderboard_window import LeaderboardWindow
     window = LeaderboardWindow(game_manager=mock_manager)
     qtbot.addWidget(window)
 
     assert window.table_top3.rowCount() == 1
     assert window.table_top3.item(0, 1).text() == "Mario"
+    
