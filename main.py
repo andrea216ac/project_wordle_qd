@@ -59,7 +59,7 @@ def main() -> None:
                 break
 
             nome_effettivo = login.user_name
-
+            manager.current_user = nome_effettivo
             # 2. Mostra la Main Window
             finestra_menu = MainWindow(
                 nome_giocatore=nome_effettivo,

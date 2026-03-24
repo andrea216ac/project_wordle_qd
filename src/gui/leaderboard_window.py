@@ -42,21 +42,22 @@ class LeaderboardWindow(BaseDialog):
             ["Posizione", "Vittorie", "Media Tentativi"]
         )
 
-        # Configurazione bottone indietro
         btn_back = getattr(self, "btn_back", None)
         if btn_back:
             btn_back.clicked.connect(self.torna_indietro)
 
-        # Controllo esistenza tabelle nell'UI
         if hasattr(self, "table_top3") and hasattr(self, "table_user_pos"):
             self.setup_leaderboard_graphics()
-            self.aggiorna_classifica()  # Carica i dati reali
+            self.aggiorna_classifica()
         else:
             print("ERRORE: Tabelle non trovate nel file .ui. Verifica gli objectName.")
 
     def setup_leaderboard_graphics(self):
         """Configura le intestazioni e il comportamento delle tabelle."""
-        # Tabella Top 3
+        self.table_top3.verticalHeader().setSectionResizeMode(
+            QtWidgets.QHeaderView.ResizeMode.Stretch
+        )
+
         self.table_top3.setColumnCount(4)
         self.table_top3.setHorizontalHeaderLabels(
             ["Pos.", "Utente", "Vittorie", "Media Tentativi"]
@@ -68,7 +69,6 @@ class LeaderboardWindow(BaseDialog):
             QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
         )
 
-        # Tabella Posizione Utente
         self.table_user_pos.setColumnCount(3)
         self.table_user_pos.setHorizontalHeaderLabels(
             ["Posizione", "Vittorie", "Media Tentativi"]
@@ -80,7 +80,6 @@ class LeaderboardWindow(BaseDialog):
             QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
         )
 
-        # Stile grafico
         style = """
             QTableWidget { background-color: #ffffff; gridline-color: #d3d6da; border-radius: 5px; }
             QHeaderView::section { background-color: #787c7e; color: white; font-weight: bold; }
@@ -104,11 +103,6 @@ class LeaderboardWindow(BaseDialog):
 
     def popola_classifica(self, dati, nome_utente_corrente):
         """Inserisce i dati reali all'interno dei widget QTableWidget."""
-        # I dati arrivano già ordinati dal Repository (vittorie DESC, media ASC)
-
-        print(f"Debug: Cerco utente '{nome_utente_corrente}' in classifica")  # DEBUG
-        print(f"Debug: Dati ricevuti: {dati}")
-        # Popolamento Top 3
         self.table_top3.setRowCount(min(3, len(dati)))
         for i in range(min(3, len(dati))):
             giocatore = dati[i]
@@ -117,11 +111,10 @@ class LeaderboardWindow(BaseDialog):
             self.table_top3.setItem(i, 2, QTableWidgetItem(str(giocatore["vittorie"])))
             self.table_top3.setItem(i, 3, QTableWidgetItem(str(giocatore["media"])))
 
-        # Trova la posizione dell'utente corrente nell'intera lista
         pos_utente = -1
         dati_utente = None
         for index, g in enumerate(dati):
-            if g["utente"].lower() == nome_utente_corrente:
+            if g["utente"].lower() == nome_utente_corrente.lower():
                 pos_utente = index + 1
                 dati_utente = g
                 break
@@ -136,19 +129,17 @@ class LeaderboardWindow(BaseDialog):
                 0, 2, QTableWidgetItem(str(dati_utente["media"]))
             )
         else:
-            self.table_user_pos.setRowCount(0)  # Utente non ha ancora giocato
+            self.table_user_pos.setRowCount(0)
 
     def torna_indietro(self):
         """Metodo per tornare alla main window evitando crash se il manager è None."""
         from src.gui.main_window import MainWindow
 
-        # Recuperiamo il nome in sicurezza
         username = "Ospite"
         if self.game_manager is not None:
             username = self.game_manager.get_current_user() or "Ospite"
 
         if self.main_window is None:
-            # Passiamo i dati necessari alla MainWindow
             self.main_window = MainWindow(
                 nome_giocatore=username, game_manager=self.game_manager
             )

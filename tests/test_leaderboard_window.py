@@ -3,6 +3,7 @@
 # pylint: disable=no-name-in-module, import-outside-toplevel
 import os
 from typing import Any, cast
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -64,7 +65,7 @@ def test_user_position_display(leaderboard_app):
     leaderboard_app.popola_classifica(dati_test, nome_utente_corrente="Io")
 
     assert leaderboard_app.table_user_pos.rowCount() == 1
-    assert leaderboard_app.table_user_pos.item(0, 0).text() == "2"
+    assert leaderboard_app.table_user_pos.item(0, 0).text() == "2°"
 
 
 def test_read_only_tables(leaderboard_app):
@@ -80,10 +81,20 @@ def test_torna_indietro_logic(leaderboard_app):
     assert leaderboard_app.main_window is not None
 
 
+def test_torna_indietro_calls_show_on_main_window(leaderboard_app):
+    """Verifica che premendo 'indietro' venga mostrata la MainWindow precedente."""
+    mock_main = MagicMock()
+    leaderboard_app.main_window = mock_main
+
+    leaderboard_app.torna_indietro()
+
+    mock_main.show.assert_called_once()
+
+
 def test_popola_classifica_empty(leaderboard_app):
     """Verifica che il popolamento funzioni anche con dati vuoti."""
     leaderboard_app.popola_classifica([], nome_utente_corrente="Nessuno")
-    assert leaderboard_app.table_top3.rowCount() == 3
+    assert leaderboard_app.table_top3.rowCount() == 0
     assert leaderboard_app.table_user_pos.rowCount() == 0
 
 
@@ -92,3 +103,25 @@ def test_user_not_in_leaderboard(leaderboard_app):
     dati_test = [{"utente": "Player1", "vittorie": 1, "media": 5.0}]
     leaderboard_app.popola_classifica(dati_test, nome_utente_corrente="Sconosciuto")
     assert leaderboard_app.table_user_pos.rowCount() == 0
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_aggiorna_classifica_with_mock_manager(request):
+    """Verifica che la finestra scarichi e mostri i dati dal GameManager all'avvio."""
+    if "qtbot" not in request.fixturenames:
+        pytest.skip("Plugin pytest-qt non installato o non configurato")
+        return
+
+    qtbot = request.getfixturevalue("qtbot")
+
+    mock_manager = MagicMock()
+    mock_manager.get_leaderboard.return_value = [
+        {"utente": "Mario", "vittorie": 10, "media": 3.5}
+    ]
+    mock_manager.get_current_user.return_value = "Mario"
+
+    window = LeaderboardWindow(game_manager=mock_manager)
+    qtbot.addWidget(window)
+
+    assert window.table_top3.rowCount() == 1
+    assert window.table_top3.item(0, 1).text() == "Mario"

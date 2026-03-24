@@ -1,7 +1,22 @@
 """Unit tests per la finestra di Login."""
 
+from typing import Any, cast
+from unittest.mock import MagicMock, patch
+
 import pytest
-from PyQt6.QtCore import Qt  # pylint: disable=no-name-in-module
+
+# pylint: disable=no-name-in-module, c-extension-no-member, invalid-name
+try:
+    from PyQt6 import QtWidgets as real_widgets
+    from PyQt6.QtCore import Qt as real_qt
+
+    QtWidgets = cast(Any, real_widgets)
+    Qt = cast(Any, real_qt)
+    HAS_QT = True
+except ImportError:
+    QtWidgets = cast(Any, MagicMock())  # type: ignore
+    Qt = cast(Any, MagicMock())  # type: ignore
+    HAS_QT = False
 
 from src.gui.login_window import HAS_QT, LoginWindow
 
@@ -105,10 +120,28 @@ def test_initial_ui_state(login_app):
 
 
 @pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
-def test_login_with_guest_logic(login_app):
-    """Verifica la logica di fallback 'Ospite'."""
-    login_app.lineEdit_username.setText("")
-    login_app.gestisci_accedi()
+def test_login_failed_user_not_found(login_app, qtbot):
+    """Verifica che appaia l'errore se l'utente non esiste nel DB."""
+    mock_session = MagicMock()
+    mock_session.query().filter_by().first.return_value = None
+    login_app.sessione_db = mock_session
 
-    assert login_app.main_window is not None
-    assert "Ospite" in login_app.main_window.lbl_welcome.text()
+    login_app.lineEdit_username.setText("utente_non_registrato")
+
+    login_app.lbl_error_login = MagicMock()
+
+    qtbot.mouseClick(login_app.btn_login, Qt.MouseButton.LeftButton)
+
+    login_app.lbl_error_login.show.assert_called()
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_registration_cancelled(login_app, qtbot):
+    """Verifica che se annullo la registrazione, la login torni visibile."""
+    with patch("src.gui.registration_window.RegistrationWindow") as mock_reg_class:
+        mock_reg_inst = mock_reg_class.return_value
+        mock_reg_inst.exec.return_value = QtWidgets.QDialog.DialogCode.Rejected
+
+        qtbot.mouseClick(login_app.btn_registration, Qt.MouseButton.LeftButton)
+
+        assert login_app.isVisible()
