@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Modulo di test per il repository del dizionario di parole."""
 
 import datetime

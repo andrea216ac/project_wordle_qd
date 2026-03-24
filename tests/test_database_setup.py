@@ -1,10 +1,10 @@
 """Modulo di test avanzato per l'inizializzazione e il popolamento del database."""
 
-import logging
 from unittest.mock import MagicMock, mock_open, patch
 
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import sessionmaker
 
 from src.database.init_db import init_database
 from src.database.models import Base, Word
@@ -29,7 +29,6 @@ def test_seed_words_from_file_success():
 
     with patch("src.database.seed_db.engine", engine):
         with patch("src.database.seed_db.SessionLocal") as mock_session_cls:
-            from sqlalchemy.orm import sessionmaker
 
             session = sessionmaker(bind=engine)()
             mock_session_cls.return_value.__enter__.return_value = session

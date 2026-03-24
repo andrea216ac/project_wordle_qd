@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker
 
-from src.database.models import Base, User
+from src.database.models import Base
 from src.database.user_repository import UserRepository
 
 

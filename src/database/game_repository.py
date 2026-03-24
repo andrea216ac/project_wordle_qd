@@ -21,7 +21,7 @@ class GameRepository:
         """Inizializza il repository con la sessione."""
         self.session = session
 
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments, R0917
     def save_game(
         self,
         user_id: int,

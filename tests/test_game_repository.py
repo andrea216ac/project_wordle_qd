@@ -1,7 +1,6 @@
 """Modulo di test completo e definitivo per GameRepository."""
 
-import datetime
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 from sqlalchemy import create_engine
@@ -133,7 +132,3 @@ class TestGameRepositoryFinal:
         # Errore DB in caricamento
         with patch.object(db_session, "query", side_effect=SQLAlchemyError("Error")):
             assert repo.load_game_state("StateUser") is None
-
-
-# Import necessario per il patch
-from unittest.mock import patch
