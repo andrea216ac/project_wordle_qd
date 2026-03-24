@@ -1,5 +1,7 @@
 """Game manager coordina le sessioni di gioco."""
 
+from __future__ import annotations
+
 import json
 import logging
 from typing import List, Optional

@@ -1,6 +1,8 @@
 # pylint: disable=no-member, invalid-name, c-extension-no-member
 """Modulo per la finestra di gioco di Wordle."""
 
+from __future__ import annotations
+
 import os
 import sys
 from typing import Any, List, Optional, Type
