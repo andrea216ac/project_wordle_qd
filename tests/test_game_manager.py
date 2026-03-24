@@ -3,8 +3,7 @@
 # pylint: disable=redefined-outer-name
 
 import json
-from unittest.mock import MagicMock
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 import pytest
 

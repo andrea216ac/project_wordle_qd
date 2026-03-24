@@ -1,8 +1,7 @@
 """tests/test_word_provider.py"""
 
 import datetime
-from unittest.mock import MagicMock
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 import pytest
 
