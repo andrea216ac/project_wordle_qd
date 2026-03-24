@@ -1,7 +1,5 @@
 """Modulo contenente il repository per la gestione del dizionario di parole."""
 
-from __future__ import annotations
-
 import datetime
 import logging
 import random

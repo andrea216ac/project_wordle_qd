@@ -1,4 +1,3 @@
-# fmt: off
 """Modulo per la finestra principale dell'applicazione Wordle."""
 
 # pylint: disable=import-outside-toplevel, cyclic-import
@@ -73,15 +72,13 @@ class MainWindow(BaseClass):  # pylint: disable=too-few-public-methods
                 if self.game_manager.has_played_classic_today(self.nome_giocatore):
                     btn_new_game.setEnabled(False)
                     btn_new_game.setText("Già giocato")
-                    btn_new_game.setStyleSheet(
-                        """
+                    btn_new_game.setStyleSheet("""
                         QPushButton { 
                             background-color: #3a3a3c; 
                             color: #818384; 
                             border: 1px solid #565758;
                         }
-                    """
-                    )
+                    """)
         else:
             print(f"ERRORE: File UI non trovato in {ui_path}")
 

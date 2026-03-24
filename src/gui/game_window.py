@@ -1,8 +1,5 @@
 # pylint: disable=no-member, invalid-name, c-extension-no-member
-# fmt: off
 """Modulo per la finestra di gioco di Wordle."""
-
-from __future__ import annotations
 
 import os
 import sys
@@ -120,12 +117,10 @@ class GameWindow(BaseWindow):
                 colore = color_map.get(esito, "#3a3a3c")
                 widget.setText(parola[i])
                 widget.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-                widget.setStyleSheet(
-                    f"""
+                widget.setStyleSheet(f"""
                     background-color: {colore}; color: white;
                     border: 2px solid {colore}; font-weight: bold; font-size: 25px;
-                """
-                )
+                """)
             self._aggiorna_colore_tasto(parola[i], colore)
 
     def torna_indietro(self):
@@ -185,25 +180,21 @@ class GameWindow(BaseWindow):
             is_active = c == self.current_col
 
             if is_active:
-                widget.setStyleSheet(
-                    """
+                widget.setStyleSheet("""
                     background-color: #3a3a3c; 
                     color: white; 
                     border: 3px solid #538d4e; 
                     font-weight: bold; font-size: 25px;
-                """
-                )
+                """)
             else:
                 has_text = bool(widget.toPlainText())
                 border_color = "#565758" if has_text else "#3a3a3c"
-                widget.setStyleSheet(
-                    f"""
+                widget.setStyleSheet(f"""
                     background-color: #121213; 
                     color: white; 
                     border: 2px solid {border_color};
                     font-weight: bold; font-size: 25px;
-                """
-                )
+                """)
 
     def _setup_keyboard(self):
         """Crea la tastiera dinamica e salva i riferimenti ai bottoni."""
@@ -232,15 +223,13 @@ class GameWindow(BaseWindow):
                     btn.setFixedWidth(25)
                 btn.setCursor(QtCore.Qt.CursorShape.PointingHandCursor)
 
-                btn.setStyleSheet(
-                    """
+                btn.setStyleSheet("""
                     QPushButton { 
                         background-color: #818384; color: white; 
                         border-radius: 4px; font-weight: bold; font-size: 16px;
                     }
                     QPushButton:hover { background-color: #565758; }
-                """
-                )
+                """)
 
                 if key == "INVIO":
                     btn.clicked.connect(self._ui_on_enter)
@@ -327,13 +316,11 @@ class GameWindow(BaseWindow):
                 colore = color_map.get(esito, "#3a3a3c")
                 lettera = tentativo[i]
 
-                widget.setStyleSheet(
-                    f"""
+                widget.setStyleSheet(f"""
                     background-color: {colore};
                     color: white; border: 2px solid {colore};
                     font-weight: bold; font-size: 25px;
-                """
-                )
+                """)
 
                 btn = self.keyboard_buttons.get(lettera)
                 if btn:
@@ -390,14 +377,12 @@ class GameWindow(BaseWindow):
         if giallo in stile_attuale and nuovo_colore != verde:
             return
 
-        btn.setStyleSheet(
-            f"""
+        btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {nuovo_colore}; color: white;
                 border-radius: 4px; font-weight: bold; font-size: 16px;
             }}
-        """
-        )
+        """)
 
     def setup_keyboard_focus(self):
         """Assicura che le celle non rubino il focus alla finestra."""

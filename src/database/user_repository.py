@@ -1,7 +1,5 @@
 """Modulo contenente il repository per l'accesso ai dati degli utenti."""
 
-from __future__ import annotations
-
 import logging
 
 from sqlalchemy.exc import SQLAlchemyError

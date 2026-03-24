@@ -1,7 +1,5 @@
 """Modulo contenente il repository per l'accesso ai dati delle partite."""
 
-from __future__ import annotations
-
 import datetime
 import logging
 
@@ -21,7 +19,7 @@ class GameRepository:
         """Inizializza il repository con la sessione."""
         self.session = session
 
-    # pylint: disable=too-many-arguments, R0917
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
     def save_game(
         self,
         user_id: int,
@@ -79,6 +77,7 @@ class GameRepository:
 
             today = datetime.date.today()
 
+            # Assumiamo che la colonna della data si chiami 'date' nel tuo models.py.
             game_today = (
                 self.session.query(Game)
                 .filter(
@@ -134,6 +133,8 @@ class GameRepository:
 
             self.session.expire_all()
 
+            # Conta come "vittoria" le partite in cui won == True
+            # Calcola la media (avg) sulla colonna attempts
             results = (
                 self.session.query(
                     User.username,
@@ -141,13 +142,17 @@ class GameRepository:
                     func.avg(Game.attempts).label("media"),
                 )
                 .join(Game, User.id == Game.user_id)
+                # Filtra solo le partite finite (Classic o Training se vuoi)
                 .filter(Game.mode == "classic")
                 .group_by(User.id, User.username)
-                .order_by(desc("vittorie"), "media")
+                .order_by(
+                    desc("vittorie"), "media"
+                )  # Ordina per vittorie (decrescente), poi per media tentativi (crescente)
                 .limit(limit)
                 .all()
             )
 
+            # Trasforma il risultato SQL in una lista di dizionari
             return [
                 {
                     "utente": row.username,
