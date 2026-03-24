@@ -195,7 +195,6 @@ def test_start_game_already_played_runtime_error(mock_word_provider, mock_repo):
     """Copre righe 98-99: RuntimeError se l'utente ha già giocato oggi."""
     mock_repo.has_played_today.return_value = True
     manager = GameManager(mock_word_provider, mock_repo)
-    import pytest
 
     with pytest.raises(RuntimeError, match="Classic mode already played today"):
         manager.start_game("classic", "it", user="user")
@@ -245,7 +244,7 @@ def test_submit_guess_save_score_exception_runs():
 
 
 def test_is_game_over_without_game_returns_true():
-    """Copre righe 188-192: is_game_over deve ritornare True se non c’è partita o current_game è None."""
+    """Copre righe 188-192"""
     gm = GameManager(MagicMock())
 
     # current_mode è None → True

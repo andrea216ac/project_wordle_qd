@@ -105,7 +105,7 @@ def test_is_valid_word_empty():
 
 
 def test_is_valid_word_exception_handling():
-    """Copre righe 61-66: se word_repository.word_exists lancia eccezione, is_valid_word ritorna False."""
+    """Copre righe 61-66: se word_repository.word_exists lancia eccezione"""
     # Crea il WordProvider con repository mockato
     wp = WordProvider(word_repository=MagicMock())
 
