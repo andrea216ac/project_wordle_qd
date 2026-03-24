@@ -1,6 +1,8 @@
 # pylint: disable=duplicate-code
 """Unit tests per la finestra di Registrazione."""
 
+from unittest.mock import MagicMock
+
 import pytest
 from PyQt6.QtCore import Qt  # pylint: disable=no-name-in-module
 
@@ -160,3 +162,40 @@ def test_error_hides_on_new_typing(registration_app, qtbot):
 
     qtbot.keyClick(window.lineEdit_username, Qt.Key.Key_Backspace)
     assert window.lbl_error_username.isVisible() is False
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_username_already_taken(registration_app, qtbot):
+    """Verifica il blocco se l'username esiste già nel DB."""
+    mock_session = MagicMock()
+    mock_session.query().filter_by().first.return_value = True  # Username occupato
+    registration_app.sessione_db = mock_session
+
+    registration_app.lineEdit_nome.setText("Mario")
+    registration_app.lineEdit_cognome.setText("Rossi")
+    registration_app.lineEdit_username.setText("mario_rossi")
+
+    qtbot.mouseClick(
+        registration_app.btn_registration_submit, Qt.MouseButton.LeftButton
+    )
+
+    assert registration_app.lbl_error_username.isVisible()
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_database_rollback_on_commit_exception(registration_app, qtbot):
+    """Verifica che un crash del DB faccia il rollback."""
+    mock_session = MagicMock()
+    mock_session.query().filter_by().first.return_value = None
+    mock_session.commit.side_effect = Exception("Crash del DB")
+    registration_app.sessione_db = mock_session
+
+    registration_app.lineEdit_nome.setText("A")
+    registration_app.lineEdit_cognome.setText("B")
+    registration_app.lineEdit_username.setText("C")
+
+    qtbot.mouseClick(
+        registration_app.btn_registration_submit, Qt.MouseButton.LeftButton
+    )
+
+    assert mock_session.rollback.called

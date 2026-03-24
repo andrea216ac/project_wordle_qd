@@ -164,3 +164,26 @@ def test_avvia_gioco_runtime_error_handling(app_window, qtbot):
 
             assert not app_window.btn_play.isEnabled()
             assert app_window.btn_play.text() == "Già giocato"
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_game_started_runtime_error_disables_button(app_window, qtbot):
+    """Verifica che un errore di runtime del manager disabiliti il pulsante Play."""
+    with patch(
+        "src.gui.game_window.GameWindow", side_effect=RuntimeError("Gia giocato")
+    ):
+        with patch.object(QtWidgets.QMessageBox, "warning") as mock_warn:
+            qtbot.mouseClick(app_window.btn_play, Qt.MouseButton.LeftButton)
+
+            mock_warn.assert_called_once()
+            assert not app_window.btn_play.isEnabled()
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_logout_richiesto_flag(app_window, qtbot):
+    """Verifica che premere esci imposti il flag di logout per il file main.py."""
+    assert app_window.logout_richiesto is False
+
+    qtbot.mouseClick(app_window.btn_exit, Qt.MouseButton.LeftButton)
+
+    assert app_window.logout_richiesto is True

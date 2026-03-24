@@ -145,3 +145,28 @@ def test_registration_cancelled(login_app, qtbot):
         qtbot.mouseClick(login_app.btn_registration, Qt.MouseButton.LeftButton)
 
         assert login_app.isVisible()
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_login_failed_with_db(login_app, qtbot):
+    """Verifica che la label di errore appaia se l'utente non è nel DB."""
+    mock_session = MagicMock()
+    mock_session.query().filter_by().first.return_value = None  # Non trovato
+    login_app.sessione_db = mock_session
+
+    login_app.lineEdit_username.setText("UtenteInesistente")
+    qtbot.mouseClick(login_app.btn_login, Qt.MouseButton.LeftButton)
+
+    assert login_app.lbl_error_login.isVisible()
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_registration_flow_cancelled(login_app, qtbot):
+    """Verifica che annullando la registrazione la finestra di login torni visibile."""
+    with patch("src.gui.registration_window.RegistrationWindow") as mock_reg_class:
+        mock_inst = mock_reg_class.return_value
+        mock_inst.exec.return_value = QtWidgets.QDialog.DialogCode.Rejected
+
+        qtbot.mouseClick(login_app.btn_registration, Qt.MouseButton.LeftButton)
+
+        assert login_app.isVisible()

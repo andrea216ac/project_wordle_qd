@@ -270,3 +270,31 @@ def test_ripristino_partita_alignment(game):
 
     if game.grid[0][0]:
         assert game.grid[0][0].alignment() == QtCore.Qt.AlignmentFlag.AlignCenter
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_victory_trigger_messagebox(game):
+    """Verifica che indovinando la parola compaia l'information popup."""
+    game.game_manager.is_game_over.return_value = True
+    game.game_manager.submit_guess.return_value = ["Corretto"] * 5
+
+    for char in "VICTO":
+        game._ui_on_key_press(char)
+
+    with patch.object(QtWidgets.QMessageBox, "information") as mock_info:
+        game._ui_on_enter()
+        mock_info.assert_called_once()
+
+
+@pytest.mark.skipif(not HAS_QT, reason="Salto test GUI")
+def test_game_over_loss_critical_messagebox(game):
+    """Verifica che perdendo i tentativi compaia l'errore critical."""
+    game.game_manager.is_game_over.return_value = True
+    game.game_manager.submit_guess.return_value = ["Assente"] * 5
+
+    for char in "DEFEA":
+        game._ui_on_key_press(char)
+
+    with patch.object(QtWidgets.QMessageBox, "critical") as mock_crit:
+        game._ui_on_enter()
+        mock_crit.assert_called_once()
