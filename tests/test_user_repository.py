@@ -2,26 +2,9 @@
 
 from unittest.mock import MagicMock
 
-import pytest
-from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import sessionmaker
 
-from src.database.models import Base
 from src.database.user_repository import UserRepository
-
-
-@pytest.fixture
-def db_session():
-    """Prepara un database SQLite in memoria vuoto e isolato per i test."""
-    engine = create_engine("sqlite:///:memory:")
-    Base.metadata.create_all(engine)
-    session_factory = sessionmaker(bind=engine)
-    session = session_factory()
-
-    yield session
-
-    session.close()
 
 
 class TestUserRepository:
