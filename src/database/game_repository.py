@@ -21,7 +21,7 @@ class GameRepository:
         """Inizializza il repository con la sessione."""
         self.session = session
 
-    # pylint: disable=too-many-arguments,too-many-positional-arguments
+    # pylint: disable=too-many-arguments
     def save_game(
         self,
         user_id: int,
@@ -143,9 +143,7 @@ class GameRepository:
                 .join(Game, User.id == Game.user_id)
                 .filter(Game.mode == "classic")
                 .group_by(User.id, User.username)
-                .order_by(
-                    desc("vittorie"), "media"
-                )
+                .order_by(desc("vittorie"), "media")
                 .limit(limit)
                 .all()
             )

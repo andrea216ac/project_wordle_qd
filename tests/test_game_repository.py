@@ -38,7 +38,7 @@ class TestGameRepositoryFinal:
         res = repo.save_game(user.id, "GATTO", 3, True, 100, "classic")
         assert res is not None
         assert res.word_to_guess == "GATTO"
-        
+
         # Verifica anche get_games_by_user (Righe 58-60)
         history = repo.get_games_by_user(user.id)
         assert len(history) == 1
@@ -48,7 +48,7 @@ class TestGameRepositoryFinal:
         mock_session = MagicMock()
         mock_session.commit.side_effect = SQLAlchemyError("DB Crash")
         repo = GameRepository(mock_session)
-        
+
         res = repo.save_game(1, "TEST", 1, True, 10, "classic")
         assert res is None
         mock_session.rollback.assert_called_once()
@@ -63,16 +63,16 @@ class TestGameRepositoryFinal:
     def test_has_played_today_flow(self, db_session):
         """Testa il flusso di gioco giornaliero e utente non trovato (Righe 71-105)."""
         repo = GameRepository(db_session)
-        
+
         # Caso utente non esiste
         assert repo.has_played_today("Inesistente") is False
-        
+
         # Caso utente esiste ma non ha giocato
         u = User(username="Player1")
         db_session.add(u)
         db_session.commit()
         assert repo.has_played_today("Player1") is False
-        
+
         # Caso ha giocato oggi
         repo.save_game(u.id, "GATTO", 1, True, 10, "classic")
         assert repo.has_played_today("Player1") is True
@@ -87,16 +87,16 @@ class TestGameRepositoryFinal:
     def test_save_score_adapter_and_error(self, db_session):
         """Testa l'adattatore save_score e il caso utente mancante (Righe 112-140)."""
         repo = GameRepository(db_session)
-        
+
         # Utente non trovato nell'adattatore
-        repo.save_score("Ghost", 100, 3) 
-        
+        repo.save_score("Ghost", 100, 3)
+
         # Successo adattatore
         u = User(username="AdapterUser")
         db_session.add(u)
         db_session.commit()
         repo.save_score("AdapterUser", 50, 4)
-        
+
         game = db_session.query(Game).filter(Game.user_id == u.id).first()
         assert game.points == 50
 
@@ -107,10 +107,10 @@ class TestGameRepositoryFinal:
         db_session.add(u)
         db_session.commit()
         repo.save_game(u.id, "W", 3, True, 10, "classic")
-        
+
         lb = repo.get_leaderboard_data()
         assert lb[0]["utente"] == "Winner"
-        
+
         # Forza errore DB
         with patch.object(db_session, "query", side_effect=SQLAlchemyError("Error")):
             assert repo.get_leaderboard_data() == []
@@ -121,18 +121,19 @@ class TestGameRepositoryFinal:
         u = User(username="StateUser")
         db_session.add(u)
         db_session.commit()
-        
+
         # Successo
         repo.save_game_state("StateUser", '{"r": 1}')
         assert repo.load_game_state("StateUser") == '{"r": 1}'
-        
+
         # Utente non trovato
         repo.save_game_state("NoUser", "{}")
         assert repo.load_game_state("NoUser") is None
-        
+
         # Errore DB in caricamento
         with patch.object(db_session, "query", side_effect=SQLAlchemyError("Error")):
             assert repo.load_game_state("StateUser") is None
+
 
 # Import necessario per il patch
 from unittest.mock import patch

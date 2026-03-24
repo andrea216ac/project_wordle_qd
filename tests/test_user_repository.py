@@ -87,7 +87,9 @@ class TestUserRepository:
         mock_session.query.return_value = mock_query
 
         # Il salvataggio esplode simulando un errore del server
-        mock_session.commit.side_effect = SQLAlchemyError("Errore simulato di scrittura")
+        mock_session.commit.side_effect = SQLAlchemyError(
+            "Errore simulato di scrittura"
+        )
 
         repo = UserRepository(mock_session)
         risultato = repo.create_user("UtenteSfortunato")
