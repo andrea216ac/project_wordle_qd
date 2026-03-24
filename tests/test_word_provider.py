@@ -1,7 +1,7 @@
 """tests/test_word_provider.py"""
 
 import datetime
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 import pytest
 
@@ -101,3 +101,21 @@ def test_is_valid_word_empty():
     provider = WordProvider(repo)
 
     assert provider.is_valid_word("", "it") is False
+
+
+def test_is_valid_word_exception_handling():
+    """Copre righe 61-66: se word_repository.word_exists lancia eccezione"""
+    # Crea il WordProvider con repository mockato
+    wp = WordProvider(word_repository=MagicMock())
+
+    # Imposta lunghezza parola (necessario per passare il controllo length)
+    wp.word_length = 5
+
+    # Mock del repository per far lanciare eccezione
+    wp.word_repository.word_exists.side_effect = Exception("DB Error")
+
+    # Chiama la funzione con parola valida → entra nel try/except
+    result = wp.is_valid_word("gatto", "it")
+
+    # Deve tornare False senza crash
+    assert result is False
