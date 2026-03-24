@@ -3,12 +3,13 @@
 # pylint: disable=redefined-outer-name
 
 import json
+from unittest.mock import MagicMock
 from unittest.mock import Mock
 
 import pytest
 
 from src.core.game_manager import GameManager
-from src.core.modes import ClassicMode, TrainingMode
+from src.core.modes import ClassicMode, ModeError, TrainingMode
 from src.core.word_provider import WordProvider
 
 
@@ -173,3 +174,114 @@ def test_get_leaderboard_no_repository(mock_word_provider):
     result = manager.get_leaderboard()
 
     assert result == []
+
+
+# =========================
+# TEST MIRATI PER LE RIGHE MANCANTI
+# =========================
+
+
+def test_restore_json_error(mock_word_provider, mock_repo):
+    """Copre righe 77-78: JSONDecodeError / KeyError durante il restore partita."""
+    # Simula JSON malformato
+    mock_repo.load_game_state.return_value = "{ invalid json }"
+    manager = GameManager(mock_word_provider, mock_repo)
+    # Non deve crashare e deve creare comunque la modalità
+    manager.start_game("classic", "it", user="user")
+    assert manager.current_mode is not None
+
+
+def test_start_game_already_played_runtime_error(mock_word_provider, mock_repo):
+    """Copre righe 98-99: RuntimeError se l'utente ha già giocato oggi."""
+    mock_repo.has_played_today.return_value = True
+    manager = GameManager(mock_word_provider, mock_repo)
+    import pytest
+
+    with pytest.raises(RuntimeError, match="Classic mode already played today"):
+        manager.start_game("classic", "it", user="user")
+
+
+def test_start_game_invalid_mode_raises_modeerror():
+    """Copre righe 111-112: raise ModeError se la modalità non è 'classic' né 'training'."""
+    mock_wp = MagicMock()
+    mock_repo = MagicMock()
+    manager = GameManager(mock_wp, mock_repo)
+
+    with pytest.raises(ModeError, match="Invalid mode: invalid_mode"):
+        manager.start_game("invalid_mode", "it")
+
+
+def test_submit_guess_no_active_game_raises():
+    """Copre righe 111-112: submit_guess senza partita attiva deve sollevare RuntimeError."""
+    gm = GameManager(MagicMock())  # nessun current_mode
+    with pytest.raises(RuntimeError, match="No active game"):
+        gm.submit_guess("PAROLA")
+
+
+def test_submit_guess_save_score_exception_runs():
+    """Copre righe 188-192: errore nel salvataggio dello score finale, submit_guess non crasha."""
+    mock_wp = MagicMock()
+    mock_wp.is_valid_word.return_value = True
+
+    mock_repo = MagicMock()
+    mock_repo.save_score.side_effect = Exception("DB Error")
+    mock_repo.load_game_state.return_value = ""  # evita TypeError
+    mock_repo.has_played_today.return_value = (
+        False  # permette di partire con classic game
+    )
+
+    manager = GameManager(mock_wp, mock_repo)
+    manager.start_game("classic", "it", user="user")
+
+    game = manager.current_mode.current_game
+    game.target_word = "GATTO"
+    game.max_attempts = 1
+
+    result = manager.submit_guess(
+        "GATTO"
+    )  # termina il gioco → entra nel try/except save_score
+    assert isinstance(result, list)
+    assert game.is_over
+
+
+def test_is_game_over_without_game_returns_true():
+    """Copre righe 188-192: is_game_over deve ritornare True se non c’è partita o current_game è None."""
+    gm = GameManager(MagicMock())
+
+    # current_mode è None → True
+    assert gm.is_game_over() is True
+
+    # current_mode c’è ma current_game è None → True
+    gm.current_mode = MagicMock()
+    gm.current_mode.current_game = None
+    assert gm.is_game_over() is True
+
+
+def test_get_score_training_mode_returns_zero():
+    """Copre riga 211: get_score in modalità training deve ritornare 0."""
+    mock_wp = MagicMock()
+    mock_repo = MagicMock()
+
+    manager = GameManager(mock_wp, mock_repo)
+    manager.start_game("training", "it")  # avvia la modalità training
+
+    # get_score deve tornare 0 perché non è ClassicMode
+    assert manager.get_score() == 0
+
+
+def test_get_current_user_returns_user():
+    """Copre riga 211: get_current_user ritorna l’utente corrente."""
+    gm = GameManager(MagicMock())
+
+    # Nessun utente impostato → None
+    assert gm.get_current_user() is None
+
+    # Imposta un utente → ritorna il valore corretto
+    gm.current_user = "pippo"
+    assert gm.get_current_user() == "pippo"
+
+
+def test_has_played_classic_today_no_repo(mock_word_provider):
+    """Copre riga 232: has_played_classic_today senza repository -> ritorna False."""
+    manager = GameManager(mock_word_provider, None)
+    assert manager.has_played_classic_today("user") is False
