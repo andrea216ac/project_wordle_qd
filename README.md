@@ -78,4 +78,4 @@ Abbiamo quindi scelto di documentare lo stato "skipped" in ambiente remoto come 
 
 ---
 
-_Progetto realizzato per il corso di Programmazione - Anno Accademico 2025/2026_
+_Progetto realizzato per il corso di Quality Development - Anno Accademico 2025/2026_
